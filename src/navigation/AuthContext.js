@@ -47,12 +47,25 @@ export const AuthProvider = ({children}) => {
         }
     }
 
+    const getProtectedData = async () => {
+        // Get the JWT token from AsyncStorage
+        const token = await AsyncStorage.getItem('userToken');
+      
+        // Make a GET request to the protected endpoint, passing in the JWT token in the Authorization header
+        const response = await axios.get('http://192.168.1.6:3000/protected', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+    }
+
     useEffect(() => {
         isLoggedIn();
+        getProtectedData();
     }, []);
 
     return (
-        <AuthContext.Provider value={{login, logout, isLoading, userToken}}>
+        <AuthContext.Provider value={{login, logout, isLoading, userToken, getProtectedData}}>
             {children}
         </AuthContext.Provider>
     ); 
