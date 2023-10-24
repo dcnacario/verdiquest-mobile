@@ -1,16 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import { AuthProvider } from './src/AuthContext';
-import AppStack from './src/navigation/AppTabNav';
-import Home from './src/screens/Home';
+import { AuthProvider } from './src/navigation/AuthContext';
+import AuthStack  from './src/navigation/AuthStack';
 
 
 export default function App() {
   return (
-    <AuthProvider>
-        {/* <Home/> */}
-        <AuthStack/>
-    </AuthProvider>
+      <AuthProvider>
+          {/* <Home/> */}
+          <AuthStack/>
+      </AuthProvider>
   );
 }
 
