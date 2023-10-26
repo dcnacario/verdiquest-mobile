@@ -1,10 +1,12 @@
 import React from "react";
 import {Text, View, StyleSheet} from 'react-native';
 
-const Home = () => {
+const Home = ({route, navigation}) => {
+    const { user } = route.params;
+
     return (
         <View>
-            <Text>Home Screen</Text>
+             <Text>Welcome, {user.Email}!</Text>
         </View>
     );
 }

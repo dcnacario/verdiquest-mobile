@@ -105,7 +105,7 @@ const Login = () => {
                         <Text style={{fontWeight: 'bold', fontSize: 12, marginRight: 20,}}>Forgot password?</Text>
                     </TouchableOpacity>
                 </View>
-                <Button title="LOGIN"  onPress={() => login(email, password)}/>
+                <Button title="LOGIN" onPress={() => login(email, password, navigation)}/>
                 <TouchableOpacity onPress={goToRegister}>
                         <Text style={{fontWeight: 'bold', fontSize: 14, marginTop: 50}}>Create a new account</Text>
                 </TouchableOpacity>

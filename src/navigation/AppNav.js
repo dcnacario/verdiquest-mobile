@@ -2,7 +2,6 @@ import {View, Text, ActivityIndicator} from 'react-native';
 import React, { useContext } from 'react';
 import { AuthContext } from './AuthContext';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import AppStack from './AppTabNav';
 import Home from '../screens/Home';
 
 
