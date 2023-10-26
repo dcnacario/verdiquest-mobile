@@ -4,8 +4,6 @@ import { theme } from "../../assets/style";
 import Button from "../components/Button";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from "axios";
 import { AuthContext } from "../navigation/AuthContext";
 
 
@@ -107,7 +105,7 @@ const Login = () => {
                         <Text style={{fontWeight: 'bold', fontSize: 12, marginRight: 20,}}>Forgot password?</Text>
                     </TouchableOpacity>
                 </View>
-                <Button title="LOGIN"  onPress={() => { login(email, password);}}/>
+                <Button title="LOGIN"  onPress={() => login(email, password)}/>
                 <TouchableOpacity onPress={goToRegister}>
                         <Text style={{fontWeight: 'bold', fontSize: 14, marginTop: 50}}>Create a new account</Text>
                 </TouchableOpacity>

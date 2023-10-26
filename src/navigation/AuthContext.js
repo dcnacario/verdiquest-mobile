@@ -5,13 +5,14 @@ import React, {createContext, useState, useEffect} from 'react';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
+
     const [isLoading, setIsLoading] = useState(false);
     const [userToken, setUserToken] = useState(null);
 
     const login = async (email, password) => {
         setIsLoading(true);
         try {
-            const response = await axios.post('http://192.168.1.6:3000/login', {
+            const response = await axios.post('http://192.168.1.2:3000/login', {
                 email: email,
                 password: password,
             });
@@ -47,25 +48,24 @@ export const AuthProvider = ({children}) => {
         }
     }
 
-    const getProtectedData = async () => {
-        // Get the JWT token from AsyncStorage
-        const token = await AsyncStorage.getItem('userToken');
+    // const getProtectedData = async () => {
+    //     // Get the JWT token from AsyncStorage
+    //     const token = await AsyncStorage.getItem('userToken');
       
-        // Make a GET request to the protected endpoint, passing in the JWT token in the Authorization header
-        const response = await axios.get('http://192.168.1.6:3000/protected', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-    }
+    //     // Make a GET request to the protected endpoint, passing in the JWT token in the Authorization header
+    //     const response = await axios.get('http://192.168.1.2:3000/protected', {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //     });
+    // }
 
     useEffect(() => {
         isLoggedIn();
-        getProtectedData();
     }, []);
 
     return (
-        <AuthContext.Provider value={{login, logout, isLoading, userToken, getProtectedData}}>
+        <AuthContext.Provider value={{login, logout, isLoading, userToken}}>
             {children}
         </AuthContext.Provider>
     ); 
