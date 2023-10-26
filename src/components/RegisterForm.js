@@ -31,12 +31,14 @@ const RegisterForm = ({onRegister}) => {
     };
 
     const handleSubmit = () => {
+        userData.gender = String(userData.gender);
+
         if (userData.password !== userData.confirmPassword) {
             Alert.alert('Error', 'Passwords do not match!');
             return;
         }
     
-        axios.post('http://192.168.1.6:3000/register', userData)
+        axios.post('http://192.168.1.16:3000/register', userData)
              .then(response => {
                  Alert.alert('Success', response.data.message);
              })
@@ -80,7 +82,7 @@ const RegisterForm = ({onRegister}) => {
                 <RadioButton.Group 
                      onValueChange={(value) => {
                         setSelectedValue(value);
-                        handleInputChange('gender', value);  // Update userData with the selected gender
+                        handleInputChange('gender', selectedValue);  // Update userData with the selected gender
                     }}
                     value={selectedValue}
                 >

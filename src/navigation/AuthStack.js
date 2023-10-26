@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import Home from '../screens/Home';
 import Login from '../screens/Login';
 import Register from '../screens/Register';
+import { theme } from '../../assets/style';
 
 const Stack = createStackNavigator();
 
@@ -28,7 +29,16 @@ const AuthStack = () => {
             name= 'Home'
             component={Home}
             options={{
-              headerShown:false
+              headerStyle: {
+                backgroundColor: theme.colors.lightSecondary,
+              },
+              headerTintColor: theme.colors.secondary,
+              headerTitleStyle: {
+                fontWeight: 'bold',
+              },
+              headerLeft: false,
+              headerTitleAlign: 'center',
+              headerTitle: '',
             }}
           />
         </Stack.Navigator>

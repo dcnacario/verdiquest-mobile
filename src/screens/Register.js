@@ -4,10 +4,13 @@ import { theme } from "../../assets/style";
 import RegisterForm from "../components/RegisterForm";
 import Button from "../components/Button";
 import { ScrollView } from "react-native-gesture-handler";
+import { useNavigation } from "@react-navigation/native";
 
 
 const Register = () => {
     const logoGoogle = require('../../assets/img/google.png')
+
+    const navigation = useNavigation();
 
     const [userData, setUserData] = useState({
         firstName: '',
@@ -39,7 +42,9 @@ const Register = () => {
         user.email = userData.email;
         user.password = userData.password;
     
-        // Navigate to the next screen
+        // Navigate to the next login screen again to login
+        navigation.navigate("Login");
+
       };
 
     return (

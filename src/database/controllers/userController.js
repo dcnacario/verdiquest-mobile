@@ -2,6 +2,7 @@ const User = require('../models/user');
 const db = require('../database');
 const jwt = require('jsonwebtoken')
 const SECRET_KEY = '5bh(76Hn7B5<pdz';
+const bcrypt = require('bcrypt');
 
     const user = new User(db);
 
