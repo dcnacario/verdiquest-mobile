@@ -4,11 +4,13 @@ import { theme } from "../../assets/style";
 
 
 
-const PointCard = () => {
+const PointCard = ({points}) => {
     return (
         <View>
             <View style={styles.container}>
-
+                <Text>{points} VP</Text>
+                <Text>Available Points</Text>
+                <Text>October 29, 2023</Text>
             </View>
         </View>
     );

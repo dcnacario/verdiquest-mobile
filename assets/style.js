@@ -9,6 +9,6 @@ export const theme = StyleSheet.create({
         background: '#FFF9F3',
         border: '#44483E',
         lightSecondary: '#7B904B',
-        pointCardBackground: '#FAFAF2',
+        pointCardBackground: '#C4C8BA',
     },
 });
