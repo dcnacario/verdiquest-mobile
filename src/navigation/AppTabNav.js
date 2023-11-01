@@ -3,6 +3,10 @@ import { StyleSheet, View, Text } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import Home from "../screens/Home";
+import Task from "../screens/Task";
+import Redeem from "../screens/Redeem";
+import MyPoints from "../screens/MyPoints";
+import Partners from "../screens/Partners";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterailCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import { theme } from "../../assets/style";
@@ -53,7 +57,7 @@ const AppTabNav = ({route}) => {
                     },
                 }
             }/>
-            <Tab.Screen name="Tasks" component={Home} initialParams={{user: user}}
+            <Tab.Screen name="Tasks" component={Task} initialParams={{user: user}}
                 options={{
                     tabBarIcon: ({ focused, color, size }) => {
                         let iconName = focused ? 'list' : 'list';
@@ -61,7 +65,7 @@ const AppTabNav = ({route}) => {
                     }
                 }
             }/>
-            <Tab.Screen name="My Points" component={Home} initialParams={{user: user}}
+            <Tab.Screen name="My Points" component={MyPoints} initialParams={{user: user}}
                 options={{
                     tabBarIcon: ({ focused, color, size }) => {
                         let iconName = focused ? 'account-balance-wallet' : 'account-balance-wallet';
@@ -69,7 +73,7 @@ const AppTabNav = ({route}) => {
                     }
                 }
             }/>
-            <Tab.Screen name="Redeem" component={Home} initialParams={{user: user}}
+            <Tab.Screen name="Redeem" component={Redeem} initialParams={{user: user}}
                 options={{
                     tabBarIcon: ({ focused, color, size }) => {
                         let iconName = focused ? 'wallet-giftcard' : 'wallet-giftcard';
@@ -77,7 +81,7 @@ const AppTabNav = ({route}) => {
                     }
                 }
             }/>
-            <Tab.Screen name="Partners" component={Home} initialParams={{user: user}}
+            <Tab.Screen name="Partners" component={Partners} initialParams={{user: user}}
                 options={{
                     tabBarIcon: ({ focused, color, size }) => {
                         let iconName = focused ? 'handshake' : 'handshake';
