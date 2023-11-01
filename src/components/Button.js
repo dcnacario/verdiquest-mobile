@@ -13,7 +13,7 @@ const Button = ({onPress, title, img}) => {
     }
     
     return (
-        <View>
+        <View style={styles.shadow}>
             <TouchableOpacity onPress={onPress} hitSlop={hitSlop} style={styles.button }>
                 {img ? <Image source={img} style={styles.img}/> : null}
                 <Text style={styles.buttonText}> {title}</Text>
@@ -23,6 +23,16 @@ const Button = ({onPress, title, img}) => {
 };
 
 const styles = StyleSheet.create({
+    shadow: {
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 2,
+        elevation: 5,
+    },
     button: {
         flexDirection: 'row',
         alignItems: 'center',
