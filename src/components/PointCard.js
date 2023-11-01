@@ -8,9 +8,9 @@ const PointCard = ({points}) => {
     return (
         <View>
             <View style={styles.container}>
-                <Text>{points} VP</Text>
-                <Text>Available Points</Text>
-                <Text>October 29, 2023</Text>
+                <Text style={styles.verdiPointsLabel}> {points} VP</Text>
+                <Text style={styles.availablePointsLabel}>Available Points</Text>
+                <Text style={styles.dateLabel}>October 29, 2023</Text>
             </View>
         </View>
     );
@@ -18,11 +18,25 @@ const PointCard = ({points}) => {
 
 const styles = StyleSheet.create({
     container:{
-        height: 100,
-        width: 150,
+        height: 120,
+        width: 200,
         backgroundColor: theme.colors.pointCardBackground,
         borderRadius: 10,
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
+    verdiPointsLabel: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: theme.colors.primary,
+    },
+    availablePointsLabel: {
+        fontSize: 16,
+    },
+    dateLabel: {
+        fontWeight: 'bold',
+    }
 });
 
 

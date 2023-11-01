@@ -4,6 +4,7 @@ import Home from '../screens/Home';
 import Login from '../screens/Login';
 import Register from '../screens/Register';
 import { theme } from '../../assets/style';
+import AppTabNav from './AppTabNav';
 
 const Stack = createStackNavigator();
 
@@ -26,8 +27,8 @@ const AuthStack = () => {
             }}
           />
           <Stack.Screen 
-            name= 'Home'
-            component={Home}
+            name= 'AppTabNav'
+            component={AppTabNav}
             options={{
               headerStyle: {
                 backgroundColor: theme.colors.lightSecondary,

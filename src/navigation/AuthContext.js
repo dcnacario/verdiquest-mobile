@@ -13,7 +13,7 @@ export const AuthProvider = ({children}) => {
     const login = async (email, password, navigation) => {
         setIsLoading(true);
         try {
-            const response = await axios.post('http://192.168.1.16:3000/login', {
+            const response = await axios.post('http://192.168.1.7:3000/login', {
                 email: email,
                 password: password,
             });
@@ -24,7 +24,7 @@ export const AuthProvider = ({children}) => {
             await AsyncStorage.setItem('userToken', token);
             setUserToken(token);
     
-            navigation.navigate('Home', { user: user });
+            navigation.navigate('AppTabNav', { user: user });
             
         } catch(error) {
             console.error('Error during login:', error.response ? error.response.data : error.message);
@@ -54,25 +54,25 @@ export const AuthProvider = ({children}) => {
         }
     }
 
-    const getProtectedData = async () => {
-        // Get the JWT token from AsyncStorage
-        const token = await AsyncStorage.getItem('userToken');
+    // const getProtectedData = async () => {
+    //     // Get the JWT token from AsyncStorage
+    //     const token = await AsyncStorage.getItem('userToken');
       
-        // Make a GET request to the protected endpoint, passing in the JWT token in the Authorization header
-        const response = await axios.get('http://192.168.1.16:3000/protected', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-    }
+    //     // Make a GET request to the protected endpoint, passing in the JWT token in the Authorization header
+    //     const response = await axios.get('http://192.168.1.12:3000/protected', {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //     });
+    // }
 
     useEffect(() => {
         isLoggedIn()
-        getProtectedData();
+        // getProtectedData();
     }, []);
 
     return (
-        <AuthContext.Provider value={{login, logout, isLoading, userToken,getProtectedData}}>
+        <AuthContext.Provider value={{login, logout, isLoading, userToken}}>
             {children}
         </AuthContext.Provider>
     ); 

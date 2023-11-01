@@ -1,31 +1,38 @@
 import React from "react";
 import {View, StyleSheet, Text, Image} from 'react-native';
 import Button from "./Button";
+import { Title } from "react-native-paper";
 
 
 
-const Card = () => {
+const Card = ({title, difficulty, img, description}) => {
     return (
-        <View>
+        <View style={styles.container}>
             <View>
                 <Image />
-                <Text>Environmental Cleaning</Text>
-                <Text>Easy</Text>
+                <Text>{title}</Text>
+                <Text>{difficulty}</Text>
             </View>
             <View>
                 <Image />
-                <Text>Description:</Text>
+                <Text>{description}</Text>
             </View>
-            <View>
-                <Button />
-                <Button />
+            <View style={{flex: 1, flexDirection: 'row', alignSelf: 'flex-end', gap: 10, marginTop: 20}}>
+                <Button title="Remove" color="white"/>
+                <Button title="View"/>
             </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-
+    container: {
+        backgroundColor: 'white',
+        flex: 1,
+        marginHorizontal: 20,
+        padding: 20,
+        borderRadius: 15,
+    },
 });
 
 
