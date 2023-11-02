@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
         borderRadius: 100,
         paddingVertical: 5,
         borderWidth: 1.5,
-        paddingHorizontal: 25,
+        paddingHorizontal: 20,
     },
     buttonText: {
         fontSize: 16,

@@ -2,9 +2,10 @@ import React from "react";
 import { StyleSheet, View, Image, Text } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { theme } from "../../assets/style";
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
 
-const Button = ({onPress, title, img}) => {
+const Button = ({onPress, title, img, color = theme.colors.primary, icon, textColor = theme.colors.secondary}) => {
     const hitSlop = {
         top: 10,
         left: 10,
@@ -13,10 +14,10 @@ const Button = ({onPress, title, img}) => {
     }
     
     return (
-        <View style={styles.shadow}>
-            <TouchableOpacity onPress={onPress} hitSlop={hitSlop} style={styles.button }>
+        <View>
+            <TouchableOpacity onPress={onPress} hitSlop={hitSlop} style={[styles.button, styles.shadow, {backgroundColor: color} ]}>
                 {img ? <Image source={img} style={styles.img}/> : null}
-                <Text style={styles.buttonText}> {title}</Text>
+                <Text style={[styles.buttonText, {color: textColor}]}>{icon ? <MaterialIcon name={icon} size={16} color={textColor} /> : null} {title}</Text>
             </TouchableOpacity>
         </View>
     );
@@ -36,14 +37,12 @@ const styles = StyleSheet.create({
     button: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: theme.colors.primary,
         borderRadius: 100,
         paddingVertical: 5,
-        paddingHorizontal: 30,
+        paddingHorizontal: 20,
     },
     buttonText: {
         fontSize: 16,
-        color: theme.colors.secondary,
         padding: 5,
     },
     img: {

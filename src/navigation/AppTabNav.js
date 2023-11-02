@@ -1,14 +1,12 @@
 import React from "react";
-import { StyleSheet, View, Text } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
 import Home from "../screens/Home";
 import Task from "../screens/Task";
 import Redeem from "../screens/Redeem";
 import MyPoints from "../screens/MyPoints";
 import Partners from "../screens/Partners";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import MaterailCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import { theme } from "../../assets/style";
 
 const Tab = createBottomTabNavigator();
@@ -85,7 +83,7 @@ const AppTabNav = ({route}) => {
                 options={{
                     tabBarIcon: ({ focused, color, size }) => {
                         let iconName = focused ? 'handshake' : 'handshake';
-                        return <MaterailCommunity name={iconName} size={size} color={color} />;
+                        return <MaterialCommunity name={iconName} size={size} color={color} />;
                     }
                 }
             }/>

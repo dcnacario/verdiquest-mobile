@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import {Text, View, StyleSheet, ScrollView, Image} from 'react-native';
+import {Text, View, StyleSheet, ScrollView, Dimensions} from 'react-native';
 import { theme } from "../../assets/style";
 import PointCard from "../components/PointCard";
-import Button from "../components/Button";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Card from "../components/Card";
 
@@ -11,8 +10,12 @@ const Home = ({route, navigation}) => {
 
     const [userPoint, setUserPoints] = useState(0);
 
+    const screenHeight = Dimensions.get('window').height;
+    const paddingBottom = screenHeight * 0.15;
+
     return (
-        <ScrollView keyboardShouldPersistTaps='handled' style={{backgroundColor: theme.colors.background, flex: 1}}>
+        <ScrollView keyboardShouldPersistTaps='handled' style={{backgroundColor: theme.colors.background, flex: 1}} contentContainerStyle
+        ={{paddingBottom: paddingBottom}}>
             <View style={{flex: 1,}}>
                 <View style={{flex: 1, marginTop: 10}}>
                     <View style={{flex: 1, flexDirection: 'row', gap: 30, justifyContent: 'center', alignItems: 'center', marginBottom: 20,}}>
@@ -41,9 +44,6 @@ const Home = ({route, navigation}) => {
 }
 
 const styles = StyleSheet.create({
-    background: {
-        backgroundColor: theme.colors.background,     
-    },
     img: {
         height: 120,
         width: 120,
