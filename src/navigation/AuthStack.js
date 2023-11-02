@@ -1,11 +1,9 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import Home from '../screens/Home';
 import Login from '../screens/Login';
 import Register from '../screens/Register';
 import { theme } from '../../assets/style';
 import AppTabNav from './AppTabNav';
-import TaskStack from './TaskStack';
 
 const Stack = createStackNavigator();
 
@@ -41,13 +39,6 @@ const AuthStack = () => {
               headerLeft: false,
               headerTitleAlign: 'center',
               headerTitle: '',
-            }}
-          />
-          <Stack.Screen 
-            name= 'TaskStack'
-            component={TaskStack}
-            options={{
-              headerShown:false
             }}
           />
         </Stack.Navigator>

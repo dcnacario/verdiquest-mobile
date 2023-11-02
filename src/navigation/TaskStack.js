@@ -1,7 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import TaskList from "../screens/TaskList";
 import Task from '../screens/Task';
-import Home from '../screens/Home';
 
 const AppTaskStack = createStackNavigator();
 
