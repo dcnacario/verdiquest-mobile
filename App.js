@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { AuthProvider } from './src/navigation/AuthContext';
 import AuthStack  from './src/navigation/AuthStack';
 import AppTabNav from './src/navigation/AppTabNav';
+import TaskStack from './src/navigation/TaskStack';
 
 
 export default function App() {

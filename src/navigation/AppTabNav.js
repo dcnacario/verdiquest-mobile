@@ -5,6 +5,7 @@ import Task from "../screens/Task";
 import Redeem from "../screens/Redeem";
 import MyPoints from "../screens/MyPoints";
 import Partners from "../screens/Partners";
+import TaskStack from './TaskStack';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import { theme } from "../../assets/style";
@@ -48,6 +49,22 @@ const AppTabNav = ({route}) => {
             }}
         >
             <Tab.Screen name="Home" component={Home} initialParams={{user: user}}
+                listeners={({ navigation, route }) => ({
+                    tabPress: e => {
+                      e.preventDefault();
+                      navigation.navigate('Home');
+                      
+                      // If the TaskStack is not on its initial screen, reset it
+                      if (route.state && route.state.index > 0) {
+                        navigation.dispatch(
+                          CommonActions.reset({
+                            index: 0,
+                            routes: [{ name: 'Task' }],
+                          })
+                        );
+                      }
+                    },
+                  })}
                 options={{
                     tabBarIcon: ({ focused, color, size }) => {
                         let iconName = focused ? 'home' : 'home';
@@ -55,7 +72,7 @@ const AppTabNav = ({route}) => {
                     },
                 }
             }/>
-            <Tab.Screen name="Tasks" component={Task} initialParams={{user: user}}
+            <Tab.Screen name="TaskStack" component={TaskStack} initialParams={{user: user}}
                 options={{
                     tabBarIcon: ({ focused, color, size }) => {
                         let iconName = focused ? 'list' : 'list';

@@ -1,11 +1,10 @@
 import React from "react";
 import {View, StyleSheet, Text} from 'react-native';
 
-
-const TaskList = ({title}) => {
-    return(
+const TaskListHeader = ({title}) => {
+    return (
         <View>
-            <Text>This is the TaskList Screen</Text>
+            <Text>{title}</Text>
         </View>
     );
 };
@@ -14,4 +13,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default TaskList;
+export default TaskListHeader;

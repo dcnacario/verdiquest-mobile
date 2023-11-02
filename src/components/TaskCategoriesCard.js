@@ -1,17 +1,20 @@
 import React from "react";
 import {View, StyleSheet, Text, Image} from 'react-native';
 import defaultImage from '../../assets/img/default-image.png';
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 
 
 
-const TaskCategoriesCard = ({img, title}) => {
+const TaskCategoriesCard = ({img, title, onPress}) => {
     return (
         <View style={styles.container}>
-            <View style={{flex: 1, flexDirection:'column', alignItems: 'center'}}>
-                {img ? <Image defaultSource={defaultImage} source={img} style={styles.imageStyle}/> : <Image source={defaultImage} style={styles.imageStyle}/>}
-                {title ? <Text style={styles.textStyle}>{title}</Text> : <Text style={styles.textStyle}>N/A</Text>}
-            </View>
+            <TouchableOpacity onPress={onPress}>
+                <View style={{flex: 1, flexDirection:'column', alignItems: 'center'}}>
+                    {img ? <Image defaultSource={defaultImage} source={img} style={styles.imageStyle}/> : <Image source={defaultImage} style={styles.imageStyle}/>}
+                    {title ? <Text style={styles.textStyle}>{title}</Text> : <Text style={styles.textStyle}>N/A</Text>}
+                </View>
+            </TouchableOpacity>
         </View>
     );
 };

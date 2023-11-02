@@ -3,12 +3,22 @@ import {View, StyleSheet, Text, ScrollView, Dimensions} from 'react-native';
 import Button from '../components/Button';
 import { theme } from "../../assets/style";
 import TaskCategoriesCard from '../components/TaskCategoriesCard';
+import { useNavigation } from "@react-navigation/native";
 
 
-const Task = () => {
+
+const Task = ({route}) => {
+    const {user} = route.params;
 
     const screenHeight = Dimensions.get('window').height;
     const paddingBottom = screenHeight * 0.15;
+
+    const navigation = useNavigation();
+
+    const handleEnvironmentProtection = () => {
+        navigation.navigate('TaskList', { user: user })
+    };
+
 
     return(
         <ScrollView keyboardShouldPersistTaps='handled' style={{backgroundColor: theme.colors.background, flex: 1}} 
@@ -26,7 +36,7 @@ const Task = () => {
                 </View>
                 {/* Card */}
                 <View style={styles.cardContainer}>
-                    <TaskCategoriesCard title='Environmental Protection'/>
+                    <TaskCategoriesCard onPress={handleEnvironmentProtection} title='Environmental Protection'/>
                     <TaskCategoriesCard title='Renewable Energy'/>
                     <TaskCategoriesCard title='Sustainable Energy'/>
                     <TaskCategoriesCard title='Waste Reduction'/>
