@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     button: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F7F2FA',
+        backgroundColor: '#FAFAF2',
         borderColor: '#79747E',
         borderRadius: 100,
         paddingVertical: 5,
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 16,
-        color: theme.colors.primary,
+        color: '#44483E',
         padding: 5,
     },
     img: {

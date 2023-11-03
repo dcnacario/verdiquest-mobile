@@ -16,7 +16,7 @@ const Task = ({route}) => {
     const navigation = useNavigation();
 
     const handleEnvironmentProtection = () => {
-        navigation.navigate('TaskList', { user: user })
+        navigation.navigate('TaskList', { user: user , title:`Environmental Protection`});
     };
 
 

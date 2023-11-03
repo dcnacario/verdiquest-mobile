@@ -57,7 +57,7 @@ const AppTabNav = ({route}) => {
                     },
                 }
             }/>
-            <Tab.Screen name="Task" component={TaskStack} initialParams={{user: user}}
+            <Tab.Screen name="Tasks" component={TaskStack} initialParams={{user: user}}
                 options={{
                     tabBarIcon: ({ focused, color, size }) => {
                         let iconName = focused ? 'list' : 'list';

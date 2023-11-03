@@ -6,11 +6,11 @@ const AppTaskStack = createStackNavigator();
 
 
 const TaskStack = ({route,navigation}) => {
-    const {user} = route.params;
+    const {user, title} = route.params;
     return (
         <AppTaskStack.Navigator initialRouteName='Task'>
             <AppTaskStack.Screen name="TaskList" component={TaskList}
-            initialParams={{user: user}}
+            initialParams={{user: user, title: title}}
             options={{
                 headerShown:false
             }}
