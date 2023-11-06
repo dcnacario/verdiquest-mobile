@@ -6,7 +6,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 
 
-const TaskCategoriesCard = ({img, title, onPress}) => {
+const TaskCategoriesCard = ({img = defaultImage, title, onPress}) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={onPress}>

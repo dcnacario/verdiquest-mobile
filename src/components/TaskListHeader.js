@@ -2,6 +2,7 @@ import React from "react";
 import {View, StyleSheet, Text, FlatList} from 'react-native';
 import { theme } from "../../assets/style";
 import DeleteButton from "./DeleteButton";
+import CardTask from "./CardTask";
 
 const TaskListHeader = ({title}) => {
     const data = [
@@ -22,7 +23,7 @@ const TaskListHeader = ({title}) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.textStyle} numberOfLines={2}>{title}</Text>
+            <Text style={styles.textStyle}>{title}</Text>
             <FlatList 
                 data={data}
                 renderItem={renderItem}
@@ -31,6 +32,8 @@ const TaskListHeader = ({title}) => {
                 contentContainerStyle={styles.flatListContainer}
                 showsHorizontalScrollIndicator={false}
             />
+            <CardTask title="Environmental Protection" difficulty='Easy' description='Join us for a Beach cleanup on May 7th!'/>
+            <CardTask title="Environmental Cleaning" difficulty='Medium' description='Join us for a Beach cleanup on May 7th!'/>
         </View>
     );
 };

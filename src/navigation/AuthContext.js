@@ -13,7 +13,7 @@ export const AuthProvider = ({children}) => {
     const login = async (email, password, navigation) => {
         setIsLoading(true);
         try {
-            const response = await axios.post('http://192.168.1.13:3000/login', {
+            const response = await axios.post('http://192.168.1.16:3000/login', {
                 email: email,
                 password: password,
             });

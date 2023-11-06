@@ -3,6 +3,7 @@ import {View, StyleSheet, } from 'react-native';
 import TaskListHeader from "../components/TaskListHeader";
 import { theme } from "../../assets/style";
 import { ScrollView } from "react-native-gesture-handler";
+import Card from '../components/Card';
 
 
 const TaskList = ({route}) => {
@@ -10,7 +11,7 @@ const TaskList = ({route}) => {
 
     return(
         <ScrollView style={styles.background}>
-            <View>
+            <View style={{flex: 1}}>
                 <TaskListHeader title={title} />
             </View>
         </ScrollView>
