@@ -12,7 +12,7 @@ const TaskList = ({route}) => {
     return(
         <ScrollView style={styles.background}>
             <View style={{flex: 1}}>
-                <TaskListHeader title={title} />
+                <TaskListHeader title={title} route={route.params}/>
             </View>
         </ScrollView>
     );

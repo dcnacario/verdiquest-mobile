@@ -18,7 +18,7 @@ const Home = ({route, navigation}) => {
         ={{paddingBottom: paddingBottom}}>
             <View style={{flex: 1,}}>
                 <View style={{flex: 1, marginTop: 10}}>
-                    <View style={{flex: 1, flexDirection: 'row', gap: 30, justifyContent: 'center', alignItems: 'center', marginBottom: 20,}}>
+                    <View style={{flex: 1, flexDirection: 'row', gap: 30, justifyContent: 'center', alignItems: 'center', marginBottom: 20, marginHorizontal: 20}}>
                         <View style={styles.profileContainer}>
                         </View>
                         <PointCard points={userPoint}/>

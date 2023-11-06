@@ -1,6 +1,7 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import TaskList from "../screens/TaskList";
 import Task from '../screens/Task';
+import TaskDetails from "../screens/TaskDetails";
 
 const AppTaskStack = createStackNavigator();
 
@@ -17,6 +18,12 @@ const TaskStack = ({route,navigation}) => {
             />
             <AppTaskStack.Screen name="Task" component={Task}
             initialParams={{user: user}}
+            options={{
+                headerShown:false
+            }}
+            />
+            <AppTaskStack.Screen name="TaskDetails" component={TaskDetails}
+            initialParams={{user: user, title: title}}
             options={{
                 headerShown:false
             }}

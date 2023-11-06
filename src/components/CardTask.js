@@ -5,7 +5,7 @@ import defaultImage from '../../assets/img/default-image.png';
 
 
 
-const CardTask = ({title, difficulty, img, description}) => {
+const CardTask = ({title, difficulty, img, description, onPress}) => {
     return (
         <View style={styles.container}>
             <View>
@@ -18,7 +18,7 @@ const CardTask = ({title, difficulty, img, description}) => {
                 <Text>{description}</Text>
             </View>
             <View style={{flex: 1, flexDirection: 'row', alignSelf: 'flex-end', gap: 10, marginTop: 20}}>
-                <Button title="View"/>
+                <Button title="View" onPress={onPress}/>
             </View>
         </View>
     );
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     },
     imageStyle: {
         width: '100%',
-        height: 250,  
+        height: 280,  
         resizeMode: 'center',
         marginVertical: 10,
         borderRadius: 10,

@@ -4,14 +4,12 @@ import { theme } from "../../assets/style";
 
 
 
-const PointCard = ({points}) => {
+const PointCard = ({points = 0}) => {
     return (
-        <View>
-            <View style={styles.container}>
-                <Text style={styles.verdiPointsLabel}> {points} VP</Text>
-                <Text style={styles.availablePointsLabel}>Available Points</Text>
-                <Text style={styles.dateLabel}>October 29, 2023</Text>
-            </View>
+        <View style={styles.container}>
+            <Text style={styles.verdiPointsLabel}> {points} VP</Text>
+            <Text style={styles.availablePointsLabel}>Available Points</Text>
+            <Text style={styles.dateLabel}>October 29, 2023</Text>
         </View>
     );
 };

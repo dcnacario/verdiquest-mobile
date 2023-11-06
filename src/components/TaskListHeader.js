@@ -3,8 +3,19 @@ import {View, StyleSheet, Text, FlatList} from 'react-native';
 import { theme } from "../../assets/style";
 import DeleteButton from "./DeleteButton";
 import CardTask from "./CardTask";
+import { useNavigation } from "@react-navigation/native";
 
-const TaskListHeader = ({title}) => {
+const TaskListHeader = ({title, route}) => {
+    const navigation = useNavigation();
+
+
+
+    const {user, routeTitle} = route;
+
+    const onPressEnvironmentProtection = () => {
+        navigation.navigate('TaskDetails', { user: user, title:'Environmental Protection'});
+    }
+
     const data = [
         {id: '1', title: 'All'},
         {id: '2', title: 'Easy'},
@@ -32,7 +43,7 @@ const TaskListHeader = ({title}) => {
                 contentContainerStyle={styles.flatListContainer}
                 showsHorizontalScrollIndicator={false}
             />
-            <CardTask title="Environmental Protection" difficulty='Easy' description='Join us for a Beach cleanup on May 7th!'/>
+            <CardTask title="Environmental Protection" difficulty='Easy' description='Join us for a Beach cleanup on May 7th!' onPress={onPressEnvironmentProtection}/>
             <CardTask title="Environmental Cleaning" difficulty='Medium' description='Join us for a Beach cleanup on May 7th!'/>
         </View>
     );
