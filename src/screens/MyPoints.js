@@ -3,6 +3,7 @@ import {View, StyleSheet, Text} from 'react-native';
 import PointCard from '../components/PointCard';
 import { theme } from "../../assets/style";
 import OngoingTask from "../components/OngoingTask";
+import { ScrollView } from "react-native-gesture-handler";
 
 
 const MyPoints = () => {
@@ -11,7 +12,9 @@ const MyPoints = () => {
             <View style={styles.pointsContainer}>
                 <PointCard />
             </View>
-            <OngoingTask />
+            <ScrollView>
+                <OngoingTask />
+            </ScrollView>
         </View>
     );
 };
