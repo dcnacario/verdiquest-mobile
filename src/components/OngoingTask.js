@@ -17,7 +17,7 @@ const OngoingTask = ({points = 0,}) => {
                     <Text style={styles.textStyle}>be earned: {points} </Text>
                 </View>
             </View>
-            <ProgressCard title='Market Cleanup' category='Environmental Protection' progress={1}/>
+            <ProgressCard title='Market Cleanup' category='Environmental Protection' progress={0.90}/>
             <ProgressCard title='Planting Tree' category='Environmental Protection' progress={0.75}/>
             <ProgressCard title='Walk 10,000 steps' category='Transportation' progress={0.50}/>
         </View>

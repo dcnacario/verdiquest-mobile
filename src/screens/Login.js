@@ -83,7 +83,7 @@ const Login = () => {
                     <Text style={{top: 8}}>or</Text>
                     <View style={styles.divider}/>
                 </View>
-            {/* Username */}
+                {/* Username */}
                 <View style={{ justifyContent: 'flex-start'}}>
                     <Text style={styles.textInput}>Email</Text>
                     <TextInput

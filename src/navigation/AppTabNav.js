@@ -8,7 +8,7 @@ import TaskStack from './TaskStack';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import { theme } from "../../assets/style";
-import { CommonActions,  useNavigation} from '@react-navigation/native';
+import PartnerStack from "./PartnerStack";
 
 
 const Tab = createBottomTabNavigator();
@@ -81,7 +81,7 @@ const AppTabNav = ({route}) => {
                     }
                 }
             }/>
-            <Tab.Screen name="Partners" component={Partners} initialParams={{user: user}}
+            <Tab.Screen name="Partners" component={PartnerStack} initialParams={{user: user}}
                 options={{
                     tabBarIcon: ({ focused, color, size }) => {
                         let iconName = focused ? 'handshake' : 'handshake';

@@ -12,7 +12,7 @@ const ProgressCard = ({img, title, category, progress = 0}) => {
                 <Text style={styles.titleStyle}>{title}</Text>
                 <Text>{category}</Text>
             </View>
-            <Progress.Circle animated={true} borderWidth={0} textStyle={{fontWeight: 'bold', fontSize: 10,}} showsText={true} strokeCap="round" progress={progress} color={theme.colors.primary}/>
+            <Progress.Circle textStyle={{fontWeight: 'bold', fontSize: 10,}} showsText={true} strokeCap="round" progress={progress} color={theme.colors.primary}/>
         </View>
     );
 };
