@@ -5,13 +5,13 @@ import defaultImage from '../../assets/img/default-image.png';
 
 
 
-const CardTask = ({title, difficulty, img, description, onPress}) => {
+const CardTask = ({title, difficulty, img, description, onPress, eventName}) => {
     return (
         <View style={styles.container}>
             <View>
                 <Image />
                 <Text style={styles.textStyle}>{title}</Text>
-                <Text>{difficulty}</Text>
+                {difficulty ? <Text>{difficulty}</Text>:<Text>{eventName}</Text>}
             </View>
             <View style={{flex: 1}}>
             {img ? <Image defaultSource={defaultImage} source={img} style={styles.imageStyle}/> : <Image source={defaultImage} style={styles.imageStyle}/>}

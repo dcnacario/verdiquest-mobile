@@ -22,7 +22,7 @@ const Redeem = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: theme.colors.backgroundColor,
+        backgroundColor: theme.colors.background,
         flexDirection: 'column',
         justifyContent:'center',
         alignItems: 'center',
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
         margin: 30,
         borderRadius: 15,
     },
-
+    
 });
 
 export default Redeem;

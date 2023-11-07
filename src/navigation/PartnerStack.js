@@ -35,8 +35,7 @@ const PartnerStack = ({route,navigation}) => {
             options={{
                 headerShown:false
             }}
-            />
-            
+            />           
         </AppPartnerStack.Navigator>
     );
 };
