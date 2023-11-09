@@ -5,11 +5,19 @@ import { theme } from "../../assets/style";
 import { FlatList, ScrollView } from "react-native-gesture-handler";
 import DeleteButton from "../components/DeleteButton";
 import CardTask from "../components/CardTask";
+import { useNavigation } from "@react-navigation/native";
 
 const OrgHome = ({img, route}) => {
 
     const screenHeight = Dimensions.get('window').height;
     const paddingBottom = screenHeight * 0.15;
+
+    const {user} = route.params;
+    const navigation = useNavigation();
+
+    const handleOrgView = () => {
+        navigation.navigate('OrgView', {user: user});
+    };
 
     const data = [
         {id: '1', title: 'Tasks'},
@@ -40,7 +48,7 @@ const OrgHome = ({img, route}) => {
                         showsHorizontalScrollIndicator={false}
                     />
                 </View>
-                <CardTask title={'Event Category'} eventName={'Event Name'} description={'Lorem ipsum'}/>
+                <CardTask title={'Event Category'} eventName={'Event Name'} description={'Lorem ipsum'} onPress={handleOrgView}/>
             </View>
         </ScrollView>
     );

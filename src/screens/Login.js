@@ -83,6 +83,7 @@ const Login = () => {
                     <Text style={{top: 8}}>or</Text>
                     <View style={styles.divider}/>
                 </View>
+                <Text style={{fontSize: 24, fontWeight: 'bold', color: theme.colors.primary, marginVertical: 20,}}>Volunteer Login</Text>
                 {/* Username */}
                 <View style={{ justifyContent: 'flex-start'}}>
                     <Text style={styles.textInput}>Email</Text>

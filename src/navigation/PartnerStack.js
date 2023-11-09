@@ -3,6 +3,7 @@ import Partners from "../screens/Partners";
 import PartnerOverview from "../screens/PartnerOverview";
 import SuccessJoin from "../screens/SuccessJoin";
 import OrgHome from "../screens/OrgHome";
+import OrgView from "../screens/OrgView";
 
 const AppPartnerStack = createStackNavigator();
 
@@ -35,7 +36,13 @@ const PartnerStack = ({route,navigation}) => {
             options={{
                 headerShown:false
             }}
-            />           
+            />    
+            <AppPartnerStack.Screen name="OrgView" component={OrgView}
+            initialParams={{user: user, title: title}}
+            options={{
+                headerShown:false
+            }}
+            />        
         </AppPartnerStack.Navigator>
     );
 };

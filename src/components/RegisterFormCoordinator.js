@@ -9,7 +9,7 @@ import axios from 'axios';
 import { useNavigation } from "@react-navigation/native";
 
 
-const RegisterForm = ({onRegister}) => {
+const RegisterFormCoordinator = ({}) => {
 
     const navigation = useNavigation();
 
@@ -49,7 +49,7 @@ const RegisterForm = ({onRegister}) => {
                  console.error(error);
                  Alert.alert('Error', 'Failed to register. Please try again.');
              });
-             navigation.navigate('Login');
+             navigation.navigate('CoordinatorLogin');
     };
 
 
@@ -228,4 +228,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default RegisterForm;
+export default RegisterFormCoordinator;

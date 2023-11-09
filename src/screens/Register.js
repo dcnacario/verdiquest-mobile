@@ -1,9 +1,8 @@
 import React, {useState} from "react";
-import {Text, StyleSheet, View} from 'react-native';
+import {Text, StyleSheet, View, ScrollView} from 'react-native';
 import { theme } from "../../assets/style";
 import RegisterForm from "../components/RegisterForm";
 import Button from "../components/Button";
-import { ScrollView } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 
 
