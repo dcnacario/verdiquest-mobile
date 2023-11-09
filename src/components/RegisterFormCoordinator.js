@@ -24,7 +24,7 @@ const RegisterFormCoordinator = ({}) => {
         barangay: '',
         city: '',
         province: '',
-        email: '',
+        username: '',
         password: '',
         confirmPassword: ''
     });
@@ -153,11 +153,10 @@ const RegisterFormCoordinator = ({}) => {
                 </View>
             </View>
             <View style={{flex: 1, marginHorizontal: 20, alignSelf: 'stretch'}}>
-                <Text style={styles.textInput}>Email</Text>
+                <Text style={styles.textInput}>Username</Text>
                 <TextInput 
                     style={styles.inputStyle}
-                    keyboardType="email-address"
-                    value={userData.email}
+                    value={userData.username}
                     onChangeText={(text) => handleInputChange('email', text)}
 
                 />

@@ -7,6 +7,7 @@ import AppTabNav from './AppTabNav';
 import LoginIntro from '../screens/LoginIntro';
 import CoordinatorLogin from '../screens/CoordinatorLogin';
 import CoordinatorRegistration from '../screens/CoordinatorRegistration';
+import OrgProfile from '../screens/OrgProfile';
 
 const Stack = createStackNavigator();
 
@@ -67,6 +68,13 @@ const AuthStack = () => {
           <Stack.Screen 
             name= 'CoordinatorRegistration'
             component={CoordinatorRegistration}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen 
+            name= 'OrgProfile'
+            component={OrgProfile}
             options={{
               headerShown: false,
             }}

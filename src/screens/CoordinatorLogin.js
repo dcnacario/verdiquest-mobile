@@ -10,13 +10,13 @@ const CoordinatorLogin = () => {
 
     const {login} = useContext(AuthContext);
 
-    const [email,setEmail] = useState('');
+    const [username,setUsername] = useState('');
     const [password,setPassword] = useState('');
 
     const navigation = useNavigation();
 
     const handleRegister = () => {
-        navigation.navigate('CoordinatorRegistration');
+        navigation.navigate('OrgProfile');
     };
 
 
@@ -33,11 +33,11 @@ const CoordinatorLogin = () => {
             {/* Username */}
             <Text style={{fontSize: 24, fontWeight: 'bold', color: theme.colors.primary, marginVertical: 20,}}>Coordinator Login</Text>
             <View style={{ justifyContent: 'flex-start'}}>
-                <Text style={styles.textInput}>Email</Text>
+                <Text style={styles.textInput}>Username</Text>
                 <TextInput
                     style={styles.inputStyle}
-                    value={email}
-                    onChangeText={setEmail}
+                    value={username}
+                    onChangeText={setUsername}
                 />
             </View>
             {/* Password */}
