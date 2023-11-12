@@ -40,15 +40,15 @@ const RegisterFormCoordinator = ({}) => {
     }
 
     axios
-      .post("http://192.168.1.6:3000/registerCoordinator", userData)
+      .post("http://192.168.1.6:3000/coordinator/register", userData)
       .then((response) => {
         Alert.alert("Success", response.data.message);
+        navigation.navigate("CoordinatorLogin");
       })
       .catch((error) => {
         console.error(error);
         Alert.alert("Error", "Failed to register. Please try again.");
       });
-    navigation.navigate("CoordinatorLogin");
   };
 
   return (
@@ -167,7 +167,7 @@ const RegisterFormCoordinator = ({}) => {
         <TextInput
           style={styles.inputStyle}
           value={userData.username}
-          onChangeText={(text) => handleInputChange("email", text)}
+          onChangeText={(text) => handleInputChange("username", text)}
         />
       </View>
       <View style={{ flex: 1, marginHorizontal: 20, alignSelf: "stretch" }}>

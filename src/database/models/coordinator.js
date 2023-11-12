@@ -27,6 +27,16 @@ class Coordinator extends BaseModel {
     }
   }
 
+  async getLastInsertedOrganizationId() {
+    try {
+      const [rows] = await this.db.query("SELECT LAST_INSERT_ID() as lastId");
+      return rows[0].lastId;
+    } catch (error) {
+      console.error("Error getting last inserted organization ID", error);
+      throw error;
+    }
+  }
+
   async insertCoordinator(coordinatorData) {
     try {
       const [person] = await this.db.query(
@@ -68,10 +78,11 @@ class Coordinator extends BaseModel {
   async fetchUser(coordinatorData) {
     try {
       const [result] = await this.db.query(
-        "SELECT * FROM coordinator WHERE username = ? AND password = ?",
-        [coordinatorData.username, coordinatorData.password]
+        "SELECT * FROM coordinator WHERE username = ?",
+        [coordinatorData.username]
       );
-      return result[0];
+      // Return the user data if found, else return null
+      return result.length > 0 ? result[0] : null;
     } catch (error) {
       console.error(`Error fetching user`, error);
       throw error;

@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
       await AsyncStorage.setItem("userToken", token);
       setUserToken(token);
 
-      navigation.navigate("AppTabNav", { user: user });
+      navigation.navigate("", { user: user });
     } catch (error) {
       console.error(
         "Error during login:",
@@ -38,20 +38,36 @@ export const AuthProvider = ({ children }) => {
   const loginCoordinator = async (username, password, navigation) => {
     setIsLoading(true);
     try {
-      const response = await axios.post("192.168.1.6:3000/loginCoordinator", {
-        username: username,
-        password: password,
-      });
+      const response = await axios.post(
+        "http://192.168.1.6:3000/coordinator/login",
+        {
+          username: username,
+          password: password,
+        }
+      );
 
-      const token = response.data.token;
-      const coordinator = response.data.coordinator;
-      await AsyncStorage.setItem("userToken", token);
+      if (response.data.success) {
+        const token = response.data.token;
+        const coordinator = response.data.coordinator;
+        await AsyncStorage.setItem("userToken", token);
 
-      setUserToken(token);
+        setUserToken(token);
 
-      navigation.navigate("Coordinator", { coordinator: coordinator });
+        navigation.navigate("CoordInterface", { coordinator: coordinator });
+        Alert.alert("Success", "You successfully logged in!");
+      } else {
+        Alert.alert("Failed", response.data.message || "Login failed");
+      }
     } catch (error) {
+      setIsLoading(false);
+      if (error.response && error.response.status === 401) {
+        Alert.alert("Login Failed", "Incorrect username or password.");
+      } else {
+        Alert.alert("Error", "An error occurred during login");
+        console.log(error);
+      }
     } finally {
+      setIsLoading(false);
     }
   };
 
@@ -93,7 +109,9 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ login, logout, isLoading, userToken }}>
+    <AuthContext.Provider
+      value={{ login, logout, loginCoordinator, isLoading, userToken }}
+    >
       {children}
     </AuthContext.Provider>
   );

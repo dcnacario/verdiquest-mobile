@@ -6,6 +6,7 @@ import { theme } from "../../assets/style";
 import AppTabNav from "./AppTabNav";
 import LoginIntro from "../screens/LoginIntro";
 import CoordinatorStack from "./CoordinatorStack";
+import CoordInterface from "../screens/coordinator/CoordInterface";
 
 const Stack = createStackNavigator();
 
@@ -53,6 +54,13 @@ const AuthStack = () => {
         <Stack.Screen
           name="CoordinatorStack"
           component={CoordinatorStack}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="CoordInterface"
+          component={CoordInterface}
           options={{
             headerShown: false,
           }}

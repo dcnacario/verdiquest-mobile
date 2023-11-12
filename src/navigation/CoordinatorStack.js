@@ -1,8 +1,10 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import CoordinatorLogin from "../screens/CoordinatorLogin";
-import CoordinatorRegistration from "../screens/CoordinatorRegistration";
-import OrgProfile from "../screens/OrgProfile";
+import CoordinatorLogin from "../screens/coordinator/CoordinatorLogin";
+import CoordinatorRegistration from "../screens/coordinator/CoordinatorRegistration";
+import OrgProfile from "../screens/coordinator/OrgProfile";
 import { theme } from "../../assets/style";
+import CoordInterface from "../screens/coordinator/CoordInterface";
+import CoordinatorDashboard from "../screens/coordinator/CoordinatorDashboard";
 
 const AppCoordinatorStack = createStackNavigator();
 
@@ -31,6 +33,20 @@ const CoordinatorStack = ({ route }) => {
       <AppCoordinatorStack.Screen
         name="OrgProfile"
         component={OrgProfile}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <AppCoordinatorStack.Screen
+        name="CoordInterface"
+        component={CoordInterface}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <AppCoordinatorStack.Screen
+        name="CoordinatorDashboard"
+        component={CoordinatorDashboard}
         options={{
           headerShown: false,
         }}
