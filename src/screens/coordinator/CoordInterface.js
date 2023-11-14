@@ -12,7 +12,8 @@ import Button from "../../components/Button";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 
-const CoordInterface = () => {
+const CoordInterface = ({ route }) => {
+  const { coordinator } = route.params;
   const navigation = useNavigation();
 
   const gotoTasks = () => {
@@ -20,7 +21,7 @@ const CoordInterface = () => {
   };
 
   const gotoCoordinators = () => {
-    navigation.navigate("CoordinatorDashboard");
+    navigation.navigate("CoordinatorMaster", {});
   };
 
   return (
@@ -61,7 +62,7 @@ const CoordInterface = () => {
             <Button title="Tasks" onPress={gotoTasks} />
           </View>
           <View style={styles.rightButton}>
-            <Button title="Coordinators" onPress={gotoTasks} />
+            <Button title="Coordinators" onPress={gotoCoordinators} />
           </View>
         </View>
         <View style={styles.row}>

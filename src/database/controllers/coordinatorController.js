@@ -103,7 +103,6 @@ async function loginCoordinator(request, response) {
         return response.status(400).json({ message: "Invalid request data" });
       }
       const isMatch = await bcrypt.compare(password, fetchedUser.Password);
-      console.log(isMatch);
 
       if (fetchedUser && fetchedUser.Password) {
         // Generate a JWT with an expiration
