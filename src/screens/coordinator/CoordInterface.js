@@ -17,7 +17,10 @@ const CoordInterface = ({ route }) => {
   const navigation = useNavigation();
 
   const gotoTasks = () => {
-    navigation.navigate("Register");
+    navigation.navigate("TaskMaster");
+  };
+  const gotoEvents = () => {
+    navigation.navigate("EventMaster");
   };
 
   const gotoCoordinators = () => {
@@ -67,7 +70,7 @@ const CoordInterface = ({ route }) => {
         </View>
         <View style={styles.row}>
           <View style={styles.leftButton}>
-            <Button title="Event" onPress={gotoTasks} />
+            <Button title="Events" onPress={gotoEvents} />
           </View>
           <View style={styles.rightButton}>
             <Button title="Report" onPress={gotoTasks} />
