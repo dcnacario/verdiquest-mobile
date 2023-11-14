@@ -6,6 +6,7 @@ import { theme } from "../../assets/style";
 import CoordInterface from "../screens/coordinator/CoordInterface";
 import CoordinatorDashboard from "../screens/coordinator/CoordinatorDashboard";
 import CoordinatorMaster from "../screens/coordinator/CoordinatorMaster";
+import AddCoordinator from "../screens/coordinator/AddCoordinator";
 
 const AppCoordinatorStack = createStackNavigator();
 
@@ -55,6 +56,13 @@ const CoordinatorStack = ({ route }) => {
       <AppCoordinatorStack.Screen
         name="CoordinatorMaster"
         component={CoordinatorMaster}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <AppCoordinatorStack.Screen
+        name="AddCoordinator"
+        component={AddCoordinator}
         options={{
           headerShown: false,
         }}

@@ -34,10 +34,7 @@ const AddCoordinator = () => {
             account.
           </Text>
         </View>
-        <Button
-          title="Add Coordinator"
-          onPress={() => handleAddCoordinatorPress}
-        />
+        <Button title="+ Add Coordinator" onPress={handleAddCoordinatorPress} />
       </View>
     </View>
   );
