@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 2,
     elevation: 5,
-    marginVertical: 20,
+    margin: 20,
     alignItems: "center", // Align items in the center vertically
   },
   imageContainer: {
@@ -66,7 +66,8 @@ const styles = StyleSheet.create({
     width: 70, // Adjust as needed
     height: 160,
     resizeMode: "cover",
-    marginRight: 0,
+    borderTopLeftRadius: 15,
+    borderBottomLeftRadius: 15,
   },
   textContainer: {
     // Container for the text
@@ -88,7 +89,6 @@ const styles = StyleSheet.create({
   },
   participantsContainer: {
     justifyContent: "center",
-    marginRight: 10,
   },
 });
 

@@ -29,6 +29,7 @@ const CoordTaskCard = ({
             style={{
               flexDirection: "row",
               alignSelf: "center",
+              gap: -5,
             }}
           >
             <Text style={{ textAlign: "center", padding: 5 }}>
@@ -62,7 +63,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 2,
     elevation: 5,
-    marginVertical: 20,
+    margin: 20,
     alignItems: "center", // Align items in the center vertically
   },
   imageContainer: {
@@ -73,7 +74,8 @@ const styles = StyleSheet.create({
     width: 70, // Adjust as needed
     height: 160,
     resizeMode: "cover",
-    marginRight: 25,
+    borderTopLeftRadius: 15,
+    borderBottomLeftRadius: 15,
   },
   textContainer: {
     // Container for the text
