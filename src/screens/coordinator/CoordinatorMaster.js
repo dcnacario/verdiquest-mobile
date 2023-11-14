@@ -15,32 +15,29 @@ const CoordinatorMaster = ({ img }) => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <WavyHeader />
-      <View style={styles.container}>
-        {img ? (
-          <View style={{ alignSelf: "flex-end", width: 100 }}>
-            <Image
-              defaultSource={defaultImage}
-              source={img}
-              style={styles.profileStyle}
-            />
-          </View>
-        ) : (
-          <View style={{ alignSelf: "flex-end", width: 100 }}>
-            <Image source={defaultImage} style={styles.profileStyle} />
-          </View>
-        )}
-        <View style={styles.header}>
-          <View style={{ flex: 1 }}></View>
-          <Text style={styles.textStyle}>Coordinator</Text>
-          <View style={{ flex: 1, alignItems: "flex-end" }}>
-            <Button title="+ Add" onPress={gotoAddCoordinator} />
-          </View>
+    <View style={styles.container}>
+      {img ? (
+        <View style={{ alignSelf: "flex-end", width: 100 }}>
+          <Image
+            defaultSource={defaultImage}
+            source={img}
+            style={styles.profileStyle}
+          />
         </View>
-        <View>
-          <CoordinatorCard name="Danmar Nacario" />
+      ) : (
+        <View style={{ alignSelf: "flex-end", width: 100 }}>
+          <Image source={defaultImage} style={styles.profileStyle} />
         </View>
+      )}
+      <View style={styles.header}>
+        <View style={{ flex: 1 }}></View>
+        <Text style={styles.textStyle}>Coordinator</Text>
+        <View style={{ flex: 1, alignItems: "flex-end" }}>
+          <Button title="+ Add" onPress={gotoAddCoordinator} />
+        </View>
+      </View>
+      <View>
+        <CoordinatorCard name="Danmar Nacario" />
       </View>
     </View>
   );
