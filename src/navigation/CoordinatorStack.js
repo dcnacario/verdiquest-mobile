@@ -8,6 +8,8 @@ import CoordinatorDashboard from "../screens/coordinator/CoordinatorDashboard";
 import CoordinatorMaster from "../screens/coordinator/CoordinatorMaster";
 import TaskMaster from "../screens/coordinator/TaskMaster";
 import EventMaster from "../screens/coordinator/EventMaster";
+import AddCoordinator from "../screens/coordinator/AddCoordinator";
+import CoordinatorAddEvent from "../screens/coordinator/CoordinatorAddEvent";
 
 const AppCoordinatorStack = createStackNavigator();
 
@@ -71,6 +73,20 @@ const CoordinatorStack = ({ route }) => {
       <AppCoordinatorStack.Screen
         name="EventMaster"
         component={EventMaster}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <AppCoordinatorStack.Screen
+        name="AddCoordinator"
+        component={AddCoordinator}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <AppCoordinatorStack.Screen
+        name="CoordinatorAddEvent"
+        component={CoordinatorAddEvent}
         options={{
           headerShown: false,
         }}

@@ -3,13 +3,19 @@ import { StyleSheet, View, Text, ScrollView } from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
 import CoordTaskCard from "../../components/CoordTaskCard";
+import { useNavigation } from "@react-navigation/native";
 
 const TaskMaster = () => {
+  const navigation = useNavigation();
+
+  const goToCreateTask = () => {
+    navigation.navigate("CoordinatorAddEvent");
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={{ flex: 1, alignItems: "flex-start" }}>
-          <Button title="+ Create" />
+          <Button title="+ Create" onPress={goToCreateTask} />
         </View>
         <Text style={styles.textStyle}>Tasks</Text>
         <View style={{ flex: 1 }}></View>

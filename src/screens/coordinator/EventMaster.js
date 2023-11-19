@@ -3,13 +3,19 @@ import { StyleSheet, View, Text, ScrollView } from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
 import CoordEventCard from "../../components/CoordEventCard";
+import { useNavigation } from "@react-navigation/native";
 
 const EventMaster = () => {
+  const navigation = useNavigation();
+
+  const goCreateEvent = () => {
+    navigation.navigate("CoordinatorAddEvent");
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={{ flex: 1, alignItems: "flex-start" }}>
-          <Button title="+ Create" />
+          <Button title="+ Create" onPress={goCreateEvent} />
         </View>
         <Text style={styles.textStyle}>Events</Text>
         <View style={{ flex: 1 }}></View>

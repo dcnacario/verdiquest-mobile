@@ -27,7 +27,7 @@ const CoordTaskCard = ({
         <View style={styles.buttonContainer}>
           <View
             style={{
-              flexDirection: "row",
+              flexDirection: "column",
               alignSelf: "center",
               gap: -5,
             }}
@@ -42,7 +42,9 @@ const CoordTaskCard = ({
             </Text>
           </View>
           <View style={{ flex: 1 }}></View>
-          <DeleteButton title={"Delete"} />
+          <View>
+            <DeleteButton title={"Delete"} />
+          </View>
           <Button title="View" onPress={onPress} />
         </View>
       </View>
@@ -72,7 +74,7 @@ const styles = StyleSheet.create({
   },
   imageStyle: {
     width: 70, // Adjust as needed
-    height: 160,
+    height: 180,
     resizeMode: "cover",
     borderTopLeftRadius: 15,
     borderBottomLeftRadius: 15,
