@@ -94,8 +94,10 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     marginTop: 10,
+    flex: 1,
+    marginHorizontal: 50,
   },
   leftButton: {
     flex: 1,
