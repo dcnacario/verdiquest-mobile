@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Text, ScrollView } from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
@@ -7,6 +7,8 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 
 const TaskMaster = ({ route }) => {
+  const [fetchedTasks, setFetchedTasks] = useState([]);
+
   const navigation = useNavigation();
   const { coordinator } = route.params;
   console.log(coordinator);
@@ -15,21 +17,19 @@ const TaskMaster = ({ route }) => {
     navigation.navigate("CreateTaskDashboard", { coordinator: coordinator });
   };
 
-  // for fetching
-  const [fetchedTasks, setFetchedTasks] = useState([]);
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get(
+        `http://192.168.1.14:3000/coordinator/fetchTasks?coordinatorId=${coordinator.CoordinatorId}`
+      );
+      setFetchedTasks(response.data.fetchTable);
+    } catch (error) {
+      console.error("Error fetching tasks table", error);
+      return []; // Return an empty array in case of an error
+    }
+  };
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await axios.get(
-          `http://192.168.1.14:3000/coordinator/fetchTasks?coordinatorId=${coordinator.CoordinatorId}`
-        );
-        setFetchedTasks(response.data.fetchTable);
-      } catch (error) {
-        console.error("Error fetching tasks table", error);
-        return []; // Return an empty array in case of an error
-      }
-    };
     fetchTasks();
   }, [coordinator.CoordinatorId]);
 

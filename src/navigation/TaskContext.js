@@ -17,7 +17,6 @@ export const TaskProvider = ({ children }) => {
       if (response.data.success) {
         console.log("Task added!", response.data);
         // Handle success (maybe clear form or show a success message)
-
         navigation.navigate("TaskMaster", { coordinator: coordinator });
       }
     } catch (error) {
