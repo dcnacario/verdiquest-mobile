@@ -20,13 +20,15 @@ const Birthday = ({onValueChange}) => {
         const currentDate = selectedDate;
         setShow(false);
         setDate(currentDate);
+        onValueChange && onValueChange(currentDate);  
     };
+    
     const showMode = (currentMode) => {
         setShow(true);
         setMode(currentMode);
     };
     
-      const showDatePicker = () => {
+    const showDatePicker = () => {
         showMode('date');
     };
     
@@ -42,11 +44,11 @@ const Birthday = ({onValueChange}) => {
                     editable={false}
                 />
                 {show && (
-                     <DateTimePicker
-                     value={date}
-                     mode={mode}
-                     onChange={onChange}
-                   />
+                    <DateTimePicker
+                    value={date}
+                    mode={mode}
+                    onChange={onChange}
+                />
                 )}
                 <TouchableOpacity onPress={showDatePicker}>
                     <MaterialCommunityIcons name="calendar" size={28}  color={`${theme.colors.primary}`}/>
