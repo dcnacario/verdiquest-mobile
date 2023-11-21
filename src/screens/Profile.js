@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import {Text, View, StyleSheet, ScrollView, Dimensions} from 'react-native';
 import { theme } from "../../assets/style";
-import IntroCard from "../components/IntroCard";
+import IntroCard from "components/IntroCard";
 import OrganizationCard from "../components/OrganizationCard";
 import AchievementCard from "../components/AchievementCard";
 
-const Profile = ({route, navigation}) => {
-    //const { user } = route.params;
+const Profile = () => {
 
     const screenHeight = Dimensions.get('window').height;
     const paddingBottom = screenHeight * 0.15;
