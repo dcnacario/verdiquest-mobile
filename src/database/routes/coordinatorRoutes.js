@@ -9,5 +9,6 @@ router.post(
 );
 router.post("/register", coordinatorController.registerCoordinator);
 router.post("/login", coordinatorController.loginCoordinator);
+router.post("/createTask", coordinatorController.createTask);
 
 module.exports = router;

@@ -40,7 +40,7 @@ const RegisterFormCoordinator = ({}) => {
     }
 
     axios
-      .post("http://192.168.1.6:3000/coordinator/register", userData)
+      .post("http://192.168.1.14:3000/coordinator/register", userData)
       .then((response) => {
         Alert.alert("Success", response.data.message);
         navigation.navigate("CoordinatorLogin");

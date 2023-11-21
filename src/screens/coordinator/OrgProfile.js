@@ -39,7 +39,7 @@ const OrgProfile = () => {
     }
     axios
       .post(
-        "http://192.168.1.6:3000/coordinator/register/organization",
+        "http://192.168.1.14:3000/coordinator/register/organization",
         coordinatorData
       )
       .then((response) => {

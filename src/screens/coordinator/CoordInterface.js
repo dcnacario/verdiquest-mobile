@@ -45,7 +45,7 @@ const CoordInterface = ({ route }) => {
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              Danmar Nacario
+              {coordinator.FirstName} {coordinator.LastName}
             </Text>
             <TouchableOpacity onPress={gotoCoordinators}>
               <Icon name="pencil" size={20} color="#000" />
