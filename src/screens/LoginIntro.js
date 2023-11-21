@@ -15,6 +15,18 @@ const LoginIntro = () => {
   const goToCoordinatorLogin = () => {
     navigation.navigate("CoordinatorStack");
   };
+  const goToProductDetail = () => {
+    navigation.navigate("ProductDetail");
+  };
+  const goToProductConfirm = () => {
+    navigation.navigate("ProductConfirm");
+  };
+  const goToProductRedeem = () => {
+    navigation.navigate("ProductRedeem");
+  };
+  const goToProductReceipt = () => {
+    navigation.navigate("ProductReceipt");
+  };
 
   // const goToCoordinatorOrganization = () => {
   //     navigation.navigate("OrgProfile");
@@ -45,6 +57,18 @@ const LoginIntro = () => {
         {/* {/ Coordinator/} */}
         <View style={{ marginTop: 10 }}>
           <Button title="Coordinator" onPress={goToCoordinatorLogin} />
+        </View>
+        <View style={{ marginTop: 10 }}>
+          <Button title="Product" onPress={goToProductDetail} />
+        </View>
+        <View style={{ marginTop: 10 }}>
+          <Button title="Product Confirm" onPress={goToProductConfirm} />
+        </View>
+        <View style={{ marginTop: 10 }}>
+          <Button title="Product Redeem" onPress={goToProductRedeem} />
+        </View>
+        <View style={{ marginTop: 10 }}>
+          <Button title="Product Receipt" onPress={goToProductReceipt} />
         </View>
       </View>
     </ScrollView>
