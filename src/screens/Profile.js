@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import {Text, View, StyleSheet, ScrollView, Dimensions} from 'react-native';
 import { theme } from "../../assets/style";
-import IntroCard from "components/IntroCard";
+import IntroCard from "../components/IntroCard";
 import OrganizationCard from "../components/OrganizationCard";
 import AchievementCard from "../components/AchievementCard";
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 
 const Profile = () => {
 
@@ -11,8 +13,12 @@ const Profile = () => {
     const paddingBottom = screenHeight * 0.15;
 
     return (
+        
         <ScrollView keyboardShouldPersistTaps='handled' style={{backgroundColor: theme.colors.background, flex: 1}} contentContainerStyle={{paddingBottom: paddingBottom}}>
             <View style={{flex: 1,}}>
+                <View style={{position: 'absolute', top: 40, right: 20, zIndex: 1}}>
+                    <Ionicons name="settings-outline" size={20} color="black" onPress={() => console.log('Settings Pressed')} />
+                </View>
                 <View style={{flex: 1, marginTop: 10}}>
                     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', marginBottom: 20, marginHorizontal: 20}}>
                         <View style={styles.profileContainer}></View>
