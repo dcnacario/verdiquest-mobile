@@ -5,7 +5,7 @@ import Button from "../../components/Button";
 import CoordinatorCard from "../../components/CoordinatorCard";
 import { useNavigation } from "@react-navigation/native";
 import defaultImage from "../../../assets/img/default-profile.png";
-import WavyHeader from "../../components/WavyHeader";
+// import WavyHeader from "../../components/WavyHeader";
 
 const CoordinatorMaster = ({ img }) => {
   const navigation = useNavigation();
