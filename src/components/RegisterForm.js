@@ -11,6 +11,10 @@ import { useNavigation } from "@react-navigation/native";
 const RegisterForm = ({ onRegister }) => {
   const navigation = useNavigation();
 
+  const handleBirthDateChange = (date) => {
+    setUserData((prev) => ({ ...prev, birthDate: date.toISOString().slice(0, 10) }));
+};
+
   const [selectedValue, setSelectedValue] = useState("male");
   const [userData, setUserData] = useState({
     firstName: "",
@@ -84,7 +88,7 @@ const RegisterForm = ({ onRegister }) => {
         <RadioButton.Group
           onValueChange={(value) => {
             setSelectedValue(value);
-            handleInputChange("gender", selectedValue); // Update userData with the selected gender
+            handleInputChange("gender", selectedValue); 
           }}
           value={selectedValue}
         >
@@ -116,7 +120,7 @@ const RegisterForm = ({ onRegister }) => {
           </View>
         </RadioButton.Group>
       </View>
-      <Birthday />
+      <Birthday onValueChange={handleBirthDateChange} />
       <View style={{ flex: 1, marginHorizontal: 20, alignSelf: "stretch" }}>
         <Text style={styles.textInput}>Phone Number</Text>
         <TextInput
