@@ -35,7 +35,7 @@ const TaskMaster = ({ route }) => {
 
   //navigation for View
   const gotoCard = (taskData) => {
-    navigation.navigate("UpdateTaskDashboard", { taskData: taskData });
+    navigation.navigate("TaskView", { taskData: taskData });
   };
 
   return (
@@ -48,16 +48,20 @@ const TaskMaster = ({ route }) => {
         <View style={{ flex: 1 }}></View>
       </View>
       <ScrollView style={styles.scrollView}>
-        {fetchedTasks.map((item) => (
-          <CoordTaskCard
-            key={item.TaskId}
-            participants={0}
-            done={2}
-            title={item.TaskName}
-            description={item.TaskDescription}
-            onPress={() => gotoCard(item)}
-          />
-        ))}
+        {fetchedTasks != null ? (
+          fetchedTasks.map((item) => (
+            <CoordTaskCard
+              key={item.TaskId}
+              participants={0}
+              done={2}
+              title={item.TaskName}
+              description={item.TaskDescription}
+              onPress={() => gotoCard(item)}
+            />
+          ))
+        ) : (
+          <Text>No tasks available for this coordinator.</Text>
+        )}
       </ScrollView>
     </View>
   );

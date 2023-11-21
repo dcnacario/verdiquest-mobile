@@ -92,11 +92,12 @@ class Coordinator extends BaseModel {
   async insertTask(taskData) {
     try {
       const [task] = await this.db.query(
-        "INSERT INTO dailytask (DifficultyId, CoordinatorId, TaskName, TaskDescription, TaskPoints, Status) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO dailytask (DifficultyId, CoordinatorId, TaskName, TaskType, TaskDescription, TaskPoints, Status) VALUES (?, ?, ?, ?, ?, ?, ?)",
         [
           taskData.difficultyId,
           taskData.coordinatorId,
           taskData.taskName,
+          taskData.taskType,
           taskData.taskDescription,
           taskData.taskPoints,
           taskData.Status,
