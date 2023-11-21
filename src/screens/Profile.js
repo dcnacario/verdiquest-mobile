@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {Text, View, StyleSheet, ScrollView, Dimensions} from 'react-native';
 import { theme } from "../../assets/style";
-import IntroCard from "../components/IntroCard";
+import IntroCard from "components/IntroCard";
 import OrganizationCard from "../components/OrganizationCard";
 import AchievementCard from "../components/AchievementCard";
 import Ionicons from 'react-native-vector-icons/Ionicons';
