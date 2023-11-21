@@ -99,13 +99,36 @@ class Coordinator extends BaseModel {
           taskData.taskName,
           taskData.taskDescription,
           taskData.taskPoints,
-          taskData.status,
+          taskData.Status,
         ]
       );
       const insertedTaskId = task.insertId;
       return insertedTaskId;
     } catch (error) {
       console.error(`Error inserting task`, error);
+      throw error;
+    }
+  }
+
+  async fetchDifficulty() {
+    try {
+      const [result] = await this.db.query("SELECT * FROM difficulty");
+      return result.length > 0 ? result : null;
+    } catch (error) {
+      console.error(`Error fetching difficulty table: ${error}`);
+      throw error;
+    }
+  }
+
+  async fetchTasks(coordinatorData) {
+    try {
+      const [result] = await this.db.query(
+        "SELECT * FROM dailytask WHERE CoordinatorId = ?",
+        [coordinatorData.coordinatorId]
+      );
+      return result.length > 0 ? result : null;
+    } catch (error) {
+      console.error(`Error fetching tasks: ${error}`);
       throw error;
     }
   }

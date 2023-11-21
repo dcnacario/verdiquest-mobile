@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -6,19 +6,40 @@ import {
   TouchableOpacity,
   Image,
   Text,
+  Alert,
 } from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
 import * as ImagePicker from "expo-image-picker";
-import { TaskProvider } from "../../navigation/TaskContext";
+import { TaskProvider, TaskContext } from "../../navigation/TaskContext";
+import { useNavigation } from "@react-navigation/native";
+import { Picker } from "@react-native-picker/picker";
 
-const CreateTaskDashboard = () => {
-  const [imageUri, setImageUri] = useState(null);
-  const [taskName, setTaskName] = useState("");
-  const [taskType, setTaskType] = useState("");
-  const [taskDescription, setTaskDescription] = useState("");
-  const [taskDuration, setTaskDuration] = useState("");
-  const [taskPoints, setTaskPoints] = useState("");
+const CreateDashboardComponent = ({ route }) => {
+  const { submitTask, fetchDifficulty } = useContext(TaskContext);
+  const navigation = useNavigation();
+
+  const coordinator = route;
+
+  const [selectedDifficulty, setSelectedDifficulty] = useState(1);
+
+  const [difficultyData, setDifficultyData] = useState([]);
+
+  const [taskData, setTaskData] = useState({
+    imageUri: null,
+    coordinatorId: coordinator.CoordinatorId,
+    difficultyId: selectedDifficulty,
+    taskName: "",
+    taskType: "",
+    taskDescription: "",
+    taskDuration: "",
+    taskPoints: "",
+    Status: "Active",
+  });
+
+  const updateTaskData = (field, value) => {
+    setTaskData({ ...taskData, [field]: value });
+  };
 
   const pickImage = async () => {
     const permissionResult =
@@ -39,79 +60,132 @@ const CreateTaskDashboard = () => {
     });
 
     if (!result.canceled && result.assets) {
-      setImageUri(result.assets[0].uri);
+      updateTaskData("imageUri", result.assets[0].uri);
     }
   };
 
+  useEffect(() => {
+    const loadData = async () => {
+      const data = await fetchDifficulty();
+      setDifficultyData(data);
+    };
+    loadData();
+  }, [fetchDifficulty]); // Dependency array
+
+  useEffect(() => {
+    updateTaskData("difficultyId", selectedDifficulty);
+  }, [selectedDifficulty]);
+
+  return (
+    <View style={styles.background}>
+      <View style={styles.eventDetailsContainer}>
+        <TouchableOpacity onPress={pickImage} style={styles.imagePlaceholder}>
+          {taskData.imageUri ? (
+            <Image source={{ uri: taskData.imageUri }} style={styles.img} />
+          ) : (
+            <Text style={styles.imagePlaceholderText}>Select Image</Text>
+          )}
+        </TouchableOpacity>
+
+        {/* Task Name */}
+        <View style={{ justifyContent: "flex-start" }}>
+          <Text style={styles.textInput}>Task Name</Text>
+          <TextInput
+            style={styles.inputStyle}
+            value={taskData.taskName}
+            onChangeText={(text) => updateTaskData("taskName", text)}
+            placeholder="Enter task name"
+          />
+        </View>
+
+        {/* Task Type */}
+        <View style={{ justifyContent: "flex-start" }}>
+          <Text style={styles.textInput}>Task Type</Text>
+          <TextInput
+            style={styles.inputStyle}
+            value={taskData.taskType}
+            onChangeText={(text) => updateTaskData("taskType", text)}
+            placeholder="Enter task type"
+          />
+        </View>
+
+        {/* Task Description */}
+        <View style={{ justifyContent: "flex-start" }}>
+          <Text style={styles.textInput}>Task Description</Text>
+          <TextInput
+            style={styles.modifiedDescriptioninputStyle}
+            value={taskData.taskDescription}
+            onChangeText={(text) => updateTaskData("taskDescription", text)}
+            placeholder="Enter task description"
+          />
+        </View>
+
+        {/* Task Duration and Task Points */}
+        <View style={styles.row}>
+          {/* Task Duration */}
+          <View style={styles.column}>
+            <Text style={styles.modifiedTextInput}>Task Duration</Text>
+            <TextInput
+              style={styles.modifiedInputStyle}
+              value={taskData.taskDuration}
+              onChangeText={(text) => updateTaskData("taskDuration", text)}
+              placeholder="Task Duration"
+            />
+          </View>
+
+          {/* Task Points */}
+          <View style={styles.column}>
+            <Text style={styles.modifiedTextInput}>Points Reward</Text>
+            <TextInput
+              style={styles.modifiedInputStyle}
+              value={taskData.taskPoints}
+              onChangeText={(text) => updateTaskData("taskPoints", text)}
+              placeholder="Points Reward"
+            />
+          </View>
+        </View>
+
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={selectedDifficulty}
+            onValueChange={(itemValue, itemIndex) =>
+              setSelectedDifficulty(itemValue)
+            }
+            style={styles.pickerStyle}
+            mode="dropdown"
+            dropdownIconColor={"#A7A6A6"}
+            dropdownIconRippleColor={theme.colors.background}
+          >
+            {difficultyData.map((item) => (
+              <Picker.Item
+                key={item.DifficultyId}
+                label={item.Level}
+                value={item.DifficultyId}
+              />
+            ))}
+          </Picker>
+        </View>
+
+        <Button
+          title="Create"
+          onPress={() => {
+            submitTask(taskData, navigation, coordinator);
+          }}
+        />
+      </View>
+    </View>
+  );
+};
+
+const CreateTaskDashboard = ({ route }) => {
+  const { coordinator } = route.params;
   return (
     <TaskProvider>
-      <View style={styles.background}>
-        <View style={styles.eventDetailsContainer}>
-          <TouchableOpacity onPress={pickImage} style={styles.imagePlaceholder}>
-            {imageUri ? (
-              <Image source={{ uri: imageUri }} style={styles.img} />
-            ) : (
-              <Text style={styles.imagePlaceholderText}>Select Image</Text>
-            )}
-          </TouchableOpacity>
-          {/* Task Name */}
-          <View style={{ justifyContent: "flex-start" }}>
-            <Text style={styles.textInput}>Task Name</Text>
-            <TextInput
-              style={styles.inputStyle}
-              value={taskName}
-              onChangeText={setTaskName}
-              placeholder="Enter task name"
-            />
-          </View>
-          {/* Task Type */}
-          <View style={{ justifyContent: "flex-start" }}>
-            <Text style={styles.textInput}>Task Type</Text>
-            <TextInput
-              style={styles.inputStyle}
-              value={taskType}
-              onChangeText={setTaskType}
-              placeholder="Enter task type"
-            />
-          </View>
-          {/* Task Description */}
-          <View style={{ justifyContent: "flex-start" }}>
-            <Text style={styles.textInput}>Task Description</Text>
-            <TextInput
-              style={styles.modifiedDescriptioninputStyle}
-              value={taskDescription}
-              onChangeText={setTaskDescription}
-              placeholder="Enter task description"
-            />
-          </View>
-          <View style={styles.row}>
-            {/* Task Duration */}
-            <View style={styles.column}>
-              <Text style={styles.modifiedTextInput}>Task Duration</Text>
-              <TextInput
-                style={styles.modifiedInputStyle}
-                value={taskDuration}
-                onChangeText={setTaskDuration}
-                placeholder="Task Duration"
-              />
-            </View>
-            {/* Task Points */}
-            <View style={styles.column}>
-              <Text style={styles.modifiedTextInput}>Points Reward</Text>
-              <TextInput
-                style={styles.modifiedInputStyle}
-                value={taskPoints}
-                onChangeText={setTaskPoints}
-                placeholder="Points Reward"
-              />
-            </View>
-          </View>
-          <Button title="Create" />
-        </View>
-      </View>
+      <CreateDashboardComponent route={coordinator} />
     </TaskProvider>
   );
 };
+
 const styles = StyleSheet.create({
   background: {
     flex: 1,
@@ -209,6 +283,16 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     padding: 5,
+  },
+  pickerContainer: {
+    borderColor: "black",
+    borderWidth: 1,
+    borderRadius: 12,
+    marginBottom: 15,
+  },
+  pickerStyle: {
+    height: 20,
+    width: 150,
   },
 });
 

@@ -40,15 +40,15 @@ const RegisterForm = ({ onRegister }) => {
     }
 
     axios
-      .post("http://192.168.1.6:3000/user/register", userData)
+      .post("http://192.168.1.14:3000/user/register", userData)
       .then((response) => {
         Alert.alert("Success", response.data.message);
+        navigation.navigate("Login");
       })
       .catch((error) => {
         console.error(error);
         Alert.alert("Error", "Failed to register. Please try again.");
       });
-    navigation.navigate("Login");
   };
 
   return (

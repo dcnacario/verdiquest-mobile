@@ -17,7 +17,7 @@ const CoordInterface = ({ route }) => {
   const navigation = useNavigation();
 
   const gotoTasks = () => {
-    navigation.navigate("TaskMaster");
+    navigation.navigate("TaskMaster", { coordinator: coordinator });
   };
   const gotoEvents = () => {
     navigation.navigate("EventMaster");
