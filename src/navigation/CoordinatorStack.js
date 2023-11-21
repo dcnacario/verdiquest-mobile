@@ -10,6 +10,9 @@ import TaskMaster from "../screens/coordinator/TaskMaster";
 import EventMaster from "../screens/coordinator/EventMaster";
 import AddCoordinator from "../screens/coordinator/AddCoordinator";
 import CoordinatorAddEvent from "../screens/coordinator/CoordinatorAddEvent";
+import CreateTaskDashboard from "../screens/coordinator/CreateTaskDashboard";
+import UpdateTaskDashboard from "../screens/coordinator/UpdateTaskDashboard";
+import ViewSubmission from "../screens/coordinator/ViewSubmission";
 
 const AppCoordinatorStack = createStackNavigator();
 
@@ -87,6 +90,27 @@ const CoordinatorStack = ({ route }) => {
       <AppCoordinatorStack.Screen
         name="CoordinatorAddEvent"
         component={CoordinatorAddEvent}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <AppCoordinatorStack.Screen
+        name="CreateTaskDashboard"
+        component={CreateTaskDashboard}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <AppCoordinatorStack.Screen
+        name="UpdateTaskDashboard"
+        component={UpdateTaskDashboard}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <AppCoordinatorStack.Screen
+        name="ViewSubmission"
+        component={ViewSubmission}
         options={{
           headerShown: false,
         }}

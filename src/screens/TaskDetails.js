@@ -1,11 +1,30 @@
-import React from "react";
-import {View, StyleSheet, Image, Text} from 'react-native';
+import React,{useState} from "react";
+import {View, StyleSheet, Image, Text,Modal,TouchableOpacity} from 'react-native';
 import Details from "../components/Details";
 import Button from "../components/Button";
 import defaultImage from '../../assets/img/default-image.png';
+import { useNavigation } from "@react-navigation/native";
+
 
 
 const TaskDetails = ({route, img}) => {
+    const navigation = useNavigation();
+    const [isAccepted, setIsAccepted] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+
+    const onPressAccept = () => {
+        setIsAccepted(true);
+        setShowModal(true);
+
+    };
+
+    const onPressOngoingTask = () => {
+        navigation.navigate('MyPoints', {user: user})
+    };
+
+    const onPressCancelTask = () => {
+        setIsAccepted(false);
+    };
     const {user, title} = route.params;
     return (
         <View style={styles.container}>
@@ -17,9 +36,31 @@ const TaskDetails = ({route, img}) => {
             </View>
             <Text style={styles.textStyle}>{title}</Text>
             <Details timeCompleted='' />
-            <View style={{alignSelf: 'center'}}>
-                <Button title='ACCEPT' />
-            </View>
+            <View style={{ alignSelf: 'center', flexDirection: 'row' }}>
+            {isAccepted ? (
+                <>
+                    <Button title='Ongoing' onPress={onPressOngoingTask} />
+                    <View style={{ width: 50 }} />
+                    <Button title='Cancel' onPress={onPressCancelTask} />
+                </>
+            ) : (
+                <Button title='ACCEPT' onPress={onPressAccept} />
+            )}
+            <Modal
+                transparent={true}
+                visible={showModal}
+                onRequestClose={() => setShowModal(false)}
+            >
+                <TouchableOpacity
+                    style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+                    onPress={() => setShowModal(false)}
+                >
+                    <View style={{ backgroundColor: '#7b904b', padding: 50, borderRadius: 10 }}>
+                        <Text style={styles.textStyle}>Mission Accepted!</Text>
+                    </View>
+                </TouchableOpacity>
+            </Modal>
+        </View>
         </View>
     );
 };

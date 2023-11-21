@@ -78,13 +78,34 @@ class Coordinator extends BaseModel {
   async fetchUser(coordinatorData) {
     try {
       const [result] = await this.db.query(
-        "SELECT * FROM coordinator WHERE username = ?",
+        "SELECT * FROM organization JOIN coordinator ON coordinator.OrganizationId = organization.OrganizationId JOIN person ON coordinator.PersonId = person.PersonId WHERE username = ?",
         [coordinatorData.username]
       );
       // Return the user data if found, else return null
       return result.length > 0 ? result[0] : null;
     } catch (error) {
       console.error(`Error fetching user`, error);
+      throw error;
+    }
+  }
+
+  async insertTask(taskData) {
+    try {
+      const [task] = await this.db.query(
+        "INSERT INTO dailytask (DifficultyId, CoordinatorId, TaskName, TaskDescription, TaskPoints, Status) VALUES (?, ?, ?, ?, ?, ?)",
+        [
+          taskData.difficultyId,
+          taskData.coordinatorId,
+          taskData.taskName,
+          taskData.taskDescription,
+          taskData.taskPoints,
+          taskData.status,
+        ]
+      );
+      const insertedTaskId = task.insertId;
+      return insertedTaskId;
+    } catch (error) {
+      console.error(`Error inserting task`, error);
       throw error;
     }
   }

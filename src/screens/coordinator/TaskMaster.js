@@ -9,8 +9,12 @@ const TaskMaster = () => {
   const navigation = useNavigation();
 
   const goToCreateTask = () => {
-    navigation.navigate("CoordinatorAddEvent");
+    navigation.navigate("CreateTaskDashboard");
   };
+
+  // const gotoTaskView = () => {
+  //   navigation.navigate("C");
+  // };
   return (
     <View style={styles.container}>
       <View style={styles.header}>

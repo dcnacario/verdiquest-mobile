@@ -92,19 +92,21 @@ async function registerCoordinator(request, response) {
 async function loginCoordinator(request, response) {
   try {
     const { username, password } = request.body;
-    const coordinatorData = { username, password };
+
+    // Validate request data
+    if (!username || !password) {
+      return response
+        .status(400)
+        .json({ message: "Username and password are required" });
+    }
+
+    const coordinatorData = { username };
     const fetchedUser = await coordinator.fetchUser(coordinatorData);
-    console.log(coordinatorData.username);
-    console.log(coordinatorData.password);
 
     if (fetchedUser) {
-      if (!password || !fetchedUser.Password) {
-        // Handle error: one of the passwords is undefined or null
-        return response.status(400).json({ message: "Invalid request data" });
-      }
       const isMatch = await bcrypt.compare(password, fetchedUser.Password);
 
-      if (fetchedUser && fetchedUser.Password) {
+      if (isMatch) {
         // Generate a JWT with an expiration
         const tokenPayload = {
           id: fetchedUser.id,
@@ -115,7 +117,11 @@ async function loginCoordinator(request, response) {
           expiresIn: "1h", // Set the token to expire in 1 hour
         });
 
-        response.json({ success: true, user: fetchedUser, token: token });
+        response.json({
+          success: true,
+          coordinator: fetchedUser,
+          token: token,
+        });
       } else {
         // Incorrect password
         response
@@ -134,8 +140,43 @@ async function loginCoordinator(request, response) {
   }
 }
 
+async function createTask(request, response) {
+  try {
+    const {
+      difficultyId,
+      coordinatorId,
+      taskName,
+      taskDescription,
+      taskPoints,
+      Status,
+    } = request.body;
+
+    const taskData = {
+      difficultyId,
+      coordinatorId,
+      taskName,
+      taskDescription,
+      taskPoints,
+      Status,
+    };
+
+    const insertTaskId = await coordinator.insertTask(taskData);
+
+    response.status(200).send({
+      message: "Task registered successfully!",
+      taskId: insertTaskId,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
 module.exports = {
   registerOrganization,
   registerCoordinator,
   loginCoordinator,
+  createTask,
 };

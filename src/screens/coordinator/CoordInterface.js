@@ -45,7 +45,7 @@ const CoordInterface = ({ route }) => {
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              Danmar Nacario
+              {coordinator.FirstName} {coordinator.LastName}
             </Text>
             <TouchableOpacity onPress={gotoCoordinators}>
               <Icon name="pencil" size={20} color="#000" />
@@ -94,8 +94,10 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     marginTop: 10,
+    flex: 1,
+    marginHorizontal: 50,
   },
   leftButton: {
     flex: 1,
