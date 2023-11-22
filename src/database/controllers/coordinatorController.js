@@ -209,6 +209,24 @@ async function getTasks(request, response) {
   }
 }
 
+async function deleteTask(request, response) {
+  try {
+    const { taskId } = request.body;
+
+    const coordinatorData = { taskId };
+    const result = await coordinator.deleteTasks(coordinatorData);
+    return response.json({
+      success: true,
+      taskId: result,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
 module.exports = {
   registerOrganization,
   registerCoordinator,
@@ -216,4 +234,5 @@ module.exports = {
   createTask,
   getDifficulty,
   getTasks,
+  deleteTask,
 };

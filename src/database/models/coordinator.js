@@ -133,6 +133,19 @@ class Coordinator extends BaseModel {
       throw error;
     }
   }
+
+  async deleteTasks(coordinatorData){
+    try {
+      const [result] = await this.db.query(
+        "UPDATE dailytask SET isDeleted = 1 WHERE TaskId = ?",
+        [coordinatorData.taskId]
+      );
+      return result;
+    }catch(error){
+      console.error(`Error fetching tasks: ${error}`);
+      throw error;
+    }
+  }
 }
 
 module.exports = Coordinator;
