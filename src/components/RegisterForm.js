@@ -11,6 +11,10 @@ import { useNavigation } from "@react-navigation/native";
 const RegisterForm = ({ onRegister }) => {
   const navigation = useNavigation();
 
+  const handleBirthDateChange = (date) => {
+    setUserData((prev) => ({ ...prev, birthDate: date.toISOString().slice(0, 10) }));
+};
+
   const [selectedValue, setSelectedValue] = useState("male");
   const [userData, setUserData] = useState({
     firstName: "",
@@ -40,15 +44,15 @@ const RegisterForm = ({ onRegister }) => {
     }
 
     axios
-      .post("http://192.168.1.6:3000/user/register", userData)
+      .post("http://192.168.1.14:3000/user/register", userData)
       .then((response) => {
         Alert.alert("Success", response.data.message);
+        navigation.navigate("Login");
       })
       .catch((error) => {
         console.error(error);
         Alert.alert("Error", "Failed to register. Please try again.");
       });
-    navigation.navigate("Login");
   };
 
   return (
@@ -84,7 +88,7 @@ const RegisterForm = ({ onRegister }) => {
         <RadioButton.Group
           onValueChange={(value) => {
             setSelectedValue(value);
-            handleInputChange("gender", selectedValue); // Update userData with the selected gender
+            handleInputChange("gender", selectedValue); 
           }}
           value={selectedValue}
         >
@@ -116,7 +120,7 @@ const RegisterForm = ({ onRegister }) => {
           </View>
         </RadioButton.Group>
       </View>
-      <Birthday />
+      <Birthday onValueChange={handleBirthDateChange} />
       <View style={{ flex: 1, marginHorizontal: 20, alignSelf: "stretch" }}>
         <Text style={styles.textInput}>Phone Number</Text>
         <TextInput

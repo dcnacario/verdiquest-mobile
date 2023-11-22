@@ -1,4 +1,5 @@
 const BaseModel = require('./BaseModel');
+const bcrypt = require('bcrypt');
 
 class User extends BaseModel {
     constructor(db) { // Accept the 'db' object as a parameter
@@ -8,15 +9,19 @@ class User extends BaseModel {
 
     async insertUser(userData) {
         try {
+            const formatDate = (date) => {
+                return date.toISOString().slice(0, 10);
+            };
+
             const [result] = await this.db.query(
-                `INSERT INTO ${this.tableName} (SubscriptionStatus, VerdiPoints, Email, Password, ProfilePicture, MissionCount, DateRegistered, LastActive) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-                ['Inactive', 0, userData.email, userData.password, '', 0, new Date(), new Date()]
+                `INSERT INTO ${this.tableName} (SubscriptionStatus, VerdiPoints, Email, Password, ProfilePicture, TaskCount, DateRegistered, LastActive) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                ['Inactive', 0, userData.email, userData.password, '', 0, formatDate(new Date()), formatDate(new Date())]
             );
             const insertedId = result.insertId;
 
             const [person] = await this.db.query(
                 'INSERT INTO person (UserId, FirstName, LastName, Initial,  Birthdate, PhoneNumber, Gender, Street, Barangay, City, Province) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                [insertedId, userData.firstName, userData.lastName, userData.middleInitial, '', userData.phoneNumber, userData.gender, userData.street, userData.barangay, userData.city, userData.province]
+                [insertedId, userData.firstName, userData.lastName, userData.middleInitial, userData.birthDate, userData.phoneNumber, userData.gender, userData.street, userData.barangay, userData.city, userData.province]
             );
             return insertedId;
 
@@ -26,14 +31,34 @@ class User extends BaseModel {
         }
     }
 
-    async fetchUser(userData){
+    async fetchUser(userData) {
         try {
-            const [result] = await this.db.query("SELECT * FROM user WHERE email = ? AND password = ?",
-            [userData.email, userData.password]);
-            return result[0];
-        } catch(error) {
+            // Fetch the user by email
+            const [result] = await this.db.query("SELECT * FROM user WHERE email = ?", [userData.email]);
+            const user = result[0];
+        
+            if (!user) {
+                return null;
+            }
+        
+            if (userData.password) {
+                try {
+                    const isPasswordValid = await bcrypt.compare(userData.password, user.Password);
+        
+                    if (isPasswordValid) {
+                        return user;
+                    } else {
+                        return null;
+                    }
+                } catch (error) {
+                    return error;
+                }
+            } else {
+                return user;
+            }
+        } catch (error) {
             console.error(`Error fetching user`, error);
-            throw error;    
+            throw error;
         }
     }
 }

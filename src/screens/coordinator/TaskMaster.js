@@ -1,20 +1,43 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Text, ScrollView } from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
 import CoordTaskCard from "../../components/CoordTaskCard";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 
-const TaskMaster = () => {
+const TaskMaster = ({ route }) => {
+  const [fetchedTasks, setFetchedTasks] = useState([]);
+
   const navigation = useNavigation();
-
+  const { coordinator } = route.params;
+  console.log(coordinator);
+  //navigate to creation of task
   const goToCreateTask = () => {
-    navigation.navigate("CreateTaskDashboard");
+    navigation.navigate("CreateTaskDashboard", { coordinator: coordinator });
   };
 
-  // const gotoTaskView = () => {
-  //   navigation.navigate("C");
-  // };
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get(
+        `http://192.168.1.14:3000/coordinator/fetchTasks?coordinatorId=${coordinator.CoordinatorId}`
+      );
+      setFetchedTasks(response.data.fetchTable);
+    } catch (error) {
+      console.error("Error fetching tasks table", error);
+      return []; // Return an empty array in case of an error
+    }
+  };
+
+  useEffect(() => {
+    fetchTasks();
+  }, [coordinator.CoordinatorId]);
+
+  //navigation for View
+  const gotoCard = (taskData) => {
+    navigation.navigate("TaskView", { taskData: taskData });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -25,30 +48,20 @@ const TaskMaster = () => {
         <View style={{ flex: 1 }}></View>
       </View>
       <ScrollView style={styles.scrollView}>
-        <CoordTaskCard
-          participants={14}
-          done={2}
-          title="10 km walk"
-          description={"well-being"}
-        />
-        <CoordTaskCard
-          participants={20}
-          done={30}
-          title="Collect Plastic Bottles"
-          description={"Recycling"}
-        />
-        <CoordTaskCard
-          participants={100}
-          done={82}
-          title="Collect Scrap Metals"
-          description={"Recycling"}
-        />
-        <CoordTaskCard
-          participants={100}
-          done={82}
-          title="Collect Scrap Metals"
-          description={"Recycling"}
-        />
+        {fetchedTasks != null ? (
+          fetchedTasks.map((item) => (
+            <CoordTaskCard
+              key={item.TaskId}
+              participants={0}
+              done={2}
+              title={item.TaskName}
+              description={item.TaskDescription}
+              onPress={() => gotoCard(item)}
+            />
+          ))
+        ) : (
+          <Text>No tasks available for this coordinator.</Text>
+        )}
       </ScrollView>
     </View>
   );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -7,36 +7,39 @@ import {
   ScrollView,
 } from "react-native";
 
-const submissions = new Array(10).fill(null).map((_, index) => ({
-  id: String(index),
-  name: "Ram P. De la Cruz",
-  status: "Completed",
-}));
+// const submissions = new Array(10).fill(null).map((_, index) => ({
+//   id: String(index),
+//   name: "Ram P. De la Cruz",
+//   status: "Completed",
+// }));
 
-const ViewSubmission = () => {
+const ViewSubmission = ({ route }) => {
+  const { taskData } = route.params;
+  console.log(taskData);
+
   return (
     <View style={styles.background}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.taskName}>Task Name</Text>
+        <Text style={styles.taskName}>{taskData.TaskName}</Text>
       </View>
       {/* Content ScrollView */}
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContent}
       >
-        {submissions.map((submission) => (
-          <View key={submission.id} style={styles.cardContainer}>
+        {/* {fetchedTasks.map((item) => (
+          <View key={item.TaskId} style={styles.cardContainer}>
             <View style={styles.imagePlaceholder} />
             <View style={styles.textContainer}>
-              <Text style={styles.name}>{submission.name}</Text>
-              <Text style={styles.status}>Status: {submission.status}</Text>
+              <Text style={styles.name}>{item.TaskName}</Text>
+              <Text style={styles.status}>Status: {item.status}</Text>
             </View>
             <TouchableOpacity style={styles.button}>
               <Text style={styles.buttonText}>View Submission</Text>
             </TouchableOpacity>
           </View>
-        ))}
+        ))} */}
       </ScrollView>
     </View>
   );

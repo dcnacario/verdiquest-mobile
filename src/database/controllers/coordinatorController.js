@@ -146,6 +146,7 @@ async function createTask(request, response) {
       difficultyId,
       coordinatorId,
       taskName,
+      taskType,
       taskDescription,
       taskPoints,
       Status,
@@ -155,6 +156,7 @@ async function createTask(request, response) {
       difficultyId,
       coordinatorId,
       taskName,
+      taskType,
       taskDescription,
       taskPoints,
       Status,
@@ -165,6 +167,39 @@ async function createTask(request, response) {
     response.status(200).send({
       message: "Task registered successfully!",
       taskId: insertTaskId,
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function getDifficulty(request, response) {
+  try {
+    const fetchedTable = await coordinator.fetchDifficulty();
+    return response.json({
+      success: true,
+      fetchTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+async function getTasks(request, response) {
+  try {
+    const { coordinatorId } = request.query;
+
+    const coordinatorData = { coordinatorId };
+    const fetchedTable = await coordinator.fetchTasks(coordinatorData);
+    return response.json({
+      success: true,
+      fetchTable: fetchedTable,
     });
   } catch (error) {
     console.error(error);
@@ -179,4 +214,6 @@ module.exports = {
   registerCoordinator,
   loginCoordinator,
   createTask,
+  getDifficulty,
+  getTasks,
 };

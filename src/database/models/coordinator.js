@@ -92,20 +92,44 @@ class Coordinator extends BaseModel {
   async insertTask(taskData) {
     try {
       const [task] = await this.db.query(
-        "INSERT INTO dailytask (DifficultyId, CoordinatorId, TaskName, TaskDescription, TaskPoints, Status) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO dailytask (DifficultyId, CoordinatorId, TaskName, TaskType, TaskDescription, TaskPoints, Status) VALUES (?, ?, ?, ?, ?, ?, ?)",
         [
           taskData.difficultyId,
           taskData.coordinatorId,
           taskData.taskName,
+          taskData.taskType,
           taskData.taskDescription,
           taskData.taskPoints,
-          taskData.status,
+          taskData.Status,
         ]
       );
       const insertedTaskId = task.insertId;
       return insertedTaskId;
     } catch (error) {
       console.error(`Error inserting task`, error);
+      throw error;
+    }
+  }
+
+  async fetchDifficulty() {
+    try {
+      const [result] = await this.db.query("SELECT * FROM difficulty");
+      return result.length > 0 ? result : null;
+    } catch (error) {
+      console.error(`Error fetching difficulty table: ${error}`);
+      throw error;
+    }
+  }
+
+  async fetchTasks(coordinatorData) {
+    try {
+      const [result] = await this.db.query(
+        "SELECT * FROM dailytask WHERE CoordinatorId = ?",
+        [coordinatorData.coordinatorId]
+      );
+      return result.length > 0 ? result : null;
+    } catch (error) {
+      console.error(`Error fetching tasks: ${error}`);
       throw error;
     }
   }
