@@ -276,6 +276,34 @@ async function getUserTask(request, response) {
   }
 }
 
+async function updateUserTask(request, response) {
+  try {
+    const { Status, userDailyTaskId } = request.body;
+
+    // Basic input validation
+    if (!Status || !userDailyTaskId) {
+      return response
+        .status(400)
+        .json({ success: false, message: "Missing required fields" });
+    }
+
+    const userTask = {
+      Status,
+      userDailyTaskId,
+    };
+
+    const result = await coordinator.updateUserDailyTask(userTask);
+    return response.json({
+      message: "User Daily Task updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
 module.exports = {
   registerOrganization,
   registerCoordinator,
@@ -286,4 +314,5 @@ module.exports = {
   deleteTask,
   updateTask,
   getUserTask,
+  updateUserTask,
 };

@@ -172,12 +172,27 @@ class Coordinator extends BaseModel {
   async fetchUserTasks(taskData) {
     try {
       const [result] = await this.db.query(
-        "SELECT * FROM userdailytask u JOIN person p ON  u.UserId = p.UserId WHERE TaskId = ?",
+        "SELECT * FROM person p JOIN userdailytask u ON p.UserId = u.UserId JOIN dailytask d ON d.TaskId = u.TaskId WHERE u.TaskId = ?",
         [taskData.taskId]
       );
       return result.length > 0 ? result : null;
     } catch (error) {
       console.error(`Error fetching user tasks table: ${error}`);
+      throw error;
+    }
+  }
+
+  async updateUserDailyTask(userTask) {
+    try {
+      const [usertask] = await this.db.query(
+        "UPDATE userdailytask SET Status = ? WHERE UserDailyTaskId = ?",
+        [userTask.Status, userTask.userDailyTaskId]
+      );
+
+      const userDailyUpdate = usertask.affectedRows;
+      return userDailyUpdate;
+    } catch (error) {
+      console.error(`Error updating user task: ${error}`);
       throw error;
     }
   }
