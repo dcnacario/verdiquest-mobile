@@ -10,5 +10,8 @@ router.get('/fetchAll', userController.userAllTasks);
 router.get('/fetchEasyTask', userController.userEasyTasks);
 router.get('/fetchNormalTask', userController.userNormalTasks);
 router.get('/fetchHardTask', userController.userHardTasks);
+router.get('/fetchTaskDetails/:taskId', userController.fetchTaskDetails);
+router.get('/fetchAllDifficulty', userController.userAllDifficultyTasks);
+
 
 module.exports = router;

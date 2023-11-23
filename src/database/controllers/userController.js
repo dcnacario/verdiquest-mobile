@@ -130,6 +130,8 @@ async function userAllTasks(request, response) {
   }
 }
 
+
+
 async function userEasyTasks(request, response) {
   try {
     const fetchedTable = await user.fetchEasyTask();
@@ -219,6 +221,32 @@ async function updateUser(request, response) {
   }
 }
 
+async function fetchTaskDetails(request, response) {
+  try {
+      const taskId = request.params.taskId;
+      const taskDetails = await user.fetchTaskDetails(taskId);
+      response.json({ success: true, taskDetails });
+  } catch (error) {
+      console.error(error);
+      response.status(500).send({ message: "Server error", error: error.message });
+  }
+}
+
+async function userAllDifficultyTasks(request, response) {
+  try {
+      const fetchedTable = await user.fetchAllDifficultyTasks(); 
+      response.json({
+          success: true,
+          fetchedTable: fetchedTable,
+      });
+  } catch (error) {
+      console.error(error);
+      response.status(500).send({ message: "Server error", error: error.message });
+  }
+}
+
+
+
 module.exports = {
   registerUser,
   loginUser,
@@ -226,5 +254,7 @@ module.exports = {
   userAllTasks,
   userEasyTasks,
   userNormalTasks,
-  userHardTasks
+  userHardTasks,
+  fetchTaskDetails,
+  userAllDifficultyTasks,
 };
