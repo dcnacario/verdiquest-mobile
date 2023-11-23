@@ -111,9 +111,75 @@ async function loginUser(request, response) {
     console.error(error);
     response.status(500).json({ success: false, message: "Server error." });
   }
+  
+
+}
+
+async function userAllTasks(request, response) {
+  try {
+    const fetchedTable = await user.fetchTasks();
+    return response.json({
+      success: true,
+      fetchTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function userEasyTasks(request, response) {
+  try {
+    const fetchedTable = await user.fetchEasyTask();
+    return response.json({
+      success: true,
+      fetchedTable: fetchedTable,
+    });
+  }catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  };
+}
+
+async function userNormalTasks(request, response) {
+  try {
+    const fetchedTable = await user.fetchNormalTask();
+    return response.json({
+      success: true,
+      fetchedTable: fetchedTable,
+    });
+  }catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  };
+}
+
+async function userHardTasks(request, response) {
+  try {
+    const fetchedTable = await user.fetchHardTask();
+    return response.json({
+      success: true,
+      fetchedTable: fetchedTable,
+    });
+  }catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  };
 }
 
 module.exports = {
   registerUser,
   loginUser,
+  userAllTasks,
+  userEasyTasks,
+  userNormalTasks,
+  userHardTasks
 };

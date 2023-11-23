@@ -9,7 +9,7 @@ const AppTaskStack = createStackNavigator();
 const TaskStack = ({ route, navigation }) => {
   const { user, title } = route.params;
   return (
-    <AppTaskStack.Navigator initialRouteName="Task">
+    <AppTaskStack.Navigator initialRouteName="TaskList">
       <AppTaskStack.Screen
         name="TaskList"
         component={TaskList}

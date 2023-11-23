@@ -1,36 +1,29 @@
 import React from "react";
-import {View, StyleSheet, Text, Image} from 'react-native';
-import Button from "./Button";
-import defaultImage from '../../assets/img/default-image.png';
+import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 
-
-
-const CardTask = ({title, difficulty, img, description, onPress, eventName}) => {
+const CardTask = ({ title, difficulty, img, description, onPress }) => {
     return (
-        <View style={styles.container}>
-            <View>
-                <Image />
-                <Text style={styles.textStyle}>{title}</Text>
-                {difficulty ? <Text>{difficulty}</Text>:<Text>{eventName}</Text>}
-            </View>
-            <View style={{flex: 1}}>
-            {img ? <Image defaultSource={defaultImage} source={img} style={styles.imageStyle}/> : <Image source={defaultImage} style={styles.imageStyle}/>}
-                <Text>{description}</Text>
-            </View>
-            <View style={{flex: 1, flexDirection: 'row', alignSelf: 'flex-end', gap: 10, marginTop: 20}}>
-                <Button title="View" onPress={onPress}/>
+        <View style={styles.cardContainer}>
+            <Image source={{ uri: img }} style={styles.cardImage} />
+            <View style={styles.cardContent}>
+                <Text style={styles.cardTitle}>{title}</Text>
+                <Text style={styles.cardDifficulty}>{difficulty}</Text>
+                <Text style={styles.cardDescription} numberOfLines={2}>{description}</Text>
+                <TouchableOpacity style={styles.viewButton} onPress={onPress}>
+                    <Text style={styles.viewButtonText}>View</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    cardContainer: {
         backgroundColor: '#F7F2FA',
-        flex: 1,
-        paddingVertical: 20,
-        paddingHorizontal: 30,
         borderRadius: 15,
+        marginVertical: 10,
+        marginHorizontal: 16, // Adjusted for slightly wider cards
+        padding: 20,
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
@@ -39,19 +32,44 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 2,
         elevation: 5,
-        marginVertical: 20,
+        overflow: 'hidden',
+        width: '90%',
     },
-    imageStyle: {
+    cardImage: {
         width: '100%',
-        height: 200,  
-        resizeMode: 'center',
-        marginVertical: 10,
-        borderRadius: 10,
+        height: 150, // Adjust based on your image aspect ratio
     },
-    textStyle: {
+    cardContent: {
+        padding: 16,
+    },
+    cardTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 4,
+    },
+    cardDifficulty: {
+        fontSize: 16,
+        color: '#4CAF50', // Use appropriate color for the difficulty
+        marginBottom: 8,
+    },
+    cardDescription: {
+        fontSize: 14,
+        color: '#646464',
+        marginBottom: 16,
+    },
+    viewButton: {
+        backgroundColor: '#3D691B', // Use your theme color
+        borderRadius: 20,
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    viewButtonText: {
+        fontSize: 16,
+        color: '#FFFFFF',
         fontWeight: 'bold',
     },
 });
-
 
 export default CardTask;

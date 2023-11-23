@@ -61,6 +61,47 @@ class User extends BaseModel {
             throw error;
         }
     }
+    async fetchTasks() {
+        try {
+            const [result] = await this.db.query(
+                "SELECT * FROM dailytask WHERE isDeleted = 0"
+            );
+            return result.length > 0 ? result : [];
+        } catch (error) {
+            console.error(`Error fetching tasks: ${error}`);
+            throw error;
+        }
+    }
+
+    async fetchEasyTask (){
+        try {
+            const [result] = await this.db.query("SELECT * FROM dailytask WHERE DifficultyId = 1");
+            return result.length > 0 ? result : [];
+        } catch (error) {
+            console.error(`Error fetching easy tasks: ${error}`);
+            throw error;
+        };
+    }
+
+    async fetchNormalTask (){
+        try {
+            const [result] = await this.db.query("SELECT * FROM dailytask WHERE DifficultyId = 2");
+            return result.length > 0 ? result : [];
+        } catch (error) {
+            console.error(`Error fetching easy tasks: ${error}`);
+            throw error;
+        };
+    }
+
+    async fetchHardTask (){
+        try {
+            const [result] = await this.db.query("SELECT * FROM dailytask WHERE DifficultyId = 3");
+            return result.length > 0 ? result : [];
+        } catch (error) {
+            console.error(`Error fetching easy tasks: ${error}`);
+            throw error;
+        };
+    }
 }
 
 module.exports = User;
