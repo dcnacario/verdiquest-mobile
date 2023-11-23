@@ -1,55 +1,128 @@
-import React, { useState } from "react";
-import {Text, View, StyleSheet, ScrollView, Dimensions} from 'react-native';
-import { theme } from "../../../assets/style";
-import SubmitCard from "../../components/SubmitCard";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  ScrollView,
+} from "react-native";
 
+// const submissions = new Array(10).fill(null).map((_, index) => ({
+//   id: String(index),
+//   name: "Ram P. De la Cruz",
+//   status: "Completed",
+// }));
 
-const ViewSubmission = () => {
-    const screenHeight = Dimensions.get('window').height;
-    const paddingBottom = screenHeight * 0.15;
-    return (
-        <ScrollView keyboardShouldPersistTaps='handled' style={{backgroundColor: theme.colors.background, flex: 1}} contentContainerStyle={{paddingBottom: paddingBottom}}>
-            <View style={{flex: 1,}}>
-                <View style={{flex: 1, marginTop: 100}}>
-                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', marginBottom: 20, marginHorizontal: 20}}>
-                            <Text style={styles.taskLabel}>Task Name</Text>
-                            <View style={styles.divider} />
-                    </View>
-                </View>
-                <View style={styles.submissionContainer}>
-                    <SubmitCard/>
-                </View>
-            </View> 
-        </ScrollView>
-    );
-}
+const ViewSubmission = ({ route }) => {
+  const { taskData } = route.params;
+  console.log(taskData);
+
+  return (
+    <View style={styles.background}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.taskName}>{taskData.TaskName}</Text>
+      </View>
+      {/* Content ScrollView */}
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}
+      >
+        {/* {fetchedTasks.map((item) => (
+          <View key={item.TaskId} style={styles.cardContainer}>
+            <View style={styles.imagePlaceholder} />
+            <View style={styles.textContainer}>
+              <Text style={styles.name}>{item.TaskName}</Text>
+              <Text style={styles.status}>Status: {item.status}</Text>
+            </View>
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>View Submission</Text>
+            </TouchableOpacity>
+          </View>
+        ))} */}
+      </ScrollView>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-    introContainer: {
-        flex: 1,
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        marginBottom: 10,
-    },
-    taskContainer: {
-        alignItems: 'center',
-        marginTop: 10,
-    },
-    taskLabel: {
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    divider: {
-        width: "100%",
-        height: 0.75,
-        backgroundColor: "#000000",
-        marginVertical: 5, 
-    },
-    submissionContainer: {
-        flex: 1,
-        justifyContent: 'center', 
-        alignItems: 'center', 
-    },
+  background: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+  },
+  taskName: {
+    fontSize: 24, // Adjust the size to match your design
+    fontWeight: "bold",
+    color: "black", // Adjust the color to match your design
+  },
+
+  header: {
+    backgroundColor: "#f5f5f5", // Header background color
+    paddingVertical: 20, // Padding for the header
+    paddingHorizontal: 16, // Padding for the header
+    justifyContent: "center", // Center content horizontally
+    alignItems: "center", // Center content vertically
+    width: "100%", // Header width
+  },
+  logo: {
+    width: 50, // Logo width
+    height: 50, // Logo height
+    resizeMode: "contain", // Keeps the logo's aspect ratio
+  },
+  scrollView: {
+    width: "100%",
+  },
+  scrollViewContent: {
+    alignItems: "center",
+    paddingVertical: 20,
+  },
+  cardContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(123, 144, 75, 0.25)",
+    borderRadius: 10,
+    padding: 16,
+    marginVertical: 8,
+    width: "90%",
+  },
+  imagePlaceholder: {
+    width: 50,
+    height: 50,
+    borderRadius: 60,
+    borderWidth: 2,
+    borderColor: "#44483E",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#e1e1e1",
+  },
+  textContainer: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  name: {
+    fontSize: 10,
+    top: -10,
+    fontWeight: "bold",
+    color: "#000",
+  },
+  status: {
+    fontSize: 9,
+    left: 10,
+    color: "grey",
+  },
+  button: {
+    backgroundColor: "#4CAF50",
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    justifyContent: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  // ... other styles if needed
 });
 
 export default ViewSubmission;
