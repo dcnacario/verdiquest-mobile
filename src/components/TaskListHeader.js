@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, FlatList } from 'react-native';
 import { theme } from "../../assets/style";
 import CardTask from "./CardTask";
@@ -7,14 +7,21 @@ import { useNavigation } from "@react-navigation/native";
 
 const TaskListHeader = ({ route }) => {
     const navigation = useNavigation();
-    const user = route?.params?.user || {}; 
+    const user = route?.params?.user || {};
     const [tasks, setTasks] = useState([]);
-    const [selectedDifficulty, setSelectedDifficulty] = useState(null);
+    const [selectedDifficulty, setSelectedDifficulty] = useState('All');
+
+    useEffect(() => {
+        fetchTasksByDifficulty('All');
+    }, []);
 
     const fetchTasksByDifficulty = async (difficultyTitle) => {
         try {
             setSelectedDifficulty(difficultyTitle);
-            let endpoint = difficultyTitle === 'All'?`http://192.168.68.110:3000/user/fetchAllDifficulty`:`http://192.168.68.110:3000/user/fetch${difficultyTitle}Task`;
+            let endpoint = difficultyTitle === 'All'
+                ? `http://192.168.68.110:3000/user/fetchAllDifficulty`
+                : `http://192.168.68.110:3000/user/fetch${difficultyTitle}Task`;
+
             const response = await axios.get(endpoint);
             if (response.data.success) {
                 setTasks(response.data.fetchedTable);
@@ -27,27 +34,27 @@ const TaskListHeader = ({ route }) => {
     };
 
     const difficulties = [
-        { id: '0', title: 'All' }, 
+        { id: '0', title: 'All' },
         { id: '1', title: 'Easy' },
         { id: '2', title: 'Normal' },
         { id: '3', title: 'Hard' },
     ];
-    
 
     const getDifficultyLevel = (difficultyId) => {
-        switch (difficultyId) {
-            case 0: return 'All';
-            case 1: return 'Easy';
-            case 2: return 'Normal';
-            case 3: return 'Hard';
+        const difficultyString = String(difficultyId);
+        switch (difficultyString) {
+            case '0': return 'All';
+            case '1': return 'Easy';
+            case '2': return 'Normal';
+            case '3': return 'Hard';
             default: return 'Unknown';
         }
     };
 
     const renderItem = ({ item }) => (
-        <TouchableOpacity 
+        <TouchableOpacity
             style={[
-                styles.difficultyButton, 
+                styles.difficultyButton,
                 selectedDifficulty === item.title ? styles.selectedButton : null
             ]}
             onPress={() => fetchTasksByDifficulty(item.title)}
@@ -58,20 +65,20 @@ const TaskListHeader = ({ route }) => {
 
     return (
         <View style={styles.container}>
-            <FlatList 
+            <FlatList
                 data={difficulties}
                 renderItem={renderItem}
                 keyExtractor={item => item.id}
                 horizontal={true}
                 contentContainerStyle={styles.flatListContainer}
                 showsHorizontalScrollIndicator={false}
-                extraData={selectedDifficulty} 
+                extraData={selectedDifficulty}
             />
             {tasks.map((task, index) => (
-                <CardTask 
+                <CardTask
                     key={index}
                     title={task.TaskName}
-                    difficulty={getDifficultyLevel(task.DifficultyId)} 
+                    difficulty={getDifficultyLevel(task.DifficultyId)}
                     description={task.TaskDescription}
                     onPress={() => navigation.navigate('TaskDetails', { taskId: task.TaskId })}
                 />

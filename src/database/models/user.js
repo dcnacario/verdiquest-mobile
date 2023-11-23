@@ -2,10 +2,10 @@ const BaseModel = require("./BaseModel");
 const bcrypt = require("bcrypt");
 
 class User extends BaseModel {
-  constructor(db) {
-    // Accept the 'db' object as a parameter
-    super("user");
-    this.db = db; // Assign the 'db' object to the instance variable
+    constructor(db) {
+        // Accept the 'db' object as a parameter
+        super("user");
+        this.db = db; // Assign the 'db' object to the instance variable
     }
 
     async insertUser(userData) {
@@ -168,7 +168,43 @@ class User extends BaseModel {
             throw error;
         }
     }
-    
+
+
+    async acceptTask(userId, taskId, dateTaken) {
+        // Check if the task is already accepted by the user
+        const checkQuery = `SELECT * FROM userdailytask WHERE UserId = ? AND TaskId = ?`;
+        const [existingTasks] = await this.db.query(checkQuery, [userId, taskId]);
+
+        if (existingTasks.length > 0) {
+            // Task is already accepted
+            return { alreadyAccepted: true };
+        }
+
+        // If not accepted, insert the task
+        const insertQuery = `
+            INSERT INTO userdailytask (UserId, TaskId, DateTaken, Status) 
+            VALUES (?, ?, ?, 'Ongoing')
+        `;
+        const [result] = await this.db.query(insertQuery, [userId, taskId, dateTaken]);
+        return { result: result, alreadyAccepted: false };
+    }
+
+    async checkTaskAccepted(userId, taskId) {
+        const query = "SELECT * FROM userdailytask WHERE UserId = ? AND TaskId = ? AND Status = 'Ongoing'";
+        const [results] = await this.db.query(query, [userId, taskId]);
+        return results.length > 0;
+    }
+
+    async fetchAcceptedTasks(userId) {
+        const query = `
+            SELECT udt.*, dt.TaskName, dt.DifficultyId, dt.TaskDescription 
+            FROM userdailytask udt
+            JOIN dailytask dt ON udt.TaskId = dt.TaskId
+            WHERE udt.UserId = ? AND udt.Status = 'Ongoing'
+        `;
+        const [tasks] = await this.db.query(query, [userId]);
+        return tasks;
+    }
     
 }
 

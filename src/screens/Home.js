@@ -14,31 +14,35 @@ const Home = ({route, navigation}) => {
     const paddingBottom = screenHeight * 0.15;
 
     useEffect(() => {
-        fetchTasks();
-    }, []);
+        if (user && user.UserId) {
+            fetchTasks();
+        }
+    }, [user]);
 
     const fetchTasks = async () => {
         try {
-            const response = await axios.get("http://192.168.68.110:3000/user/fetchAll");
+            const response = await axios.get(`http://192.168.68.110:3000/user/fetchAcceptedTasks/${user.UserId}`);
             if (response.data.success) {
-                setTasks(response.data.fetchTable);
+                setTasks(response.data.acceptedTasks);
             } else {
-                console.log('Failed to fetch tasks');
+                console.log('Failed to fetch accepted tasks');
             }
         } catch (error) {
-            console.error('Error fetching tasks:', error);
+            console.error('Error fetching accepted tasks:', error);
         }
     };
+    
 
     const getDifficultyLevel = (difficultyId) => {
-        switch(difficultyId) {
-            case 1: return 'Easy';
-            case 2: return 'Normal';
-            case 3: return 'Hard';
+        const difficultyString = String(difficultyId);
+        switch (difficultyString) {
+            case '0': return 'All';
+            case '1': return 'Easy';
+            case '2': return 'Normal';
+            case '3': return 'Hard';
             default: return 'Unknown';
         }
     };
-
     return (
         <ScrollView keyboardShouldPersistTaps='handled' style={{backgroundColor: theme.colors.background, flex: 1}} contentContainerStyle={{paddingBottom: paddingBottom}}>
             <View style={{flex: 1,}}>
@@ -55,21 +59,21 @@ const Home = ({route, navigation}) => {
                     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 24, color: theme.colors.primary, fontWeight: 'bold', marginVertical: 20}}>Daily Tasks</Text>         
                     </View>
-                    <View style={{flex: 1, flexDirection: 'column', gap: 25,}}>
+                    <View style={{flex: 1, flexDirection: 'column', margin: 10}}>
                         {tasks.map((task, index) => (
                             <Card 
-                                key={index} 
-                                title={task.TaskName} 
-                                difficulty={getDifficultyLevel(task.DifficultyId)} 
-                                description={task.TaskDescription}
+                                key={index}
+                                title={task.TaskName || 'No Title'}  
+                                difficulty={getDifficultyLevel(task.DifficultyId) || 'No Difficulty'} 
+                                description={task.TaskDescription || 'No Description'} 
                             />
                         ))}
-                    </View>                
+                    </View>                 
                 </View>
             </View>
         </ScrollView>
     );
-}
+};
 
 const styles = StyleSheet.create({
     img: {

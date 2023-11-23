@@ -3,15 +3,18 @@ import { View, StyleSheet, Image, Text, Modal, TouchableOpacity } from 'react-na
 import Details from "../components/Details";
 import Button from "../components/Button";
 import defaultImage from '../../assets/img/default-image.png';
-import axios from 'axios'; // Make sure to import axios
+import axios from 'axios';
 import { useNavigation } from "@react-navigation/native";
 
 const TaskDetails = ({ route }) => {
     const navigation = useNavigation();
     const [isAccepted, setIsAccepted] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const [taskDetails, setTaskDetails] = useState({}); 
+    const [taskDetails, setTaskDetails] = useState({});
     const [isLoading, setIsLoading] = useState(true);
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const { user } = route.params;
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -19,6 +22,7 @@ const TaskDetails = ({ route }) => {
                 const response = await axios.get(`http://192.168.68.110:3000/user/fetchTaskDetails/${route.params.taskId}`);
                 if (response.data.success) {
                     setTaskDetails(response.data.taskDetails);
+                    checkIfTaskAccepted();
                 } else {
                     console.log('Task not found');
                 }
@@ -29,16 +33,47 @@ const TaskDetails = ({ route }) => {
             }
         };
 
-        fetchDetails();
-    }, [route.params.taskId]);
+        const checkIfTaskAccepted = async () => {
+            try {
+                const acceptanceResponse = await axios.get(`http://192.168.68.110:3000/user/checkTaskAccepted/${route.params.taskId}/${user.UserId}`);
+                setIsAccepted(acceptanceResponse.data.isAccepted);
+            } catch (error) {
+                console.error('Error checking task acceptance:', error);
+            }
+        };
 
-    const onPressAccept = () => {
-        setIsAccepted(true);
-        setShowModal(true);
+        fetchDetails();
+    }, [route.params.taskId, user.UserId]);
+
+    const onPressAccept = async () => {
+        if (!user?.UserId || !taskDetails?.TaskId) {
+            console.log('User ID or Task ID is missing');
+            return;
+        }
+        try {
+            const response = await axios.post(`http://192.168.68.110:3000/user/acceptTask`, {
+                userId: user.UserId,
+                taskId: taskDetails.TaskId
+            });
+
+            if (response.data.success) {
+                setIsAccepted(true);
+                setShowModal(true);
+            } else if (response.status === 409) { 
+                setErrorMessage('Task is already accepted.');
+                setShowErrorModal(true);
+            } else {
+                console.log('Failed to accept task');
+            }
+        } catch (error) {
+            console.error('Error accepting task:', error);
+            setErrorMessage('Error accepting task.');
+            setShowErrorModal(true);
+        }
     };
 
     const onPressOngoingTask = () => {
-        navigation.navigate('MyPoints', { user: user })
+        navigation.navigate('MyPoints', { user: user });
     };
 
     const onPressCancelTask = () => {
@@ -46,7 +81,7 @@ const TaskDetails = ({ route }) => {
     };
 
     if (isLoading) {
-        return <Text>Loading...</Text>; 
+        return <Text>Loading...</Text>;
     }
 
     return (
@@ -64,23 +99,30 @@ const TaskDetails = ({ route }) => {
                 rewardPoints={taskDetails.TaskPoints || 0}
             />
             <View style={{ alignSelf: 'center', flexDirection: 'row' }}>
-            {isAccepted ? (
-                <>
-                    <Button title='Ongoing' onPress={onPressOngoingTask} />
-                    <View style={{ width: 50 }} />
-                    <Button title='Cancel' onPress={onPressCancelTask} />
-                </>
-            ) : (
-                <Button title='ACCEPT' onPress={onPressAccept} />
-            )}
+                {isAccepted ? (
+                    <>
+                        <Button title='Ongoing' onPress={onPressOngoingTask} />
+                        <View style={{ width: 50 }} />
+                        <Button title='Cancel' onPress={onPressCancelTask} />
+                    </>
+                ) : (
+                    <Button title='ACCEPT' onPress={onPressAccept} />
+                )}
+            </View>
             <Modal transparent={true} visible={showModal} onRequestClose={() => setShowModal(false)}>
-                <TouchableOpacity style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }} onPress={() => setShowModal(false)}>
-                    <View style={{ backgroundColor: '#7b904b', padding: 50, borderRadius: 10 }}>
+                <TouchableOpacity style={styles.modalStyle} onPress={() => setShowModal(false)}>
+                    <View style={styles.modalInnerStyle}>
                         <Text style={styles.textStyle}>Mission Accepted!</Text>
                     </View>
                 </TouchableOpacity>
             </Modal>
-        </View>
+            <Modal transparent={true} visible={showErrorModal} onRequestClose={() => setShowErrorModal(false)}>
+                <TouchableOpacity style={styles.modalStyle} onPress={() => setShowErrorModal(false)}>
+                    <View style={styles.modalInnerStyle}>
+                        <Text style={styles.textStyle}>{errorMessage}</Text>
+                    </View>
+                </TouchableOpacity>
+            </Modal>
         </View>
     );
 };
@@ -105,6 +147,17 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 28,
     },
+    modalStyle: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalInnerStyle: {
+        backgroundColor: '#7b904b',
+        padding: 50,
+        borderRadius: 10,
+    }
 });
 
 export default TaskDetails;
