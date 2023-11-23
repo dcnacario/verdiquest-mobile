@@ -7,7 +7,10 @@ import AppTabNav from "./AppTabNav";
 import LoginIntro from "../screens/LoginIntro";
 import CoordinatorStack from "./CoordinatorStack";
 import CoordInterface from "../screens/coordinator/CoordInterface";
-
+import ProductDetails from "../screens/ProductDetails";
+import ProductConfirm from "../screens/ProductConfirm";
+import ProductRedeem from "../screens/ProductRedeem";
+import ProductReceipt from "../screens/ProductReceipt";
 const Stack = createStackNavigator();
 
 const AuthStack = () => {
@@ -61,6 +64,34 @@ const AuthStack = () => {
         <Stack.Screen
           name="CoordInterface"
           component={CoordInterface}
+          options={{
+            headerShown: false,
+          }}
+        />
+         <Stack.Screen
+          name="ProductDetail"
+          component={ProductDetails}
+          options={{
+            headerShown: false,
+          }}
+        />
+          <Stack.Screen
+          name="ProductConfirm"
+          component={ProductConfirm}
+          options={{
+            headerShown: false,
+          }}
+        />
+         <Stack.Screen
+          name="ProductRedeem"
+          component={ProductRedeem}
+          options={{
+            headerShown: false,
+          }}
+        />
+         <Stack.Screen
+          name="ProductReceipt"
+          component={ProductReceipt}
           options={{
             headerShown: false,
           }}

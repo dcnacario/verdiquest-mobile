@@ -6,7 +6,12 @@ export const TaskContext = createContext();
 
 // Provider Component
 export const TaskProvider = ({ children }) => {
-  const submitTask = async (taskData, navigation, coordinator) => {
+  const submitTask = async (
+    taskData,
+    navigation,
+    coordinator,
+    onTaskCreated
+  ) => {
     try {
       console.log(taskData);
       console.log(coordinator);
@@ -17,7 +22,9 @@ export const TaskProvider = ({ children }) => {
       if (response.data.success) {
         console.log("Task added!", response.data);
         // Handle success (maybe clear form or show a success message)
-
+        if (onTaskCreated) {
+          onTaskCreated();
+        }
         navigation.navigate("TaskMaster", { coordinator: coordinator });
       }
     } catch (error) {

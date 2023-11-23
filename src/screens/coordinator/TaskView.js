@@ -15,11 +15,6 @@ import * as ImagePicker from "expo-image-picker";
 const TaskView = ({ route }) => {
   const { taskData } = route.params;
   const [imageUri, setImageUri] = useState(null);
-  const [taskName, setTaskName] = useState("");
-  const [taskType, setTaskType] = useState("");
-  const [taskDescription, setTaskDescription] = useState("");
-  const [taskDuration, setTaskDuration] = useState("");
-  const [taskPoints, setTaskPoints] = useState("");
 
   const pickImage = async () => {
     const permissionResult =
@@ -55,31 +50,21 @@ const TaskView = ({ route }) => {
           )}
         </TouchableOpacity>
         {/* Task Name */}
-        <View style={{ justifyContent: "flex-start", pointerEvents: "none" }}>
+        <View style={{ justifyContent: "flex-start" }}>
           <Text style={styles.textInput}>Task Name</Text>
-          <TextInput
-            style={styles.inputStyle}
-            value={taskData.TaskName}
-            onChangeText={setTaskName}
-          />
+          <TextInput style={styles.inputStyle} value={taskData.TaskName} />
         </View>
         {/* Task Type */}
-        <View style={{ justifyContent: "flex-start", pointerEvents: "none" }}>
+        <View style={{ justifyContent: "flex-start" }}>
           <Text style={styles.textInput}>Task Type</Text>
-          <TextInput
-            style={styles.inputStyle}
-            value={taskData.TaskType}
-            onChangeText={setTaskType}
-          />
+          <TextInput style={styles.inputStyle} value={taskData.TaskType} />
         </View>
         {/* Task Description */}
         <View style={{ justifyContent: "flex-start" }}>
           <Text style={styles.textInput}>Task Description</Text>
           <TextInput
             style={styles.modifiedDescriptioninputStyle}
-            value={taskDescription}
-            onChangeText={setTaskDescription}
-            placeholder="Enter task description"
+            value={taskData.TaskDescription}
           />
         </View>
         <View style={styles.row}>
@@ -88,9 +73,7 @@ const TaskView = ({ route }) => {
             <Text style={styles.modifiedTextInput}>Task Duration</Text>
             <TextInput
               style={styles.modifiedInputStyle}
-              value={taskDuration}
-              onChangeText={setTaskDuration}
-              placeholder="Task Duration"
+              value={taskData.Status}
             />
           </View>
           {/* Task Points */}
@@ -98,9 +81,7 @@ const TaskView = ({ route }) => {
             <Text style={styles.modifiedTextInput}>Points Reward</Text>
             <TextInput
               style={styles.modifiedInputStyle}
-              value={taskPoints}
-              onChangeText={setTaskPoints}
-              placeholder="Points Reward"
+              value={taskData.TaskPoints.toString()}
             />
           </View>
         </View>

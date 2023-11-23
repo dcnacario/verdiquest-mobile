@@ -1,11 +1,10 @@
 import React from "react";
 import { View, StyleSheet, Text, Image } from "react-native";
 import Button from "./Button";
-import defaultImage from "../../assets/img/default-image.png";
-import DeleteButton from "./DeleteButton";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons";
+import defaultImage from "../../assets/img/default-image.png";
 
-const CoordTaskCard = ({
+const ProductDetail = ({
   title,
   difficulty,
   participants,
@@ -14,39 +13,31 @@ const CoordTaskCard = ({
   onPress,
   eventName,
   done,
-  deleteTask,
 }) => {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         <Image source={img || defaultImage} style={styles.imageStyle} />
       </View>
+
       <View style={styles.textContainer}>
         <Text style={styles.textStyle}>{title}</Text>
         {difficulty ? <Text>{difficulty}</Text> : <Text>{eventName}</Text>}
         <Text style={{ textAlign: "center" }}>{description}</Text>
+
         <View style={styles.buttonContainer}>
-          <View
-            style={{
-              flexDirection: "column",
-              alignSelf: "center",
-              gap: -5,
-            }}
-          >
-            <Text style={{ textAlign: "center", padding: 5 }}>
+          <View style={styles.participantsContainer}>
+            <Text style={styles.participantsText}>
               <MaterialIcon name="people" size={18} />
               {participants}
-            </Text>
-            <Text style={{ textAlign: "center", padding: 5 }}>
-              <MaterialIcon name="done-outline" size={18} />
-              {done}
+              <MaterialIcon name="chat" size={18} />
+              {participants}
             </Text>
           </View>
-          <View style={{ flex: 1 }}></View>
-          <View>
-            <DeleteButton title={"Delete"} onPress={deleteTask} />
+          <View style={styles.listItem}>
+            <Button title="View" onPress={onPress} style={styles.button} />
           </View>
-          <Button title="View" onPress={onPress} />
+
         </View>
       </View>
     </View>
@@ -75,7 +66,7 @@ const styles = StyleSheet.create({
   },
   imageStyle: {
     width: 70, // Adjust as needed
-    height: 180,
+    height: 160,
     resizeMode: "cover",
     borderTopLeftRadius: 15,
     borderBottomLeftRadius: 15,
@@ -91,8 +82,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   buttonContainer: {
-    flex: 1,
-    marginLeft: 50,
     flexDirection: "row",
     alignSelf: "flex-end",
     justifyContent: "center",
@@ -100,6 +89,23 @@ const styles = StyleSheet.create({
     gap: 5,
     marginTop: 20,
   },
+  participantsContainer: {
+    justifyContent: "center",
+  },
+  buttonView: {
+    flexDirection: 'row', // Aligns children in a row
+    justifyContent: 'flex-start',
+    marginLeft: 80,
+    gap: 5,
+  },
+  listItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc', // Adjust the color as needed
+  },
 });
 
-export default CoordTaskCard;
+export default ProductDetail;
