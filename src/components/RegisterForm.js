@@ -44,7 +44,7 @@ const RegisterForm = ({ onRegister }) => {
     }
 
     axios
-      .post("http://192.168.1.14:3000/user/register", userData)
+      .post("http://192.168.1.2:3000/user/register", userData)
       .then((response) => {
         Alert.alert("Success", response.data.message);
         navigation.navigate("Login");
