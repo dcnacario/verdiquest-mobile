@@ -124,7 +124,7 @@ class Coordinator extends BaseModel {
   async fetchTasks(coordinatorData) {
     try {
       const [result] = await this.db.query(
-        "SELECT * FROM dailytask WHERE CoordinatorId = ?",
+        "SELECT * FROM dailytask WHERE CoordinatorId = ? AND isDeleted = 0",
         [coordinatorData.coordinatorId]
       );
       return result.length > 0 ? result : null;
@@ -134,14 +134,14 @@ class Coordinator extends BaseModel {
     }
   }
 
-  async deleteTasks(coordinatorData){
+  async deleteTasks(coordinatorData) {
     try {
       const [result] = await this.db.query(
         "UPDATE dailytask SET isDeleted = 1 WHERE TaskId = ?",
         [coordinatorData.taskId]
       );
       return result;
-    }catch(error){
+    } catch (error) {
       console.error(`Error fetching tasks: ${error}`);
       throw error;
     }

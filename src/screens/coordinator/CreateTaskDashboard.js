@@ -15,11 +15,9 @@ import { TaskProvider, TaskContext } from "../../navigation/TaskContext";
 import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 
-const CreateDashboardComponent = ({ route }) => {
+const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
   const { submitTask, fetchDifficulty } = useContext(TaskContext);
   const navigation = useNavigation();
-
-  const coordinator = route;
 
   const [selectedDifficulty, setSelectedDifficulty] = useState(1);
 
@@ -169,7 +167,7 @@ const CreateDashboardComponent = ({ route }) => {
         <Button
           title="Create"
           onPress={() => {
-            submitTask(taskData, navigation, coordinator);
+            submitTask(taskData, navigation, coordinator, onTaskCreated);
           }}
         />
       </View>
@@ -178,10 +176,13 @@ const CreateDashboardComponent = ({ route }) => {
 };
 
 const CreateTaskDashboard = ({ route }) => {
-  const { coordinator } = route.params;
+  const { coordinator, onTaskCreated } = route.params;
   return (
     <TaskProvider>
-      <CreateDashboardComponent route={coordinator} />
+      <CreateDashboardComponent
+        coordinator={coordinator}
+        onTaskCreated={onTaskCreated}
+      />
     </TaskProvider>
   );
 };

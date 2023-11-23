@@ -12,6 +12,6 @@ router.post("/login", coordinatorController.loginCoordinator);
 router.post("/createTask", coordinatorController.createTask);
 router.get("/fetchDifficulty", coordinatorController.getDifficulty);
 router.get("/fetchTasks", coordinatorController.getTasks);
-router.post("/delete", coordinatorController.deleteTask);
+router.post("/deleteTask", coordinatorController.deleteTask);
 
 module.exports = router;
