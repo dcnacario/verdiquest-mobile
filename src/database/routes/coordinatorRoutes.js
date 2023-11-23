@@ -13,5 +13,7 @@ router.post("/createTask", coordinatorController.createTask);
 router.get("/fetchDifficulty", coordinatorController.getDifficulty);
 router.get("/fetchTasks", coordinatorController.getTasks);
 router.post("/deleteTask", coordinatorController.deleteTask);
+router.post("/updateTask", coordinatorController.updateTask);
+router.post("/getTasks", coordinatorController.getUserTask);
 
 module.exports = router;

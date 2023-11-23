@@ -92,13 +92,14 @@ class Coordinator extends BaseModel {
   async insertTask(taskData) {
     try {
       const [task] = await this.db.query(
-        "INSERT INTO dailytask (DifficultyId, CoordinatorId, TaskName, TaskType, TaskDescription, TaskPoints, Status) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO dailytask (DifficultyId, CoordinatorId, TaskName, TaskType, TaskDescription, TaskDuration, TaskPoints, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         [
           taskData.difficultyId,
           taskData.coordinatorId,
           taskData.taskName,
           taskData.taskType,
           taskData.taskDescription,
+          taskData.taskDuration,
           taskData.taskPoints,
           taskData.Status,
         ]
@@ -142,7 +143,41 @@ class Coordinator extends BaseModel {
       );
       return result;
     } catch (error) {
-      console.error(`Error fetching tasks: ${error}`);
+      console.error(`Error deleting tasks: ${error}`);
+      throw error;
+    }
+  }
+
+  async updateTask(taskData) {
+    try {
+      const [task] = await this.db.query(
+        "UPDATE dailytask SET TaskName = ?, TaskType = ?, TaskDescription = ?, TaskPoints = ?, TaskDuration = ? WHERE TaskId = ?",
+        [
+          taskData.taskName,
+          taskData.taskType,
+          taskData.taskDescription,
+          taskData.taskPoints,
+          taskData.taskDuration,
+          taskData.taskId,
+        ]
+      );
+      const taskUpdate = task.affectedRows;
+      return taskUpdate;
+    } catch (error) {
+      console.error(`Error updating task: ${error}`);
+      throw error;
+    }
+  }
+
+  async fetchUserTasks(taskData) {
+    try {
+      const [result] = await this.db.query(
+        "SELECT * FROM userdailytask u JOIN person p ON  u.UserId = p.UserId WHERE TaskId = ?",
+        [taskData.taskId]
+      );
+      return result.length > 0 ? result : null;
+    } catch (error) {
+      console.error(`Error fetching user tasks table: ${error}`);
       throw error;
     }
   }

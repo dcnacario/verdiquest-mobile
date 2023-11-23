@@ -11,10 +11,47 @@ import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import * as ImagePicker from "expo-image-picker";
+import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 
 const TaskView = ({ route }) => {
+  const navigation = useNavigation();
   const { taskData } = route.params;
+  const [isEditing, setIsEditing] = useState(false);
+
   const [imageUri, setImageUri] = useState(null);
+
+  const [editTaskData, setEditTaskData] = useState({
+    taskName: taskData.TaskName,
+    taskType: taskData.TaskType,
+    taskDescription: taskData.TaskDescription,
+    taskPoints: taskData.TaskPoints.toString(),
+    taskDuration: taskData.TaskDuration.toString(),
+    taskId: taskData.TaskId,
+  });
+
+  const gotoView = () => {
+    navigation.navigate("ViewSubmission", { taskData: editTaskData });
+  };
+
+  const handleEditSave = async () => {
+    if (isEditing) {
+      try {
+        const response = await axios.post(
+          "http://192.168.1.14:3000/coordinator/updateTask",
+          editTaskData
+        );
+        console.log("Update response:", response.data);
+      } catch (error) {
+        console.error("Error updating task:", error);
+      }
+    }
+    setIsEditing(!isEditing);
+  };
+
+  const updateField = (field, value) => {
+    setEditTaskData({ ...editTaskData, [field]: value });
+  };
 
   const pickImage = async () => {
     const permissionResult =
@@ -52,19 +89,31 @@ const TaskView = ({ route }) => {
         {/* Task Name */}
         <View style={{ justifyContent: "flex-start" }}>
           <Text style={styles.textInput}>Task Name</Text>
-          <TextInput style={styles.inputStyle} value={taskData.TaskName} />
+          <TextInput
+            style={styles.inputStyle}
+            value={editTaskData.taskName}
+            onChangeText={(text) => updateField("taskName", text)}
+            editable={isEditing}
+          />
         </View>
         {/* Task Type */}
         <View style={{ justifyContent: "flex-start" }}>
           <Text style={styles.textInput}>Task Type</Text>
-          <TextInput style={styles.inputStyle} value={taskData.TaskType} />
+          <TextInput
+            style={styles.inputStyle}
+            value={editTaskData.taskType}
+            editable={isEditing}
+            onChangeText={(text) => updateField("taskType", text)}
+          />
         </View>
         {/* Task Description */}
         <View style={{ justifyContent: "flex-start" }}>
           <Text style={styles.textInput}>Task Description</Text>
           <TextInput
             style={styles.modifiedDescriptioninputStyle}
-            value={taskData.TaskDescription}
+            value={editTaskData.taskDescription}
+            editable={isEditing}
+            onChangeText={(text) => updateField("taskDescription", text)}
           />
         </View>
         <View style={styles.row}>
@@ -73,7 +122,10 @@ const TaskView = ({ route }) => {
             <Text style={styles.modifiedTextInput}>Task Duration</Text>
             <TextInput
               style={styles.modifiedInputStyle}
-              value={taskData.Status}
+              value={editTaskData.taskDuration}
+              onChangeText={(text) => updateField("taskDuration", text)}
+              editable={isEditing}
+              keyboardType="numeric"
             />
           </View>
           {/* Task Points */}
@@ -81,16 +133,21 @@ const TaskView = ({ route }) => {
             <Text style={styles.modifiedTextInput}>Points Reward</Text>
             <TextInput
               style={styles.modifiedInputStyle}
-              value={taskData.TaskPoints.toString()}
+              value={editTaskData.taskPoints}
+              editable={isEditing}
+              onChangeText={(text) => updateField("taskPoints", text)}
             />
           </View>
         </View>
         <View style={styles.row}>
-          <View style={styles.column}>
+          <TouchableOpacity style={styles.column} onPress={() => gotoView()}>
             <MaterialIcon name="check" size={18} />
             <Text style={styles.View}>View Submission</Text>
-          </View>
-          <Button title="Edit" />
+          </TouchableOpacity>
+          <Button
+            title={isEditing ? "Save" : "Edit"}
+            onPress={handleEditSave}
+          />
         </View>
       </View>
     </View>

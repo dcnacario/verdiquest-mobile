@@ -6,40 +6,57 @@ import {
   Text,
   ScrollView,
 } from "react-native";
-
-// const submissions = new Array(10).fill(null).map((_, index) => ({
-//   id: String(index),
-//   name: "Ram P. De la Cruz",
-//   status: "Completed",
-// }));
+import axios from "axios";
 
 const ViewSubmission = ({ route }) => {
   const { taskData } = route.params;
+  const [fetchedTasks, setFetchedTasks] = useState([]);
   console.log(taskData);
+
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.post(
+        "http://192.168.1.14:3000/coordinator/getTasks",
+        {
+          taskId: taskData.taskId,
+        }
+      );
+      setFetchedTasks(response.data.fetchTable);
+    } catch (error) {
+      console.error("Error fetching tasks table", error);
+      return []; // Return an empty array in case of an error
+    }
+  };
+
+  useEffect(() => {
+    fetchTasks();
+  }, [taskData.taskId]);
 
   return (
     <View style={styles.background}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.taskName}>{taskData.TaskName}</Text>
+        <Text style={styles.taskName}>{taskData.taskName}</Text>
       </View>
       {/* Content ScrollView */}
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContent}
       >
-        {/* {fetchedTasks.map((item) => (
+        {fetchedTasks.map((item) => (
           <View key={item.TaskId} style={styles.cardContainer}>
             <View style={styles.imagePlaceholder} />
             <View style={styles.textContainer}>
-              <Text style={styles.name}>{item.TaskName}</Text>
-              <Text style={styles.status}>Status: {item.status}</Text>
+              <Text style={styles.name}>
+                {item.FirstName} {item.LastName}
+              </Text>
+              <Text style={styles.status}>Status: {item.Status}</Text>
             </View>
             <TouchableOpacity style={styles.button}>
               <Text style={styles.buttonText}>View Submission</Text>
             </TouchableOpacity>
           </View>
-        ))} */}
+        ))}
       </ScrollView>
     </View>
   );

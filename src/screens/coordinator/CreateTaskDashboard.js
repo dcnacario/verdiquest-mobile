@@ -20,7 +20,7 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
   const navigation = useNavigation();
 
   const [selectedDifficulty, setSelectedDifficulty] = useState(1);
-
+  const [taskDurationHours, setTaskDurationHours] = useState("");
   const [difficultyData, setDifficultyData] = useState([]);
 
   const [taskData, setTaskData] = useState({
@@ -38,6 +38,10 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
   const updateTaskData = (field, value) => {
     setTaskData({ ...taskData, [field]: value });
   };
+  useEffect(() => {
+    const durationInHours = parseInt(taskDurationHours) || 0;
+    updateTaskData("taskDuration", durationInHours);
+  }, [taskDurationHours]);
 
   const pickImage = async () => {
     const permissionResult =
@@ -109,12 +113,13 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
 
         {/* Task Description */}
         <View style={{ justifyContent: "flex-start" }}>
-          <Text style={styles.textInput}>Task Description</Text>
+          <Text style={styles.modifiedTextInput}>Task Duration (Hours)</Text>
           <TextInput
-            style={styles.modifiedDescriptioninputStyle}
-            value={taskData.taskDescription}
-            onChangeText={(text) => updateTaskData("taskDescription", text)}
-            placeholder="Enter task description"
+            style={styles.modifiedInputStyle}
+            value={taskDurationHours}
+            onChangeText={setTaskDurationHours}
+            placeholder="Hours"
+            keyboardType="numeric" // Ensure numeric input
           />
         </View>
 
@@ -127,7 +132,7 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
               style={styles.modifiedInputStyle}
               value={taskData.taskDuration}
               onChangeText={(text) => updateTaskData("taskDuration", text)}
-              placeholder="Task Duration"
+              placeholder="in Hours"
             />
           </View>
 

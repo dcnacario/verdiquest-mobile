@@ -148,6 +148,7 @@ async function createTask(request, response) {
       taskName,
       taskType,
       taskDescription,
+      taskDuration,
       taskPoints,
       Status,
     } = request.body;
@@ -158,6 +159,7 @@ async function createTask(request, response) {
       taskName,
       taskType,
       taskDescription,
+      taskDuration,
       taskPoints,
       Status,
     };
@@ -218,6 +220,53 @@ async function deleteTask(request, response) {
     return response.json({
       success: true,
       taskId: result,
+      message: "Task deleted successfully!",
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function updateTask(request, response) {
+  try {
+    const {
+      taskName,
+      taskType,
+      taskDescription,
+      taskPoints,
+      taskDuration,
+      taskId,
+    } = request.body;
+
+    const taskData = {
+      taskName,
+      taskType,
+      taskDescription,
+      taskPoints,
+      taskDuration,
+      taskId,
+    };
+
+    const result = await coordinator.updateTask(taskData);
+    return response.json({
+      message: "Task updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {}
+}
+
+async function getUserTask(request, response) {
+  try {
+    const { taskId } = request.body;
+    const taskData = { taskId };
+    const fetchedTable = await coordinator.fetchUserTasks(taskData);
+    return response.json({
+      success: true,
+      fetchTable: fetchedTable,
     });
   } catch (error) {
     console.error(error);
@@ -235,4 +284,6 @@ module.exports = {
   getDifficulty,
   getTasks,
   deleteTask,
+  updateTask,
+  getUserTask,
 };
