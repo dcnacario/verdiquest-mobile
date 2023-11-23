@@ -7,36 +7,52 @@ import {
   ScrollView,
 } from "react-native";
 import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 
 const ViewSubmission = ({ route }) => {
   const { taskData } = route.params;
+
   const [fetchedTasks, setFetchedTasks] = useState([]);
   console.log(taskData);
+  //FOR NAVIGATION
+  const navigation = useNavigation();
+  const goToViewSubmissionUser = (item, onTaskFetch) => {
+    navigation.navigate("ViewSubmissionUser", {
+      data: item,
+      onTaskFetch: onTaskFetch,
+    });
+  };
+  //----------------------------------------
 
   const fetchTasks = async () => {
     try {
+      let taskId = taskData.taskId || taskData.TaskId; // Use taskId if it exists, otherwise use TaskId
+      if (!taskId) {
+        console.error("No task ID available");
+        return; // Exit the function if no task ID is provided
+      }
+
       const response = await axios.post(
         "http://192.168.1.14:3000/coordinator/getTasks",
-        {
-          taskId: taskData.taskId,
-        }
+        { taskId }
       );
       setFetchedTasks(response.data.fetchTable);
     } catch (error) {
       console.error("Error fetching tasks table", error);
-      return []; // Return an empty array in case of an error
     }
   };
 
   useEffect(() => {
     fetchTasks();
-  }, [taskData.taskId]);
+  }, [taskData.UserDailyTaskId]);
 
   return (
     <View style={styles.background}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.taskName}>{taskData.taskName}</Text>
+        <Text style={styles.taskName}>
+          {taskData.taskName || taskData.TaskName}
+        </Text>
       </View>
       {/* Content ScrollView */}
       <ScrollView
@@ -52,7 +68,10 @@ const ViewSubmission = ({ route }) => {
               </Text>
               <Text style={styles.status}>Status: {item.Status}</Text>
             </View>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => goToViewSubmissionUser(item, fetchTasks)}
+            >
               <Text style={styles.buttonText}>View Submission</Text>
             </TouchableOpacity>
           </View>

@@ -175,9 +175,54 @@ async function userHardTasks(request, response) {
   };
 }
 
+async function updateUser(request, response) {
+  try {
+    const { verdiPoints, password, userId } = request.body;
+
+    const userData = {
+      verdiPoints,
+      password,
+      userId,
+    };
+
+    const result = await user.updateUser(userData);
+    return response.json({
+      message: "User updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
+async function updateUser(request, response) {
+  try {
+    const { verdiPoints, password, userId } = request.body;
+
+    const userData = {
+      verdiPoints,
+      password,
+      userId,
+    };
+
+    const result = await user.updateUser(userData);
+    return response.json({
+      message: "User updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
+  updateUser,
   userAllTasks,
   userEasyTasks,
   userNormalTasks,
