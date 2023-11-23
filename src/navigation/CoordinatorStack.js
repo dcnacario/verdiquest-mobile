@@ -15,6 +15,7 @@ import UpdateTaskDashboard from "../screens/coordinator/UpdateTaskDashboard";
 import ViewSubmission from "../screens/coordinator/ViewSubmission";
 import TaskView from "../screens/coordinator/TaskView";
 import ViewSubmissionUser from "../screens/coordinator/ViewSubmissionUser";
+import ViewEvent from "../screens/coordinator/ViewEvent";
 
 const AppCoordinatorStack = createStackNavigator();
 
@@ -127,6 +128,13 @@ const CoordinatorStack = ({ route }) => {
       <AppCoordinatorStack.Screen
         name="ViewSubmissionUser"
         component={ViewSubmissionUser}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <AppCoordinatorStack.Screen
+        name="ViewEvent"
+        component={ViewEvent}
         options={{
           headerShown: false,
         }}

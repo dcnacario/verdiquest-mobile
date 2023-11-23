@@ -19,6 +19,14 @@ const EventMaster = ({ route }) => {
     });
   };
 
+  const goToView = (coordinator, onFetchEvent, item) => {
+    navigation.navigate("ViewEvent", {
+      item: item,
+      coordinator: coordinator,
+      onFetchEvent: onFetchEvent,
+    });
+  };
+
   //fetching Events
   const fetchEvent = async () => {
     try {
@@ -61,6 +69,7 @@ const EventMaster = ({ route }) => {
               done={0}
               title={item.EventName}
               description={item.EventDescription}
+              onPress={() => goToView(coordinator, fetchEvent, item)}
             />
           ))
         ) : (
