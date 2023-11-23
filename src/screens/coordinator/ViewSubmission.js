@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {Text, View, StyleSheet, ScrollView, Dimensions} from 'react-native';
-import { theme } from "../../assets/style";
-import SubmitCard from "../components/SubmitCard";
+import { theme } from "../../../assets/style";
+import SubmitCard from "../../components/SubmitCard";
 
 
 const ViewSubmission = () => {
