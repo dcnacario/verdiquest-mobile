@@ -10,16 +10,48 @@ import {
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
 import * as ImagePicker from "expo-image-picker";
+import axios from "axios";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { useNavigation } from "@react-navigation/native";
 
-const CoordinatorAddEvent = () => {
+const CoordinatorAddEvent = ({ route }) => {
+  const navigation = useNavigation();
   const [imageUri, setImageUri] = useState(null);
-  const [eventName, setEventName] = useState("");
-  const [eventType, setEventType] = useState("");
-  const [eventDescription, setEventDescription] = useState("");
-  const [eventVenue, setEventVenue] = useState("");
-  const [eventDuration, setEventDuration] = useState("");
-  const [eventPoints, setEventPoints] = useState("");
-  const [eventCapacity, setEventCapacity] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedTime, setSelectedTime] = useState(new Date());
+  const { coordinator, onFetchEvent } = route.params;
+  const minimumDate = new Date();
+  const [eventData, setEventData] = useState({
+    coordinatorId: coordinator.CoordinatorId,
+    eventName: "",
+    eventDescription: "",
+    eventVenue: "",
+    eventDate: new Date(),
+    eventPoints: "",
+  });
+
+  const updateEventData = (field, value) => {
+    setEventData({ ...eventData, [field]: value });
+  };
+
+  //API CALL FOR BACKEND
+  const handleCreateEvent = async () => {
+    const combinedDateTime = combineDateTime();
+    updateEventData("eventDate", combinedDateTime);
+    try {
+      const response = await axios.post(
+        "http://192.168.1.14:3000/coordinator/createEvent",
+        eventData
+      );
+      onFetchEvent();
+      navigation.navigate("EventMaster", { coordinator: coordinator });
+    } catch (error) {
+      console.log("Error! creating an event", error);
+    }
+  };
+  //-------------------------------------------------------
 
   const pickImage = async () => {
     const permissionResult =
@@ -44,6 +76,30 @@ const CoordinatorAddEvent = () => {
     }
   };
 
+  //DateTimePicker
+  const handleDateChange = (event, date) => {
+    setShowDatePicker(false);
+    if (date) {
+      setSelectedDate(date);
+    }
+  };
+
+  const handleTimeChange = (event, time) => {
+    setShowTimePicker(false);
+    if (time) {
+      setSelectedTime(time);
+    }
+  };
+
+  const combineDateTime = () => {
+    // Combining date and time into a single string
+    const dateString = selectedDate.toISOString().split("T")[0];
+    const timeString = selectedTime.toISOString().split("T")[1];
+    return `${dateString}T${timeString}`;
+  };
+
+  //------------------
+
   return (
     <View style={styles.background}>
       <View style={styles.eventDetailsContainer}>
@@ -59,19 +115,9 @@ const CoordinatorAddEvent = () => {
           <Text style={styles.textInput}>Event Name</Text>
           <TextInput
             style={styles.inputStyle}
-            value={eventName}
-            onChangeText={setEventName}
+            value={eventData.eventName}
+            onChangeText={(text) => updateEventData("eventName", text)}
             placeholder="Enter event's name"
-          />
-        </View>
-        {/* Event Type */}
-        <View style={{ justifyContent: "flex-start" }}>
-          <Text style={styles.textInput}>Event Type</Text>
-          <TextInput
-            style={styles.inputStyle}
-            value={eventType}
-            onChangeText={setEventType}
-            placeholder="Enter event's type"
           />
         </View>
         {/* Event Description */}
@@ -79,8 +125,8 @@ const CoordinatorAddEvent = () => {
           <Text style={styles.textInput}>Event Description</Text>
           <TextInput
             style={styles.inputStyle}
-            value={eventDescription}
-            onChangeText={setEventDescription}
+            value={eventData.eventDescription}
+            onChangeText={(text) => updateEventData("eventDescription", text)}
             placeholder="Enter event's description"
           />
         </View>
@@ -89,46 +135,68 @@ const CoordinatorAddEvent = () => {
           <Text style={styles.textInput}>Event Venue</Text>
           <TextInput
             style={styles.inputStyle}
-            value={eventVenue}
-            onChangeText={setEventVenue}
-            placeholder="Enter event's description"
+            value={eventData.eventVenue}
+            onChangeText={(text) => updateEventData("eventVenue", text)}
+            placeholder="Enter event's event"
           />
         </View>
         <View style={styles.row}>
-          {/* Event Duration */}
+          {/* Event Date */}
+          {/* Date Picker */}
           <View style={styles.column}>
-            <Text style={styles.modifiedTextInput}>Event Duration</Text>
-            <TextInput
-              style={styles.modifiedInputStyle}
-              value={eventDuration}
-              onChangeText={setEventDuration}
-              placeholder="Event Duration"
-            />
+            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+              <Text>Event Date: {selectedDate.toDateString()}</Text>
+            </TouchableOpacity>
+            {showDatePicker && (
+              <DateTimePicker
+                value={selectedDate}
+                mode="date"
+                display="default"
+                minimumDate={minimumDate}
+                onChange={handleDateChange}
+              />
+            )}
           </View>
+          {/* Time Picker */}
+          <View style={styles.column}>
+            <TouchableOpacity onPress={() => setShowTimePicker(true)}>
+              <Text>Event Start Time: {selectedTime.toLocaleTimeString()}</Text>
+            </TouchableOpacity>
+            {showTimePicker && (
+              <DateTimePicker
+                value={selectedTime}
+                mode="time"
+                display="default"
+                onChange={handleTimeChange}
+              />
+            )}
+          </View>
+        </View>
+        <View style={styles.row}>
           {/* Event Points */}
           <View style={styles.column}>
-            <Text style={styles.modifiedTextInput}>Points Reward</Text>
+            <Text
+              style={{
+                marginLeft: 80,
+                backgroundColor: theme.colors.background,
+                alignSelf: "flex-start",
+                fontSize: 14,
+                color: "#44483E",
+                zIndex: 1,
+                padding: 5,
+              }}
+            >
+              Points Reward
+            </Text>
             <TextInput
               style={styles.modifiedInputStyle}
-              value={eventPoints}
-              onChangeText={setEventPoints}
+              value={eventData.eventPoints}
+              onChangeText={(text) => updateEventData("eventPoints", text)}
               placeholder="Points Reward"
             />
           </View>
         </View>
-        {/* Event Participant Capacity */}
-        <View style={{ justifyContent: "flex-start" }}>
-          <Text style={styles.modifiedParticipantTextInput}>
-            Participants Capacity
-          </Text>
-          <TextInput
-            style={styles.modifiedParticipantInputStyle}
-            value={eventCapacity}
-            onChangeText={setEventCapacity}
-            placeholder="Enter participant capacity"
-          />
-        </View>
-        <Button title="Create" />
+        <Button title="Create" onPress={handleCreateEvent} />
       </View>
     </View>
   );

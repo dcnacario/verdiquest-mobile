@@ -196,6 +196,40 @@ class Coordinator extends BaseModel {
       throw error;
     }
   }
+
+  async createEvent(eventData) {
+    try {
+      const [event] = await this.db.query(
+        "INSERT INTO event (CoordinatorId, EventName, EventDescription, EventVenue, EventDate, EventPoints) VALUES (?, ?, ?, ?, ?, ?)",
+        [
+          eventData.coordinatorId,
+          eventData.eventName,
+          eventData.eventDescription,
+          eventData.eventVenue,
+          eventData.eventDate,
+          eventData.eventPoints,
+        ]
+      );
+      const insertedEventId = event.insertId;
+      return insertedEventId;
+    } catch (error) {
+      console.error("Error creating event:", error);
+      throw error;
+    }
+  }
+
+  async fetchEvent(eventData) {
+    try {
+      const [result] = await this.db.query(
+        "SELECT * FROM event WHERE CoordinatorId = ?",
+        [eventData.coordinatorId]
+      );
+      return result.length > 0 ? result : null;
+    } catch (error) {
+      console.error("Error creating event:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = Coordinator;

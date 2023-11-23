@@ -304,6 +304,59 @@ async function updateUserTask(request, response) {
   }
 }
 
+async function createEvent(request, response) {
+  try {
+    const {
+      coordinatorId,
+      eventName,
+      eventDescription,
+      eventVenue,
+      eventDate,
+      eventPoints,
+    } = request.body;
+
+    const eventData = {
+      coordinatorId,
+      eventName,
+      eventDescription,
+      eventVenue,
+      eventDate,
+      eventPoints,
+    };
+
+    const insertEventId = await coordinator.createEvent(eventData);
+
+    response.status(200).send({
+      message: "Event registered successfully!",
+      taskId: insertEventId,
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function getEvents(request, response) {
+  try {
+    const { coordinatorId } = request.body;
+
+    const eventData = { coordinatorId };
+    const fetchedTable = await coordinator.fetchEvent(eventData);
+    return response.json({
+      success: true,
+      fetchTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
 module.exports = {
   registerOrganization,
   registerCoordinator,
@@ -315,4 +368,6 @@ module.exports = {
   updateTask,
   getUserTask,
   updateUserTask,
+  createEvent,
+  getEvents,
 };

@@ -20,7 +20,7 @@ const CoordInterface = ({ route }) => {
     navigation.navigate("TaskMaster", { coordinator: coordinator });
   };
   const gotoEvents = () => {
-    navigation.navigate("EventMaster");
+    navigation.navigate("EventMaster", { coordinator: coordinator });
   };
 
   const gotoCoordinators = () => {

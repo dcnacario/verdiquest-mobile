@@ -1,50 +1,71 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, ScrollView } from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
 import CoordEventCard from "../../components/CoordEventCard";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 
-const EventMaster = () => {
+const EventMaster = ({ route }) => {
   const navigation = useNavigation();
 
-  const goCreateEvent = () => {
-    navigation.navigate("CoordinatorAddEvent");
+  const [fetchedEvents, setFetchedEvents] = useState([]);
+  const { coordinator } = route.params;
+
+  const goCreateEvent = (coordinator, onFetchEvent) => {
+    navigation.navigate("CoordinatorAddEvent", {
+      coordinator: coordinator,
+      onFetchEvent: onFetchEvent,
+    });
   };
+
+  //fetching Events
+  const fetchEvent = async () => {
+    try {
+      const response = await axios.post(
+        "http://192.168.1.14:3000/coordinator/fetchEvents",
+        {
+          coordinatorId: coordinator.CoordinatorId,
+        }
+      );
+      console.log(coordinator.CoordinatorId);
+      setFetchedEvents(response.data.fetchTable);
+    } catch (error) {
+      console.error("Error fetching tasks table", error);
+      return []; // Return an empty array in case of an error
+    }
+  };
+
+  useEffect(() => {
+    fetchEvent();
+  }, [fetchedEvents.CoordinatorId]);
+
+  //------------------------------------------------------------
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={{ flex: 1, alignItems: "flex-start" }}>
-          <Button title="+ Create" onPress={goCreateEvent} />
+          <Button
+            title="+ Create"
+            onPress={() => goCreateEvent(coordinator, fetchEvent)}
+          />
         </View>
         <Text style={styles.textStyle}>Events</Text>
         <View style={{ flex: 1 }}></View>
       </View>
       <ScrollView style={styles.scrollView}>
-        <CoordEventCard
-          participants={14}
-          done={2}
-          title="10 km walk"
-          description={"well-being"}
-        />
-        <CoordEventCard
-          participants={20}
-          done={30}
-          title="Collect Plastic Bottles"
-          description={"Recycling"}
-        />
-        <CoordEventCard
-          participants={100}
-          done={82}
-          title="Collect Scrap Metals"
-          description={"Recycling"}
-        />
-        <CoordEventCard
-          participants={100}
-          done={82}
-          title="Collect Scrap Metals"
-          description={"Recycling"}
-        />
+        {fetchedEvents != null ? (
+          fetchedEvents.map((item) => (
+            <CoordEventCard
+              participants={0}
+              done={0}
+              title={item.EventName}
+              description={item.EventDescription}
+            />
+          ))
+        ) : (
+          <Text>No tasks available for this coordinator.</Text>
+        )}
       </ScrollView>
     </View>
   );
