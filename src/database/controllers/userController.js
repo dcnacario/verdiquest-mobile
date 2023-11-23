@@ -111,9 +111,150 @@ async function loginUser(request, response) {
     console.error(error);
     response.status(500).json({ success: false, message: "Server error." });
   }
+  
+
 }
+
+async function userAllTasks(request, response) {
+  try {
+    const fetchedTable = await user.fetchTasks();
+    return response.json({
+      success: true,
+      fetchTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+
+
+async function userEasyTasks(request, response) {
+  try {
+    const fetchedTable = await user.fetchEasyTask();
+    return response.json({
+      success: true,
+      fetchedTable: fetchedTable,
+    });
+  }catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  };
+}
+
+async function userNormalTasks(request, response) {
+  try {
+    const fetchedTable = await user.fetchNormalTask();
+    return response.json({
+      success: true,
+      fetchedTable: fetchedTable,
+    });
+  }catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  };
+}
+
+async function userHardTasks(request, response) {
+  try {
+    const fetchedTable = await user.fetchHardTask();
+    return response.json({
+      success: true,
+      fetchedTable: fetchedTable,
+    });
+  }catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  };
+}
+
+async function updateUser(request, response) {
+  try {
+    const { verdiPoints, password, userId } = request.body;
+
+    const userData = {
+      verdiPoints,
+      password,
+      userId,
+    };
+
+    const result = await user.updateUser(userData);
+    return response.json({
+      message: "User updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
+async function updateUser(request, response) {
+  try {
+    const { verdiPoints, password, userId } = request.body;
+
+    const userData = {
+      verdiPoints,
+      password,
+      userId,
+    };
+
+    const result = await user.updateUser(userData);
+    return response.json({
+      message: "User updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
+async function fetchTaskDetails(request, response) {
+  try {
+      const taskId = request.params.taskId;
+      const taskDetails = await user.fetchTaskDetails(taskId);
+      response.json({ success: true, taskDetails });
+  } catch (error) {
+      console.error(error);
+      response.status(500).send({ message: "Server error", error: error.message });
+  }
+}
+
+async function userAllDifficultyTasks(request, response) {
+  try {
+      const fetchedTable = await user.fetchAllDifficultyTasks(); 
+      response.json({
+          success: true,
+          fetchedTable: fetchedTable,
+      });
+  } catch (error) {
+      console.error(error);
+      response.status(500).send({ message: "Server error", error: error.message });
+  }
+}
+
+
 
 module.exports = {
   registerUser,
   loginUser,
+  updateUser,
+  userAllTasks,
+  userEasyTasks,
+  userNormalTasks,
+  userHardTasks,
+  fetchTaskDetails,
+  userAllDifficultyTasks,
 };

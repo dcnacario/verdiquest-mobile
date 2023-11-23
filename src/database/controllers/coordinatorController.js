@@ -148,6 +148,7 @@ async function createTask(request, response) {
       taskName,
       taskType,
       taskDescription,
+      taskDuration,
       taskPoints,
       Status,
     } = request.body;
@@ -158,6 +159,7 @@ async function createTask(request, response) {
       taskName,
       taskType,
       taskDescription,
+      taskDuration,
       taskPoints,
       Status,
     };
@@ -209,6 +211,99 @@ async function getTasks(request, response) {
   }
 }
 
+async function deleteTask(request, response) {
+  try {
+    const { taskId } = request.body;
+
+    const coordinatorData = { taskId };
+    const result = await coordinator.deleteTasks(coordinatorData);
+    return response.json({
+      success: true,
+      taskId: result,
+      message: "Task deleted successfully!",
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function updateTask(request, response) {
+  try {
+    const {
+      taskName,
+      taskType,
+      taskDescription,
+      taskPoints,
+      taskDuration,
+      taskId,
+    } = request.body;
+
+    const taskData = {
+      taskName,
+      taskType,
+      taskDescription,
+      taskPoints,
+      taskDuration,
+      taskId,
+    };
+
+    const result = await coordinator.updateTask(taskData);
+    return response.json({
+      message: "Task updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {}
+}
+
+async function getUserTask(request, response) {
+  try {
+    const { taskId } = request.body;
+    const taskData = { taskId };
+    const fetchedTable = await coordinator.fetchUserTasks(taskData);
+    return response.json({
+      success: true,
+      fetchTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function updateUserTask(request, response) {
+  try {
+    const { Status, userDailyTaskId } = request.body;
+
+    // Basic input validation
+    if (!Status || !userDailyTaskId) {
+      return response
+        .status(400)
+        .json({ success: false, message: "Missing required fields" });
+    }
+
+    const userTask = {
+      Status,
+      userDailyTaskId,
+    };
+
+    const result = await coordinator.updateUserDailyTask(userTask);
+    return response.json({
+      message: "User Daily Task updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
 module.exports = {
   registerOrganization,
   registerCoordinator,
@@ -216,4 +311,8 @@ module.exports = {
   createTask,
   getDifficulty,
   getTasks,
+  deleteTask,
+  updateTask,
+  getUserTask,
+  updateUserTask,
 };

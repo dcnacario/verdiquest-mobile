@@ -92,13 +92,14 @@ class Coordinator extends BaseModel {
   async insertTask(taskData) {
     try {
       const [task] = await this.db.query(
-        "INSERT INTO dailytask (DifficultyId, CoordinatorId, TaskName, TaskType, TaskDescription, TaskPoints, Status) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO dailytask (DifficultyId, CoordinatorId, TaskName, TaskType, TaskDescription, TaskDuration, TaskPoints, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         [
           taskData.difficultyId,
           taskData.coordinatorId,
           taskData.taskName,
           taskData.taskType,
           taskData.taskDescription,
+          taskData.taskDuration,
           taskData.taskPoints,
           taskData.Status,
         ]
@@ -124,12 +125,74 @@ class Coordinator extends BaseModel {
   async fetchTasks(coordinatorData) {
     try {
       const [result] = await this.db.query(
-        "SELECT * FROM dailytask WHERE CoordinatorId = ?",
+        "SELECT * FROM dailytask WHERE CoordinatorId = ? AND isDeleted = 0",
         [coordinatorData.coordinatorId]
       );
       return result.length > 0 ? result : null;
     } catch (error) {
       console.error(`Error fetching tasks: ${error}`);
+      throw error;
+    }
+  }
+
+  async deleteTasks(coordinatorData) {
+    try {
+      const [result] = await this.db.query(
+        "UPDATE dailytask SET isDeleted = 1 WHERE TaskId = ?",
+        [coordinatorData.taskId]
+      );
+      return result;
+    } catch (error) {
+      console.error(`Error deleting tasks: ${error}`);
+      throw error;
+    }
+  }
+
+  async updateTask(taskData) {
+    try {
+      const [task] = await this.db.query(
+        "UPDATE dailytask SET TaskName = ?, TaskType = ?, TaskDescription = ?, TaskPoints = ?, TaskDuration = ? WHERE TaskId = ?",
+        [
+          taskData.taskName,
+          taskData.taskType,
+          taskData.taskDescription,
+          taskData.taskPoints,
+          taskData.taskDuration,
+          taskData.taskId,
+        ]
+      );
+      const taskUpdate = task.affectedRows;
+      return taskUpdate;
+    } catch (error) {
+      console.error(`Error updating task: ${error}`);
+      throw error;
+    }
+  }
+
+  async fetchUserTasks(taskData) {
+    try {
+      const [result] = await this.db.query(
+        "SELECT * FROM person p JOIN userdailytask u ON p.UserId = u.UserId JOIN dailytask d ON d.TaskId = u.TaskId WHERE u.TaskId = ?",
+        [taskData.taskId]
+      );
+      return result.length > 0 ? result : null;
+    } catch (error) {
+      console.error(`Error fetching user tasks table: ${error}`);
+      throw error;
+    }
+  }
+
+  async updateUserDailyTask(userTask) {
+    try {
+      const [usertask] = await this.db.query(
+        "UPDATE userdailytask SET Status = ? WHERE UserDailyTaskId = ?",
+        [userTask.Status, userTask.userDailyTaskId]
+      );
+
+      const userDailyUpdate = usertask.affectedRows;
+      return userDailyUpdate;
+    } catch (error) {
+      console.error(`Error updating user task: ${error}`);
       throw error;
     }
   }

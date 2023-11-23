@@ -14,7 +14,10 @@ const TaskMaster = ({ route }) => {
   console.log(coordinator);
   //navigate to creation of task
   const goToCreateTask = () => {
-    navigation.navigate("CreateTaskDashboard", { coordinator: coordinator });
+    navigation.navigate("CreateTaskDashboard", {
+      coordinator: coordinator,
+      onTaskCreated: fetchTasks,
+    });
   };
 
   const fetchTasks = async () => {
@@ -26,6 +29,21 @@ const TaskMaster = ({ route }) => {
     } catch (error) {
       console.error("Error fetching tasks table", error);
       return []; // Return an empty array in case of an error
+    }
+  };
+
+  const deleteTask = async (taskId) => {
+    try {
+      const response = await axios.post(
+        "http://192.168.1.14:3000/coordinator/deleteTask",
+        {
+          taskId: taskId,
+        }
+      );
+      fetchTasks();
+    } catch (error) {
+      console.error("Error deleting task!", error);
+      return [];
     }
   };
 
@@ -42,7 +60,7 @@ const TaskMaster = ({ route }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={{ flex: 1, alignItems: "flex-start" }}>
-          <Button title="+ Create" onPress={goToCreateTask} />
+          <Button title="+ Create" onPress={() => goToCreateTask()} />
         </View>
         <Text style={styles.textStyle}>Tasks</Text>
         <View style={{ flex: 1 }}></View>
@@ -57,6 +75,7 @@ const TaskMaster = ({ route }) => {
               title={item.TaskName}
               description={item.TaskDescription}
               onPress={() => gotoCard(item)}
+              deleteTask={() => deleteTask(item.TaskId)}
             />
           ))
         ) : (

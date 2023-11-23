@@ -6,40 +6,76 @@ import {
   Text,
   ScrollView,
 } from "react-native";
-
-// const submissions = new Array(10).fill(null).map((_, index) => ({
-//   id: String(index),
-//   name: "Ram P. De la Cruz",
-//   status: "Completed",
-// }));
+import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 
 const ViewSubmission = ({ route }) => {
   const { taskData } = route.params;
+
+  const [fetchedTasks, setFetchedTasks] = useState([]);
   console.log(taskData);
+  //FOR NAVIGATION
+  const navigation = useNavigation();
+  const goToViewSubmissionUser = (item, onTaskFetch) => {
+    navigation.navigate("ViewSubmissionUser", {
+      data: item,
+      onTaskFetch: onTaskFetch,
+    });
+  };
+  //----------------------------------------
+
+  const fetchTasks = async () => {
+    try {
+      let taskId = taskData.taskId || taskData.TaskId; // Use taskId if it exists, otherwise use TaskId
+      if (!taskId) {
+        console.error("No task ID available");
+        return; // Exit the function if no task ID is provided
+      }
+
+      const response = await axios.post(
+        "http://192.168.1.14:3000/coordinator/getTasks",
+        { taskId }
+      );
+      setFetchedTasks(response.data.fetchTable);
+    } catch (error) {
+      console.error("Error fetching tasks table", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTasks();
+  }, [taskData.UserDailyTaskId]);
 
   return (
     <View style={styles.background}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.taskName}>{taskData.TaskName}</Text>
+        <Text style={styles.taskName}>
+          {taskData.taskName || taskData.TaskName}
+        </Text>
       </View>
       {/* Content ScrollView */}
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContent}
       >
-        {/* {fetchedTasks.map((item) => (
+        {fetchedTasks.map((item) => (
           <View key={item.TaskId} style={styles.cardContainer}>
             <View style={styles.imagePlaceholder} />
             <View style={styles.textContainer}>
-              <Text style={styles.name}>{item.TaskName}</Text>
-              <Text style={styles.status}>Status: {item.status}</Text>
+              <Text style={styles.name}>
+                {item.FirstName} {item.LastName}
+              </Text>
+              <Text style={styles.status}>Status: {item.Status}</Text>
             </View>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => goToViewSubmissionUser(item, fetchTasks)}
+            >
               <Text style={styles.buttonText}>View Submission</Text>
             </TouchableOpacity>
           </View>
-        ))} */}
+        ))}
       </ScrollView>
     </View>
   );

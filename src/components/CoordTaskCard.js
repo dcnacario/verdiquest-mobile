@@ -14,6 +14,7 @@ const CoordTaskCard = ({
   onPress,
   eventName,
   done,
+  deleteTask,
 }) => {
   return (
     <View style={styles.container}>
@@ -43,7 +44,7 @@ const CoordTaskCard = ({
           </View>
           <View style={{ flex: 1 }}></View>
           <View>
-            <DeleteButton title={"Delete"} />
+            <DeleteButton title={"Delete"} onPress={deleteTask} />
           </View>
           <Button title="View" onPress={onPress} />
         </View>
