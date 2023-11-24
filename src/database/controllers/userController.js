@@ -275,7 +275,6 @@ async function acceptTask(request, response) {
 
 async function checkTaskAccepted(request, response) {
   const { userId, taskId } = request.params;
-
   try {
       const isAccepted = await user.checkTaskAccepted(userId, taskId);
       response.json({ success: true, isAccepted });

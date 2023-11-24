@@ -192,8 +192,10 @@ class User extends BaseModel {
     async checkTaskAccepted(userId, taskId) {
         const query = "SELECT * FROM userdailytask WHERE UserId = ? AND TaskId = ? AND Status = 'Ongoing'";
         const [results] = await this.db.query(query, [userId, taskId]);
-        return results.length > 0;
+        return results.length > 0; // true if task is accepted
     }
+
+    
 
     async fetchAcceptedTasks(userId) {
         const query = `

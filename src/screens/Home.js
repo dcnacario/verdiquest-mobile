@@ -5,7 +5,7 @@ import { theme } from "../../assets/style";
 import PointCard from "../components/PointCard";
 import Card from "../components/Card";
 
-const Home = ({route, navigation}) => {
+const Home = ({ route, navigation }) => {
     const { user } = route.params;
     const [userPoint, setUserPoints] = useState(0);
     const [tasks, setTasks] = useState([]);
@@ -15,7 +15,7 @@ const Home = ({route, navigation}) => {
 
     useEffect(() => {
         if (user && user.UserId) {
-            fetchTasks();
+        fetchTasks();
         }
     }, [user]);
 
@@ -23,24 +23,27 @@ const Home = ({route, navigation}) => {
         try {
             const response = await axios.get(`http://192.168.68.110:3000/user/fetchAcceptedTasks/${user.UserId}`);
             if (response.data.success) {
-                setTasks(response.data.acceptedTasks);
-            } else {
-                console.log('Failed to fetch accepted tasks');
-            }
-        } catch (error) {
-            console.error('Error fetching accepted tasks:', error);
+            const tasksWithUniqueKeys = response.data.acceptedTasks.map(task => ({
+                ...task,
+                key: `task-${task.TaskId}-${Math.random().toString(16).slice(2)}` 
+            }));
+        setTasks(tasksWithUniqueKeys);
+        } else {
+        console.log('Failed to fetch accepted tasks');
         }
+    } catch (error) {
+        console.error('Error fetching accepted tasks:', error);
+    }
     };
-    
 
     const getDifficultyLevel = (difficultyId) => {
         const difficultyString = String(difficultyId);
         switch (difficultyString) {
-            case '0': return 'All';
-            case '1': return 'Easy';
-            case '2': return 'Normal';
-            case '3': return 'Hard';
-            default: return 'Unknown';
+        case '0': return 'All';
+        case '1': return 'Easy';
+        case '2': return 'Normal';
+        case '3': return 'Hard';
+        default: return 'Unknown';
         }
     };
     return (
@@ -59,16 +62,16 @@ const Home = ({route, navigation}) => {
                     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 24, color: theme.colors.primary, fontWeight: 'bold', marginVertical: 20}}>Daily Tasks</Text>         
                     </View>
-                    <View style={{flex: 1, flexDirection: 'column', margin: 10}}>
-                        {tasks.map((task, index) => (
-                            <Card 
-                                key={index}
-                                title={task.TaskName || 'No Title'}  
-                                difficulty={getDifficultyLevel(task.DifficultyId) || 'No Difficulty'} 
-                                description={task.TaskDescription || 'No Description'} 
-                            />
+                    <View style={{ flex: 1, flexDirection: 'column', margin: 10 }}>
+                    {tasks.map((task) => (
+                        <Card 
+                            key={task.key}
+                            title={task.TaskName || 'No Title'}
+                            difficulty={getDifficultyLevel(task.DifficultyId) || 'No Difficulty'}
+                            description={task.TaskDescription || 'No Description'}
+                        />
                         ))}
-                    </View>                 
+                    </View>               
                 </View>
             </View>
         </ScrollView>

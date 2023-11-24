@@ -11,7 +11,7 @@ const Card = ({ title, difficulty, img, description }) => {
             <Text style={styles.difficulty}>{difficulty}</Text>
             <Text style={styles.description}>{description}</Text>
             <View style={styles.buttonContainer}>
-                <DeleteButton title="Remove" />
+                {/* <DeleteButton title="Remove" /> */}
                 <Button title="View" />
             </View>
         </View>

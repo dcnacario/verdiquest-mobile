@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Image, Text, Modal, TouchableOpacity } from 'react-native';
-import Details from "../components/Details";
-import Button from "../components/Button";
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Image, Text, Modal, TouchableOpacity, Alert } from 'react-native';
+import Details from '../components/Details';
+import Button from '../components/Button';
 import defaultImage from '../../assets/img/default-image.png';
 import axios from 'axios';
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation } from '@react-navigation/native';
 
 const TaskDetails = ({ route }) => {
     const navigation = useNavigation();
@@ -17,32 +17,26 @@ const TaskDetails = ({ route }) => {
     const { user } = route.params;
 
     useEffect(() => {
-        const fetchDetails = async () => {
+        async function fetchDetailsAndCheckAcceptance() {
+            const taskId = route.params.taskId;
+            const userId = user.UserId;
             try {
-                const response = await axios.get(`http://192.168.68.110:3000/user/fetchTaskDetails/${route.params.taskId}`);
-                if (response.data.success) {
-                    setTaskDetails(response.data.taskDetails);
-                    checkIfTaskAccepted();
+                const detailsResponse = await axios.get(`http://192.168.68.110:3000/user/fetchTaskDetails/${taskId}`);
+                if (detailsResponse.data.success) {
+                    setTaskDetails(detailsResponse.data.taskDetails);
                 } else {
                     console.log('Task not found');
                 }
+
+                const acceptanceResponse = await axios.get(`http://192.168.68.110:3000/user/checkTaskAccepted/${userId}/${taskId}`);
+                setIsAccepted(acceptanceResponse.data.isAccepted);
             } catch (error) {
-                console.error('Error fetching task details:', error);
+                console.error('Error fetching task details or checking acceptance:', error);
             } finally {
                 setIsLoading(false);
             }
-        };
-
-        const checkIfTaskAccepted = async () => {
-            try {
-                const acceptanceResponse = await axios.get(`http://192.168.68.110:3000/user/checkTaskAccepted/${route.params.taskId}/${user.UserId}`);
-                setIsAccepted(acceptanceResponse.data.isAccepted);
-            } catch (error) {
-                console.error('Error checking task acceptance:', error);
-            }
-        };
-
-        fetchDetails();
+        }
+        fetchDetailsAndCheckAcceptance();
     }, [route.params.taskId, user.UserId]);
 
     const onPressAccept = async () => {
@@ -50,6 +44,7 @@ const TaskDetails = ({ route }) => {
             console.log('User ID or Task ID is missing');
             return;
         }
+    
         try {
             const response = await axios.post(`http://192.168.68.110:3000/user/acceptTask`, {
                 userId: user.UserId,
@@ -59,11 +54,9 @@ const TaskDetails = ({ route }) => {
             if (response.data.success) {
                 setIsAccepted(true);
                 setShowModal(true);
-            } else if (response.status === 409) { 
+            } else {
                 setErrorMessage('Task is already accepted.');
                 setShowErrorModal(true);
-            } else {
-                console.log('Failed to accept task');
             }
         } catch (error) {
             console.error('Error accepting task:', error);
@@ -76,8 +69,22 @@ const TaskDetails = ({ route }) => {
         navigation.navigate('MyPoints', { user: user });
     };
 
-    const onPressCancelTask = () => {
-        setIsAccepted(false);
+    const onPressCancelTask = async () => {
+        try {
+            // Replace with your API endpoint to cancel the task
+            const response = await axios.post(`http://192.168.68.110:3000/user/cancelTask`, {
+                userId: user.UserId,
+                taskId: taskDetails.TaskId
+            });
+            if (response.data.success) {
+                setIsAccepted(false);
+            } else {
+                Alert.alert('Error', 'Failed to cancel the task');
+            }
+        } catch (error) {
+            console.error('Error cancelling task:', error);
+            Alert.alert('Error', 'An error occurred while cancelling the task');
+        }
     };
 
     if (isLoading) {
@@ -102,7 +109,6 @@ const TaskDetails = ({ route }) => {
                 {isAccepted ? (
                     <>
                         <Button title='Ongoing' onPress={onPressOngoingTask} />
-                        <View style={{ width: 50 }} />
                         <Button title='Cancel' onPress={onPressCancelTask} />
                     </>
                 ) : (
