@@ -24,7 +24,9 @@ const CoordEventCard = ({
       <View style={styles.textContainer}>
         <Text style={styles.textStyle}>{title}</Text>
         {difficulty ? <Text>{difficulty}</Text> : <Text>{eventName}</Text>}
-        <Text style={{ textAlign: "center" }}>{description}</Text>
+        <Text style={{ textAlign: "justify", marginHorizontal: 10 }}>
+          {description}
+        </Text>
 
         <View style={styles.buttonContainer}>
           <View style={styles.participantsContainer}>

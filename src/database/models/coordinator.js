@@ -230,6 +230,27 @@ class Coordinator extends BaseModel {
       throw error;
     }
   }
+
+  async updateEvent(eventData) {
+    try {
+      const [event] = await this.db.query(
+        "UPDATE event SET EventName = ?, EventDescription = ?, EventVenue = ?, EventDate = ?, EventPoints = ? WHERE EventId = ?",
+        [
+          eventData.eventName,
+          eventData.eventDescription,
+          eventData.eventVenue,
+          eventData.eventDate,
+          eventData.eventPoints,
+          eventData.eventId,
+        ]
+      );
+      const eventUpdate = event.affectedRows;
+      return eventUpdate;
+    } catch (error) {
+      console.error(`Error updating task: ${error}`);
+      throw error;
+    }
+  }
 }
 
 module.exports = Coordinator;

@@ -36,7 +36,6 @@ const EventMaster = ({ route }) => {
           coordinatorId: coordinator.CoordinatorId,
         }
       );
-      console.log(coordinator.CoordinatorId);
       setFetchedEvents(response.data.fetchTable);
     } catch (error) {
       console.error("Error fetching tasks table", error);
@@ -46,7 +45,7 @@ const EventMaster = ({ route }) => {
 
   useEffect(() => {
     fetchEvent();
-  }, [fetchedEvents.CoordinatorId]);
+  }, [coordinator.CoordinatorId]);
 
   //------------------------------------------------------------
   return (
@@ -65,6 +64,7 @@ const EventMaster = ({ route }) => {
         {fetchedEvents != null ? (
           fetchedEvents.map((item) => (
             <CoordEventCard
+              key={item.EventId}
               participants={0}
               done={0}
               title={item.EventName}
@@ -73,7 +73,7 @@ const EventMaster = ({ route }) => {
             />
           ))
         ) : (
-          <Text>No tasks available for this coordinator.</Text>
+          <Text>No event/s available for this coordinator.</Text>
         )}
       </ScrollView>
     </View>
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingVertical: 10,
     fontWeight: "bold",
-    textAlign: "center",
+    textAlign: "justify",
   },
   header: {
     flexDirection: "row",

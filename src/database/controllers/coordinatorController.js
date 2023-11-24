@@ -256,7 +256,12 @@ async function updateTask(request, response) {
       success: true,
       result: result,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
 }
 
 async function getUserTask(request, response) {
@@ -357,6 +362,40 @@ async function getEvents(request, response) {
   }
 }
 
+async function updateEvent(request, response) {
+  try {
+    const {
+      eventName,
+      eventDescription,
+      eventVenue,
+      eventDate,
+      eventPoints,
+      eventId,
+    } = request.body;
+
+    const eventData = {
+      eventName,
+      eventDescription,
+      eventVenue,
+      eventDate,
+      eventPoints,
+      eventId,
+    };
+
+    const result = await coordinator.updateEvent(eventData);
+    return response.json({
+      message: "Event updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
 module.exports = {
   registerOrganization,
   registerCoordinator,
@@ -370,4 +409,5 @@ module.exports = {
   updateUserTask,
   createEvent,
   getEvents,
+  updateEvent,
 };

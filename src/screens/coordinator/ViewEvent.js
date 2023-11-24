@@ -28,20 +28,17 @@ const ViewEvent = ({ route }) => {
 
   const minimumDate = new Date();
   const [eventData, setEventData] = useState({
-    coordinatorId: coordinator.CoordinatorId,
     eventName: item.EventName,
     eventDescription: item.EventDescription,
     eventVenue: item.EventVenue,
     eventPoints: item.EventPoints.toString(),
+    eventDate: dateOfEvent,
+    eventId: item.EventId,
   });
 
   const updateEventData = (field, value) => {
     setEventData({ ...eventData, [field]: value });
   };
-
-  //API CALL FOR BACKEND
-
-  //-------------------------------------------------------
 
   const pickImage = async () => {
     const permissionResult =
@@ -82,28 +79,43 @@ const ViewEvent = ({ route }) => {
   };
 
   const combineDateTime = () => {
-    // Combining date and time into a single string
-    const dateString = selectedDate.toISOString().split("T")[0];
-    const timeString = selectedTime.toISOString().split("T")[1];
-    return `${dateString}T${timeString}`;
-  };
+    const date = selectedDate.toISOString().split("T")[0];
+    const time =
+      selectedTime.getHours().toString().padStart(2, "0") +
+      ":" +
+      selectedTime.getMinutes().toString().padStart(2, "0") +
+      ":" +
+      selectedTime.getSeconds().toString().padStart(2, "0");
 
-  const handleEditSave = async () => {
-    // if (isEditing) {
-    //   try {
-    //     const response = await axios.post(
-    //       "http://192.168.1.14:3000/coordinator/updateEvent",
-    //       editTaskData
-    //     );
-    //     console.log("Update response:", response.data);
-    //   } catch (error) {
-    //     console.error("Error updating task:", error);
-    //   }
-    // }
-    setIsEditing(!isEditing);
+    return `${date}T${time}`;
   };
 
   //------------------
+
+  //API CALL FOR BACKEND
+
+  const handleEditSave = async () => {
+    if (isEditing) {
+      const combinedDateTime = combineDateTime();
+      const updatedEventData = {
+        ...eventData,
+        eventDate: combinedDateTime,
+      };
+      try {
+        const response = await axios.post(
+          "http://192.168.1.14:3000/coordinator/updateEvent",
+          updatedEventData
+        );
+        onFetchEvent;
+        console.log("Update response:", response.data);
+      } catch (error) {
+        console.error("Error updating task:", error);
+      }
+    }
+    setIsEditing(!isEditing);
+  };
+
+  //-------------------------------------------------------
 
   return (
     <View style={styles.background}>

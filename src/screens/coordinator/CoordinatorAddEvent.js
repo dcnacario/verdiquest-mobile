@@ -28,30 +28,13 @@ const CoordinatorAddEvent = ({ route }) => {
     eventName: "",
     eventDescription: "",
     eventVenue: "",
-    eventDate: new Date(),
+    eventDate: selectedDate,
     eventPoints: "",
   });
 
   const updateEventData = (field, value) => {
     setEventData({ ...eventData, [field]: value });
   };
-
-  //API CALL FOR BACKEND
-  const handleCreateEvent = async () => {
-    const combinedDateTime = combineDateTime();
-    updateEventData("eventDate", combinedDateTime);
-    try {
-      const response = await axios.post(
-        "http://192.168.1.14:3000/coordinator/createEvent",
-        eventData
-      );
-      onFetchEvent();
-      navigation.navigate("EventMaster", { coordinator: coordinator });
-    } catch (error) {
-      console.log("Error! creating an event", error);
-    }
-  };
-  //-------------------------------------------------------
 
   const pickImage = async () => {
     const permissionResult =
@@ -77,28 +60,53 @@ const CoordinatorAddEvent = ({ route }) => {
   };
 
   //DateTimePicker
-  const handleDateChange = (event, date) => {
+  const handleDateChange = (event, selectedDate) => {
     setShowDatePicker(false);
-    if (date) {
-      setSelectedDate(date);
+    if (selectedDate) {
+      setSelectedDate(selectedDate); // Update the selected date
     }
   };
 
-  const handleTimeChange = (event, time) => {
+  const handleTimeChange = (event, selectedTime) => {
     setShowTimePicker(false);
-    if (time) {
-      setSelectedTime(time);
+    if (selectedTime) {
+      setSelectedTime(selectedTime); // Update the selected time
     }
   };
 
   const combineDateTime = () => {
-    // Combining date and time into a single string
-    const dateString = selectedDate.toISOString().split("T")[0];
-    const timeString = selectedTime.toISOString().split("T")[1];
-    return `${dateString}T${timeString}`;
+    const date = selectedDate.toISOString().split("T")[0];
+    const time =
+      selectedTime.getHours().toString().padStart(2, "0") +
+      ":" +
+      selectedTime.getMinutes().toString().padStart(2, "0") +
+      ":" +
+      selectedTime.getSeconds().toString().padStart(2, "0");
+
+    return `${date}T${time}`;
   };
 
   //------------------
+
+  //API CALL FOR BACKEND
+  const handleCreateEvent = async () => {
+    const combinedDateTime = combineDateTime();
+    const updatedEventData = {
+      ...eventData,
+      eventDate: combinedDateTime,
+    };
+    try {
+      const response = await axios.post(
+        "http://192.168.1.14:3000/coordinator/createEvent",
+        updatedEventData
+      );
+      onFetchEvent();
+      navigation.navigate("EventMaster", { coordinator: coordinator });
+    } catch (error) {
+      console.log("Error! creating an event", error);
+    }
+  };
+  //-------------------------------------------------------
 
   return (
     <View style={styles.background}>
@@ -160,7 +168,9 @@ const CoordinatorAddEvent = ({ route }) => {
           {/* Time Picker */}
           <View style={styles.column}>
             <TouchableOpacity onPress={() => setShowTimePicker(true)}>
-              <Text>Event Start Time: {selectedTime.toLocaleTimeString()}</Text>
+              <Text>
+                Event Start Time: {selectedTime.toLocaleTimeString("en-GB")}
+              </Text>
             </TouchableOpacity>
             {showTimePicker && (
               <DateTimePicker
