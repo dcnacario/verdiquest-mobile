@@ -43,6 +43,24 @@ const EventMaster = ({ route }) => {
     }
   };
 
+  // DELETING A TASK
+  const deleteEvent = async (eventId) => {
+    try {
+      const response = await axios.post(
+        "http://192.168.1.14:3000/coordinator/deleteEvent",
+        {
+          eventId: eventId,
+        }
+      );
+      fetchEvent();
+    } catch (error) {
+      console.error("Error deleting event!", error);
+      return [];
+    }
+  };
+
+  //--------------------------------------------
+
   useEffect(() => {
     fetchEvent();
   }, [coordinator.CoordinatorId]);
@@ -70,6 +88,7 @@ const EventMaster = ({ route }) => {
               title={item.EventName}
               description={item.EventDescription}
               onPress={() => goToView(coordinator, fetchEvent, item)}
+              onDelete={() => deleteEvent(item.EventId)}
             />
           ))
         ) : (

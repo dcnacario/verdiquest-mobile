@@ -309,6 +309,25 @@ async function updateUserTask(request, response) {
   }
 }
 
+async function deleteEvent(request, response) {
+  try {
+    const { eventId } = request.body;
+
+    const eventData = { eventId };
+    const result = await coordinator.deleteEvent(eventData);
+    return response.json({
+      success: true,
+      eventId: result,
+      message: "Event deleted successfully!",
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
 async function createEvent(request, response) {
   try {
     const {
@@ -410,4 +429,5 @@ module.exports = {
   createEvent,
   getEvents,
   updateEvent,
+  deleteEvent,
 };

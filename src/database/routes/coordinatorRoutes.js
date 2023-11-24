@@ -19,5 +19,6 @@ router.post("/updateUserTask", coordinatorController.updateUserTask);
 router.post("/createEvent", coordinatorController.createEvent);
 router.post("/fetchEvents", coordinatorController.getEvents);
 router.post("/updateEvent", coordinatorController.updateEvent);
+router.post("/deleteEvent", coordinatorController.deleteEvent);
 
 module.exports = router;

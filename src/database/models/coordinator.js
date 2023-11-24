@@ -251,6 +251,19 @@ class Coordinator extends BaseModel {
       throw error;
     }
   }
+
+  async deleteEvent(eventData) {
+    try {
+      const [result] = await this.db.query(
+        "DELETE FROM event WHERE EventId = ?",
+        [eventData.eventId]
+      );
+      return result;
+    } catch (error) {
+      console.error(`Error deleting tasks: ${error}`);
+      throw error;
+    }
+  }
 }
 
 module.exports = Coordinator;
