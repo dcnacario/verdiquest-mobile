@@ -415,6 +415,71 @@ async function updateEvent(request, response) {
   }
 }
 
+async function getParticipants(request, response) {
+  try {
+    const { eventId } = request.body;
+    const eventData = { eventId };
+    const fetchedTable = await coordinator.fetchParticipants(eventData);
+    return response.json({
+      success: true,
+      fetchTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function updateParticipant(request, response) {
+  try {
+    const { Status, participantId } = request.body;
+
+    // Basic input validation
+    if (!Status || !participantId) {
+      return response
+        .status(400)
+        .json({ success: false, message: "Missing required fields" });
+    }
+
+    const participantData = {
+      Status,
+      participantId,
+    };
+
+    const result = await coordinator.updateParticipant(participantData);
+    return response.json({
+      message: "Participant updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
+async function getCountParticipants(request, response) {
+  try {
+    const { eventId } = request.body;
+    console.log(eventId);
+    const eventData = { eventId };
+    const countParticipants = await coordinator.fetchCountParticipants(
+      eventData
+    );
+    return response.json({
+      success: true,
+      count: countParticipants,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
 module.exports = {
   registerOrganization,
   registerCoordinator,
@@ -430,4 +495,7 @@ module.exports = {
   getEvents,
   updateEvent,
   deleteEvent,
+  getParticipants,
+  updateParticipant,
+  getCountParticipants,
 };

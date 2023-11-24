@@ -13,6 +13,7 @@ import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation } from "@react-navigation/native";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const ViewEvent = ({ route }) => {
   const { coordinator, onFetchEvent, item } = route.params;
@@ -91,6 +92,12 @@ const ViewEvent = ({ route }) => {
   };
 
   //------------------
+
+  const goToViewParticipants = () => {
+    navigation.navigate("ViewParticipants", {
+      eventData: eventData,
+    });
+  };
 
   //API CALL FOR BACKEND
 
@@ -226,7 +233,30 @@ const ViewEvent = ({ route }) => {
             />
           </View>
         </View>
-        <Button title={isEditing ? "Save" : "Edit"} onPress={handleEditSave} />
+        <View style={styles.row}>
+          <TouchableOpacity onPress={() => goToViewParticipants(onFetchEvent)}>
+            <View
+              style={{
+                marginRight: 50,
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <MaterialIcons
+                name="people-alt"
+                size={28}
+                color={theme.colors.primary}
+              />
+              <Text style={{ fontWeight: "bold", color: theme.colors.primary }}>
+                View Participants
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <Button
+            title={isEditing ? "Save" : "Edit"}
+            onPress={handleEditSave}
+          />
+        </View>
       </View>
     </View>
   );

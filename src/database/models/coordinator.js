@@ -264,6 +264,53 @@ class Coordinator extends BaseModel {
       throw error;
     }
   }
+
+  async fetchParticipants(eventData) {
+    try {
+      const [result] = await this.db.query(
+        "SELECT * FROM person p JOIN participants pt ON p.UserId = pt.UserId JOIN event e ON pt.EventId = e.EventId WHERE pt.EventId = e.EventId",
+        [eventData.eventId]
+      );
+      return result.length > 0 ? result : null;
+    } catch (error) {
+      console.error(`Error fetching participants: ${error}`);
+      throw error;
+    }
+  }
+
+  async updateParticipant(participantData) {
+    try {
+      const [participant] = await this.db.query(
+        "UPDATE participants SET Status = ? WHERE ParticipantId = ?",
+        [participantData.Status, participantData.participantId]
+      );
+
+      const participantUpdate = participant.affectedRows;
+      return participantUpdate;
+    } catch (error) {
+      console.error(`Error updating participant: ${error}`);
+      throw error;
+    }
+  }
+
+  async fetchCountParticipants(eventData) {
+    try {
+      const [rows] = await this.db.query(
+        "SELECT COUNT(*) as totalParticipants FROM participants WHERE EventId = ?",
+        [eventData.eventId]
+      );
+
+      if (!rows || rows.length === 0) {
+        return 0; // Return 0 if no rows are returned
+      }
+
+      const count = rows[0].totalParticipants; // Access the count from the first row
+      return count;
+    } catch (error) {
+      console.error(`Error fetching number of participants: ${error}`);
+      throw error;
+    }
+  }
 }
 
 module.exports = Coordinator;

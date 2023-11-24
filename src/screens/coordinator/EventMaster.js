@@ -26,6 +26,20 @@ const EventMaster = ({ route }) => {
       onFetchEvent: onFetchEvent,
     });
   };
+  //Count Number of Participants
+  const countParticipants = async (eventId) => {
+    try {
+      const response = await axios.post(
+        "http://192.168.1.14:3000/coordinator/fetchCountParticipants",
+        {
+          eventId: eventId,
+        }
+      );
+      return response.data.count;
+    } catch (error) {
+      console.error("Error counting Participants", error);
+    }
+  };
 
   //fetching Events
   const fetchEvent = async () => {
@@ -36,7 +50,13 @@ const EventMaster = ({ route }) => {
           coordinatorId: coordinator.CoordinatorId,
         }
       );
-      setFetchedEvents(response.data.fetchTable);
+      const eventWithCount = await Promise.all(
+        response.data.fetchTable.map(async (item) => {
+          const participantCount = await countParticipants(item.EventId);
+          return { ...item, participantCount };
+        })
+      );
+      setFetchedEvents(eventWithCount);
     } catch (error) {
       console.error("Error fetching tasks table", error);
       return []; // Return an empty array in case of an error
@@ -83,8 +103,7 @@ const EventMaster = ({ route }) => {
           fetchedEvents.map((item) => (
             <CoordEventCard
               key={item.EventId}
-              participants={0}
-              done={0}
+              participants={item.participantCount || 0}
               title={item.EventName}
               description={item.EventDescription}
               onPress={() => goToView(coordinator, fetchEvent, item)}
