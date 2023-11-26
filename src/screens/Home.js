@@ -53,7 +53,11 @@ const Home = ({ route, navigation }) => {
     } catch (error) {
         console.error("Error fetching VerdiPoints:", error);
     }
-};
+  };
+
+  const formatPoints = (points) => {
+    return points.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
 
   const getDifficultyLevel = (difficultyId) => {
     const difficultyString = String(difficultyId);
@@ -91,7 +95,7 @@ const Home = ({ route, navigation }) => {
             }}
           >
             <View style={styles.profileContainer}></View>
-            <PointCard points={userPoint} />
+            <PointCard points={formatPoints(userPoint)} />
           </View>
           <View>
             <TouchableOpacity style={styles.buttonStyle}>
