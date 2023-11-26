@@ -54,6 +54,7 @@ const TaskDetails = ({ route }) => {
             if (response.data.success) {
                 setIsAccepted(true);
                 setShowModal(true);
+                //navigation.navigate('Home', { user: user });
             } else {
                 setErrorMessage('Task is already accepted.');
                 setShowErrorModal(true);

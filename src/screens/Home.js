@@ -4,6 +4,7 @@ import axios from 'axios';
 import { theme } from "../../assets/style";
 import PointCard from "../components/PointCard";
 import Card from "../components/Card";
+import { useIsFocused } from '@react-navigation/native';
 
 const Home = ({ route, navigation }) => {
     const { user } = route.params;
@@ -13,6 +14,14 @@ const Home = ({ route, navigation }) => {
     const screenHeight = Dimensions.get('window').height;
     const paddingBottom = screenHeight * 0.15;
 
+    const isFocused = useIsFocused();
+    // Fetch tasks when the Home screen is focused
+    useEffect(() => {
+        if (isFocused) {
+            fetchTasks();
+        }
+    }, [isFocused]);
+    
     useEffect(() => {
         if (user && user.UserId) {
         fetchTasks();
@@ -26,15 +35,15 @@ const Home = ({ route, navigation }) => {
             const tasksWithUniqueKeys = response.data.acceptedTasks.map(task => ({
                 ...task,
                 key: `task-${task.TaskId}-${Math.random().toString(16).slice(2)}` 
-            }));
-        setTasks(tasksWithUniqueKeys);
-        } else {
-        console.log('Failed to fetch accepted tasks');
+                }));
+            setTasks(tasksWithUniqueKeys);
+            } else {
+            console.log('Failed to fetch accepted tasks');
+            }
+        } catch (error) {
+            console.error('Error fetching accepted tasks:', error);
         }
-    } catch (error) {
-        console.error('Error fetching accepted tasks:', error);
-    }
-    };
+        };
 
     const getDifficultyLevel = (difficultyId) => {
         const difficultyString = String(difficultyId);
@@ -63,15 +72,19 @@ const Home = ({ route, navigation }) => {
                         <Text style={{fontSize: 24, color: theme.colors.primary, fontWeight: 'bold', marginVertical: 20}}>Daily Tasks</Text>         
                     </View>
                     <View style={{ flex: 1, flexDirection: 'column', margin: 10 }}>
-                    {tasks.map((task) => (
-                        <Card 
-                            key={task.key}
-                            title={task.TaskName || 'No Title'}
-                            difficulty={getDifficultyLevel(task.DifficultyId) || 'No Difficulty'}
-                            description={task.TaskDescription || 'No Description'}
-                        />
-                        ))}
-                    </View>               
+                        {tasks.length === 0 ? (
+                            <Text>You have not accepted a task.</Text>
+                        ) : (
+                            tasks.map((task) => (
+                                <Card 
+                                    key={task.key}
+                                    title={task.TaskName || 'No Title'}
+                                    difficulty={getDifficultyLevel(task.DifficultyId) || 'No Difficulty'}
+                                    description={task.TaskDescription || 'No Description'}
+                                />
+                            ))
+                        )}
+                    </View>
                 </View>
             </View>
         </ScrollView>
