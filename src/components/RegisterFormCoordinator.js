@@ -7,9 +7,12 @@ import Birthday from "./Birthday";
 import Button from "./Button";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import ipAddress from "../database/ipAddress";
 
 const RegisterFormCoordinator = ({}) => {
   const navigation = useNavigation();
+
+  const localhost = ipAddress;
 
   const [selectedValue, setSelectedValue] = useState("male");
   const [userData, setUserData] = useState({
@@ -40,7 +43,7 @@ const RegisterFormCoordinator = ({}) => {
     }
 
     axios
-      .post("http://192.168.1.14:3000/coordinator/register", userData)
+      .post(`${localhost}/coordinator/register`, userData)
       .then((response) => {
         Alert.alert("Success", response.data.message);
         navigation.navigate("CoordinatorLogin");

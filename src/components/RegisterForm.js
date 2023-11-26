@@ -7,13 +7,19 @@ import Birthday from "./Birthday";
 import Button from "./Button";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import ipAddress from "../database/ipAddress";
 
 const RegisterForm = ({ onRegister }) => {
   const navigation = useNavigation();
 
+  const localhost = ipAddress;
+
   const handleBirthDateChange = (date) => {
-    setUserData((prev) => ({ ...prev, birthDate: date.toISOString().slice(0, 10) }));
-};
+    setUserData((prev) => ({
+      ...prev,
+      birthDate: date.toISOString().slice(0, 10),
+    }));
+  };
 
   const [selectedValue, setSelectedValue] = useState("male");
   const [userData, setUserData] = useState({
@@ -44,7 +50,7 @@ const RegisterForm = ({ onRegister }) => {
     }
 
     axios
-      .post("http://192.168.1.14:3000/user/register", userData)
+      .post(`${localhost}/user/register`, userData)
       .then((response) => {
         Alert.alert("Success", response.data.message);
         navigation.navigate("Login");
@@ -88,7 +94,7 @@ const RegisterForm = ({ onRegister }) => {
         <RadioButton.Group
           onValueChange={(value) => {
             setSelectedValue(value);
-            handleInputChange("gender", selectedValue); 
+            handleInputChange("gender", selectedValue);
           }}
           value={selectedValue}
         >

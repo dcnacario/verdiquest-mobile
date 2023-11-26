@@ -8,9 +8,11 @@ import {
 } from "react-native";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import ipAddress from "../../database/ipAddress";
 
 const ViewSubmission = ({ route }) => {
   const { taskData } = route.params;
+  const localhost = ipAddress;
 
   const [fetchedTasks, setFetchedTasks] = useState([]);
   console.log(taskData);
@@ -32,10 +34,9 @@ const ViewSubmission = ({ route }) => {
         return; // Exit the function if no task ID is provided
       }
 
-      const response = await axios.post(
-        "http://192.168.1.14:3000/coordinator/getTasks",
-        { taskId }
-      );
+      const response = await axios.post(`${localhost}/coordinator/getTasks`, {
+        taskId,
+      });
       setFetchedTasks(response.data.fetchTable);
     } catch (error) {
       console.error("Error fetching tasks table", error);

@@ -5,9 +5,11 @@ import Button from "../../components/Button";
 import CoordTaskCard from "../../components/CoordTaskCard";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
+import ipAddress from "../../database/ipAddress";
 
 const TaskMaster = ({ route }) => {
   const [fetchedTasks, setFetchedTasks] = useState([]);
+  const localhost = ipAddress;
 
   const navigation = useNavigation();
   const { coordinator } = route.params;
@@ -23,7 +25,7 @@ const TaskMaster = ({ route }) => {
   const fetchTasks = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.1.14:3000/coordinator/fetchTasks?coordinatorId=${coordinator.CoordinatorId}`
+        `${localhost}/coordinator/fetchTasks?coordinatorId=${coordinator.CoordinatorId}`
       );
       setFetchedTasks(response.data.fetchTable);
     } catch (error) {
@@ -34,12 +36,9 @@ const TaskMaster = ({ route }) => {
 
   const deleteTask = async (taskId) => {
     try {
-      const response = await axios.post(
-        "http://192.168.1.14:3000/coordinator/deleteTask",
-        {
-          taskId: taskId,
-        }
-      );
+      const response = await axios.post(`${localhost}/coordinator/deleteTask`, {
+        taskId: taskId,
+      });
       fetchTasks();
     } catch (error) {
       console.error("Error deleting task!", error);
