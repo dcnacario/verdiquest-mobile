@@ -26,7 +26,7 @@ const CoordinatorAddEvent = ({ route }) => {
   const { coordinator, onFetchEvent } = route.params;
   const minimumDate = new Date();
   const [eventData, setEventData] = useState({
-    coordinatorId: coordinator.CoordinatorId,
+    organizationId: coordinator.OrganizationId,
     eventName: "",
     eventDescription: "",
     eventVenue: "",

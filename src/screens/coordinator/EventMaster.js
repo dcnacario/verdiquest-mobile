@@ -49,7 +49,7 @@ const EventMaster = ({ route }) => {
       const response = await axios.post(
         `${localhost}/coordinator/fetchEvents`,
         {
-          coordinatorId: coordinator.CoordinatorId,
+          organizationId: coordinator.OrganizationId,
         }
       );
       const eventWithCount = await Promise.all(
@@ -60,7 +60,7 @@ const EventMaster = ({ route }) => {
       );
       setFetchedEvents(eventWithCount);
     } catch (error) {
-      console.error("Error fetching tasks table", error);
+      console.error("Error fetching events table", error);
       return []; // Return an empty array in case of an error
     }
   };

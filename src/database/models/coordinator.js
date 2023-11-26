@@ -92,10 +92,10 @@ class Coordinator extends BaseModel {
   async insertTask(taskData) {
     try {
       const [task] = await this.db.query(
-        "INSERT INTO dailytask (DifficultyId, CoordinatorId, TaskName, TaskType, TaskDescription, TaskDuration, TaskPoints, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO dailytask (DifficultyId, OrganizationId, TaskName, TaskType, TaskDescription, TaskDuration, TaskPoints, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         [
           taskData.difficultyId,
-          taskData.coordinatorId,
+          taskData.organizationId,
           taskData.taskName,
           taskData.taskType,
           taskData.taskDescription,
@@ -125,8 +125,8 @@ class Coordinator extends BaseModel {
   async fetchTasks(coordinatorData) {
     try {
       const [result] = await this.db.query(
-        "SELECT * FROM dailytask WHERE CoordinatorId = ? AND isDeleted = 0",
-        [coordinatorData.coordinatorId]
+        "SELECT * FROM dailytask WHERE OrganizationId = ? AND isDeleted = 0",
+        [coordinatorData.organizationId]
       );
       return result.length > 0 ? result : null;
     } catch (error) {
@@ -200,9 +200,9 @@ class Coordinator extends BaseModel {
   async createEvent(eventData) {
     try {
       const [event] = await this.db.query(
-        "INSERT INTO event (CoordinatorId, EventName, EventDescription, EventVenue, EventDate, EventPoints) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO event (OrganizationId, EventName, EventDescription, EventVenue, EventDate, EventPoints) VALUES (?, ?, ?, ?, ?, ?)",
         [
-          eventData.coordinatorId,
+          eventData.organizationId,
           eventData.eventName,
           eventData.eventDescription,
           eventData.eventVenue,
@@ -221,8 +221,8 @@ class Coordinator extends BaseModel {
   async fetchEvent(eventData) {
     try {
       const [result] = await this.db.query(
-        "SELECT * FROM event WHERE CoordinatorId = ?",
-        [eventData.coordinatorId]
+        "SELECT * FROM event WHERE OrganizationId = ?",
+        [eventData.organizationId]
       );
       return result.length > 0 ? result : null;
     } catch (error) {

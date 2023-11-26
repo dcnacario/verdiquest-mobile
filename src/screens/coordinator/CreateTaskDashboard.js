@@ -25,12 +25,12 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
 
   const [taskData, setTaskData] = useState({
     imageUri: null,
-    coordinatorId: coordinator.CoordinatorId,
+    organizationId: coordinator.OrganizationId,
     difficultyId: selectedDifficulty,
     taskName: "",
     taskType: "",
     taskDescription: "",
-    taskDuration: "",
+    taskDuration: "".toString(),
     taskPoints: "",
     Status: "Active",
   });
@@ -113,13 +113,12 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
 
         {/* Task Description */}
         <View style={{ justifyContent: "flex-start" }}>
-          <Text style={styles.modifiedTextInput}>Task Duration (Hours)</Text>
+          <Text style={styles.textInput}>Task Description</Text>
           <TextInput
-            style={styles.modifiedInputStyle}
-            value={taskDurationHours}
-            onChangeText={setTaskDurationHours}
-            placeholder="Hours"
-            keyboardType="numeric" // Ensure numeric input
+            style={styles.inputStyle}
+            value={taskData.taskDescription}
+            onChangeText={(text) => updateTaskData("taskDescription", text)}
+            placeholder="Enter task description"
           />
         </View>
 
@@ -130,9 +129,10 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
             <Text style={styles.modifiedTextInput}>Task Duration</Text>
             <TextInput
               style={styles.modifiedInputStyle}
-              value={taskData.taskDuration}
+              value={taskData.taskDuration.toString()}
               onChangeText={(text) => updateTaskData("taskDuration", text)}
               placeholder="in Hours"
+              keyboardType="numeric"
             />
           </View>
 

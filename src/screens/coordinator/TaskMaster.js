@@ -25,7 +25,7 @@ const TaskMaster = ({ route }) => {
   const fetchTasks = async () => {
     try {
       const response = await axios.get(
-        `${localhost}/coordinator/fetchTasks?coordinatorId=${coordinator.CoordinatorId}`
+        `${localhost}/coordinator/fetchTasks?organizationId=${coordinator.OrganizationId}`
       );
       setFetchedTasks(response.data.fetchTable);
     } catch (error) {
@@ -48,7 +48,7 @@ const TaskMaster = ({ route }) => {
 
   useEffect(() => {
     fetchTasks();
-  }, [coordinator.CoordinatorId]);
+  }, [coordinator.OrganizationId]);
 
   //navigation for View
   const gotoCard = (taskData) => {
