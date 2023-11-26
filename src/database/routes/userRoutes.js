@@ -15,7 +15,6 @@ router.get('/fetchAllDifficulty', userController.userAllDifficultyTasks);
 router.post('/acceptTask', userController.acceptTask);
 router.get('/fetchAcceptedTasks/:userId', userController.fetchAcceptedTasks);
 router.get('/checkTaskAccepted/:userId/:taskId', userController.checkTaskAccepted);
-
-
+router.get('/fetchVerdiPoints/:userId', userController.fetchVerdiPoints);
 
 module.exports = router;

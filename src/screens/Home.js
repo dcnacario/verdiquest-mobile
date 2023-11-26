@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  ScrollView,
-  Dimensions,
-  TouchableOpacity,
-} from "react-native";
+import { Text, View, StyleSheet, ScrollView, Dimensions, TouchableOpacity, } from "react-native";
 import axios from "axios";
 import { theme } from "../../assets/style";
 import PointCard from "../components/PointCard";
@@ -23,38 +16,44 @@ const Home = ({ route, navigation }) => {
   const screenHeight = Dimensions.get("window").height;
   const paddingBottom = screenHeight * 0.15;
 
-    const isFocused = useIsFocused();
-    // Fetch tasks when the Home screen is focused
-    useEffect(() => {
-        if (isFocused) {
-            fetchTasks();
-        }
-    }, [isFocused]);
-    
+  const isFocused = useIsFocused();
+
   useEffect(() => {
-    if (user && user.UserId) {
+    if (isFocused && user && user.UserId) {
       fetchTasks();
+      fetchVerdiPoints();
     }
-  }, [user]);
+  }, [isFocused, user]);
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(
-        `${localhost}/user/fetchAcceptedTasks/${user.UserId}`
-      );
+      const response = await axios.get(`${localhost}/user/fetchAcceptedTasks/${user.UserId}`);
       if (response.data.success) {
         const tasksWithUniqueKeys = response.data.acceptedTasks.map((task) => ({
           ...task,
           key: `task-${task.TaskId}-${Math.random().toString(16).slice(2)}`,
-            }));
-            setTasks(tasksWithUniqueKeys);
-          } else {
-            console.log("Failed to fetch accepted tasks");
-          }
-        } catch (error) {
-          console.error("Error fetching accepted tasks:", error);
+        }));
+        setTasks(tasksWithUniqueKeys);
+      } else {
+        console.log("Failed to fetch accepted tasks");
+      }
+    } catch (error) {
+      console.error("Error fetching accepted tasks:", error);
+    }
+  };
+
+  const fetchVerdiPoints = async () => {
+    try {
+        const response = await axios.get(`${localhost}/user/fetchVerdiPoints/${user.UserId}`);
+        if (response.data.success) {
+            setUserPoints(response.data.verdiPoints);
+        } else {
+            console.log("Failed to fetch VerdiPoints");
         }
-      };
+    } catch (error) {
+        console.error("Error fetching VerdiPoints:", error);
+    }
+};
 
   const getDifficultyLevel = (difficultyId) => {
     const difficultyString = String(difficultyId);
@@ -71,6 +70,7 @@ const Home = ({ route, navigation }) => {
         return "Unknown";
     }
   };
+
   return (
     <ScrollView
       keyboardShouldPersistTaps="handled"

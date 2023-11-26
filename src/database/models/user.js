@@ -195,8 +195,6 @@ class User extends BaseModel {
         return results.length > 0; // true if task is accepted
     }
 
-    
-
     async fetchAcceptedTasks(userId) {
         const query = `
             SELECT udt.*, dt.TaskName, dt.DifficultyId, dt.TaskDescription 
@@ -207,7 +205,16 @@ class User extends BaseModel {
         const [tasks] = await this.db.query(query, [userId]);
         return tasks;
     }
-    
+
+    async getVerdiPoints(userId) {
+        const query = `SELECT VerdiPoints FROM user WHERE UserId = ?`;
+        try {
+            const result = await this.db.query(query, [userId]);
+            return result[0][0].VerdiPoints; 
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 module.exports = User;

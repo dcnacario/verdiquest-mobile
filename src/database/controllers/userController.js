@@ -295,6 +295,15 @@ async function fetchAcceptedTasks(request, response) {
   }
 }
 
+async function fetchVerdiPoints(request, response) {
+  try {
+      const userId = request.params.userId;
+      const points = await user.getVerdiPoints(userId);
+      response.json({ success: true, verdiPoints: points });
+  } catch (error) {
+      response.status(500).json({ success: false, message: "Error fetching VerdiPoints", error: error.message });
+  }
+};
 
 module.exports = {
   registerUser,
@@ -308,5 +317,6 @@ module.exports = {
   userAllDifficultyTasks,
   acceptTask,
   fetchAcceptedTasks,
-  checkTaskAccepted
+  checkTaskAccepted,
+  fetchVerdiPoints,
 };
