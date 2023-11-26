@@ -19,6 +19,7 @@ import ViewEvent from "../screens/coordinator/ViewEvent";
 import ViewParticipants from "../screens/coordinator/ViewParticipants";
 import ReportEvent from "../screens/coordinator/ReportEvent";
 import ReportFeedbacks from "../screens/coordinator/ReportFeedbacks";
+import ReportMission from "../screens/coordinator/ReportMission";
 
 const AppCoordinatorStack = createStackNavigator();
 
@@ -159,6 +160,13 @@ const CoordinatorStack = ({ route }) => {
       <AppCoordinatorStack.Screen
         name="ReportFeedbacks"
         component={ReportFeedbacks}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <AppCoordinatorStack.Screen
+        name="ReportMission"
+        component={ReportMission}
         options={{
           headerShown: false,
         }}

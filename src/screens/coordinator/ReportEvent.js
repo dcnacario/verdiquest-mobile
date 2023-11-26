@@ -19,11 +19,15 @@ const ReportEvent = ({ route }) => {
   const [fetchedEvents, setFetchedEvents] = useState([]);
   const { coordinator } = route.params;
 
-  const goToView = (coordinator, onFetchEvent, item) => {
+  const goToView = (item) => {
     navigation.navigate("ReportFeedbacks", {
       item: item,
+    });
+  };
+
+  const goToTasks = (coordinator) => {
+    navigation.navigate("ReportMission", {
       coordinator: coordinator,
-      onFetchEvent: onFetchEvent,
     });
   };
 
@@ -75,8 +79,11 @@ const ReportEvent = ({ route }) => {
         <Text style={styles.textStyle}>REPORT</Text>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.buttonStyle}>
-          <Text style={styles.buttonText}>Mission</Text>
+        <TouchableOpacity
+          style={styles.buttonStyle}
+          onPress={() => goToTasks(coordinator)}
+        >
+          <Text style={styles.buttonText}>Task</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.buttonStyle, styles.buttonActive]}>
           <Text style={styles.buttonTextActive}>Event</Text>
@@ -92,7 +99,7 @@ const ReportEvent = ({ route }) => {
               title={item.EventName}
               description={item.EventDescription}
               status={item.EventStatus}
-              onPress={() => goToView(coordinator, fetchEvent, item)}
+              onPress={() => goToView(item)}
             />
           ))
         ) : (

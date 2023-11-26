@@ -9,9 +9,23 @@ import {
 import { theme } from "../../../assets/style";
 import CoordEventCard from "../../components/CoordReportCard";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import ipAddress from "../../database/ipAddress";
 
-const ReportMission = () => {
+const ReportMission = ({ route }) => {
   const navigation = useNavigation();
+  const { coordinator } = route.params;
+
+  const localhost = ipAddress;
+
+  const [fetchedTasks, setFetchedTasks] = useState([]);
+
+  const goToEvent = (coordinator) => {
+    navigation.navigate("ReportEvent", {
+      coordinator: coordinator,
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -19,31 +33,31 @@ const ReportMission = () => {
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.buttonStyle}>
-          <Text style={styles.buttonText}>Mission</Text>
+          <Text style={styles.buttonText}>Tasks</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.buttonStyle, styles.buttonActive]}>
-          <Text style={styles.buttonTextActive}>Event</Text>
+        <TouchableOpacity
+          style={[styles.buttonStyle, styles.buttonActive]}
+          onPress={() => goToEvent(coordinator)}
+        >
+          <Text style={styles.buttonTextActive}>Events</Text>
         </TouchableOpacity>
       </View>
       <ScrollView style={styles.scrollView}>
-        <CoordEventCard
-          participants={8}
-          done={2}
-          title="Cleanup Drive"
-          description={"well-being"}
-        />
-        <CoordEventCard
-          participants={20}
-          done={30}
-          title="Tree Planting"
-          description={"Recycling"}
-        />
-        <CoordEventCard
-          participants={100}
-          done={82}
-          title="Collect Plastic Bottle and Scrap Metals"
-          description={"Recycling"}
-        />
+        {fetchedTasks != null && fetchedTasks.length > 0 ? (
+          fetchedTasks.map((item) => (
+            <CoordEventCard
+              key={item.EventId}
+              participants={item.participantCount || 0}
+              feedback={0}
+              title={item.EventName}
+              description={item.EventDescription}
+              status={item.EventStatus}
+              onPress={() => goToView(item)}
+            />
+          ))
+        ) : (
+          <Text>No event/s available for this organization.</Text>
+        )}
       </ScrollView>
     </View>
   );

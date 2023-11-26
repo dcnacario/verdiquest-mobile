@@ -6,7 +6,7 @@ import axios from "axios";
 import ipAddress from "../../database/ipAddress";
 
 const ReportFeedbacks = ({ route }) => {
-  const { onFetchEvent, coordinator, item } = route.params;
+  const { item } = route.params;
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
