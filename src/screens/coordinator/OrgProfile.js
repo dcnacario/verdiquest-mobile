@@ -14,9 +14,11 @@ import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../../navigation/AuthContext";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
+import ipAddress from "../../database/ipAddress";
 
 const OrgProfile = () => {
   const [imageUri, setImageUri] = useState(null);
+  const localhost = ipAddress;
 
   const [coordinatorData, setCoordinatorData] = useState({
     organizationName: "",
@@ -38,10 +40,7 @@ const OrgProfile = () => {
       return;
     }
     axios
-      .post(
-        "http://192.168.1.14:3000/coordinator/register/organization",
-        coordinatorData
-      )
+      .post(`${localhost}/coordinator/register/organization`, coordinatorData)
       .then((response) => {
         Alert.alert("Success", response.data.message);
         navigation.navigate("CoordinatorRegistration");

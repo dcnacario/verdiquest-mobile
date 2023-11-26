@@ -1,11 +1,13 @@
 import React, { createContext } from "react";
 import axios from "axios";
+import ipAddress from "../database/ipAddress";
 
 // Create the context
 export const TaskContext = createContext();
 
 // Provider Component
 export const TaskProvider = ({ children }) => {
+  const localhost = ipAddress;
   const submitTask = async (
     taskData,
     navigation,
@@ -16,7 +18,7 @@ export const TaskProvider = ({ children }) => {
       console.log(taskData);
       console.log(coordinator);
       const response = await axios.post(
-        "http://192.168.1.14:3000/coordinator/createTask",
+        `${localhost}/coordinator/createTask`,
         taskData
       );
       if (response.data.success) {
@@ -37,7 +39,7 @@ export const TaskProvider = ({ children }) => {
   const fetchDifficulty = async () => {
     try {
       const response = await axios.get(
-        "http://192.168.1.14:3000/coordinator/fetchDifficulty"
+        `${localhost}/coordinator/fetchDifficulty`
       );
       return Array.isArray(response.data.fetchTable)
         ? response.data.fetchTable

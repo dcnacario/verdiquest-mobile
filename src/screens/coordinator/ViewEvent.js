@@ -14,6 +14,7 @@ import axios from "axios";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
+import ipAddress from "../../database/ipAddress";
 
 const ViewEvent = ({ route }) => {
   const { coordinator, onFetchEvent, item } = route.params;
@@ -24,6 +25,7 @@ const ViewEvent = ({ route }) => {
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(dateOfEvent);
   const [selectedTime, setSelectedTime] = useState(dateOfEvent);
+  const localhost = ipAddress;
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -110,7 +112,7 @@ const ViewEvent = ({ route }) => {
       };
       try {
         const response = await axios.post(
-          "http://192.168.1.14:3000/coordinator/updateEvent",
+          `${localhost}/coordinator/updateEvent`,
           updatedEventData
         );
         onFetchEvent;

@@ -5,9 +5,11 @@ import Button from "../../components/Button";
 import CoordEventCard from "../../components/CoordEventCard";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
+import ipAddress from "../../database/ipAddress";
 
 const EventMaster = ({ route }) => {
   const navigation = useNavigation();
+  const localhost = ipAddress;
 
   const [fetchedEvents, setFetchedEvents] = useState([]);
   const { coordinator } = route.params;
@@ -30,7 +32,7 @@ const EventMaster = ({ route }) => {
   const countParticipants = async (eventId) => {
     try {
       const response = await axios.post(
-        "http://192.168.1.14:3000/coordinator/fetchCountParticipants",
+        `${localhost}/coordinator/fetchCountParticipants`,
         {
           eventId: eventId,
         }
@@ -45,9 +47,9 @@ const EventMaster = ({ route }) => {
   const fetchEvent = async () => {
     try {
       const response = await axios.post(
-        "http://192.168.1.14:3000/coordinator/fetchEvents",
+        `${localhost}/coordinator/fetchEvents`,
         {
-          coordinatorId: coordinator.CoordinatorId,
+          organizationId: coordinator.OrganizationId,
         }
       );
       const eventWithCount = await Promise.all(
@@ -58,7 +60,7 @@ const EventMaster = ({ route }) => {
       );
       setFetchedEvents(eventWithCount);
     } catch (error) {
-      console.error("Error fetching tasks table", error);
+      console.error("Error fetching events table", error);
       return []; // Return an empty array in case of an error
     }
   };
@@ -67,7 +69,7 @@ const EventMaster = ({ route }) => {
   const deleteEvent = async (eventId) => {
     try {
       const response = await axios.post(
-        "http://192.168.1.14:3000/coordinator/deleteEvent",
+        `${localhost}/coordinator/deleteEvent`,
         {
           eventId: eventId,
         }

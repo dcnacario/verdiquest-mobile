@@ -13,9 +13,11 @@ import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation } from "@react-navigation/native";
+import ipAddress from "../../database/ipAddress";
 
 const CoordinatorAddEvent = ({ route }) => {
   const navigation = useNavigation();
+  const localhost = ipAddress;
   const [imageUri, setImageUri] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -24,7 +26,7 @@ const CoordinatorAddEvent = ({ route }) => {
   const { coordinator, onFetchEvent } = route.params;
   const minimumDate = new Date();
   const [eventData, setEventData] = useState({
-    coordinatorId: coordinator.CoordinatorId,
+    organizationId: coordinator.OrganizationId,
     eventName: "",
     eventDescription: "",
     eventVenue: "",
@@ -97,7 +99,7 @@ const CoordinatorAddEvent = ({ route }) => {
     };
     try {
       const response = await axios.post(
-        "http://192.168.1.14:3000/coordinator/createEvent",
+        `${localhost}/coordinator/createEvent`,
         updatedEventData
       );
       onFetchEvent();

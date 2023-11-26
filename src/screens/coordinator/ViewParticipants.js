@@ -8,12 +8,14 @@ import {
 } from "react-native";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import ipAddress from "../../database/ipAddress";
 
 const ViewParticipants = ({ route }) => {
   const { eventData } = route.params;
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [verified, setVerify] = useState(false);
+  const localhost = ipAddress;
 
   const [fetchedParticipants, setFetchedParticipants] = useState([]);
 
@@ -29,7 +31,7 @@ const ViewParticipants = ({ route }) => {
         return;
       }
       const response = await axios.post(
-        "http://192.168.1.14:3000/coordinator/fetchParticipants",
+        `${localhost}/coordinator/fetchParticipants`,
         {
           eventId,
         }
@@ -48,19 +50,16 @@ const ViewParticipants = ({ route }) => {
   const handleVerify = async (data) => {
     try {
       const response = await axios.post(
-        "http://192.168.1.14:3000/coordinator/updateParticipant",
+        `${localhost}/coordinator/updateParticipant`,
         {
           Status: "VERIFIED",
           participantId: data.ParticipantId,
         }
       );
-      const responsePoints = await axios.post(
-        "http://192.168.1.14:3000/user/updateUser",
-        {
-          verdiPoints: data.EventPoints,
-          userId: data.UserId,
-        }
-      );
+      const responsePoints = await axios.post(`${localhost}/user/updateUser`, {
+        verdiPoints: data.EventPoints,
+        userId: data.UserId,
+      });
       fetchParticipants();
     } catch (error) {
       console.log("Error updating user/task data:", error);

@@ -13,11 +13,13 @@ import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import ipAddress from "../../database/ipAddress";
 
 const TaskView = ({ route }) => {
   const navigation = useNavigation();
   const { taskData } = route.params;
   const [isEditing, setIsEditing] = useState(false);
+  const localhost = ipAddress;
 
   const [imageUri, setImageUri] = useState(null);
 
@@ -38,7 +40,7 @@ const TaskView = ({ route }) => {
     if (isEditing) {
       try {
         const response = await axios.post(
-          "http://192.168.1.14:3000/coordinator/updateTask",
+          `${localhost}/coordinator/updateTask`,
           editTaskData
         );
         console.log("Update response:", response.data);

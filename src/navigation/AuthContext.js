@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import React, { createContext, useState, useEffect } from "react";
 import { Alert } from "react-native";
+import ipAddress from "../database/ipAddress";
 
 export const AuthContext = createContext();
 
@@ -9,10 +10,13 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [userToken, setUserToken] = useState(null);
 
+  const localhost = ipAddress;
+
   const login = async (email, password, navigation) => {
     setIsLoading(true);
     try {
-      const response = await axios.post("http://192.168.1.14:3000/user/login", {
+      console.log(`${localhost}/user/login`);
+      const response = await axios.post(`${localhost}/user/login`, {
         email: email,
         password: password,
       });
@@ -38,13 +42,10 @@ export const AuthProvider = ({ children }) => {
   const loginCoordinator = async (username, password, navigation) => {
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        "http://192.168.1.14:3000/coordinator/login",
-        {
-          username: username,
-          password: password,
-        }
-      );
+      const response = await axios.post(`${localhost}/coordinator/login`, {
+        username: username,
+        password: password,
+      });
 
       if (response.data.success) {
         const token = response.data.token;

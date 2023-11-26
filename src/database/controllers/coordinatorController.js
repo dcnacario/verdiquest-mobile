@@ -144,7 +144,7 @@ async function createTask(request, response) {
   try {
     const {
       difficultyId,
-      coordinatorId,
+      organizationId,
       taskName,
       taskType,
       taskDescription,
@@ -155,7 +155,7 @@ async function createTask(request, response) {
 
     const taskData = {
       difficultyId,
-      coordinatorId,
+      organizationId,
       taskName,
       taskType,
       taskDescription,
@@ -195,9 +195,9 @@ async function getDifficulty(request, response) {
 }
 async function getTasks(request, response) {
   try {
-    const { coordinatorId } = request.query;
+    const { organizationId } = request.query;
 
-    const coordinatorData = { coordinatorId };
+    const coordinatorData = { organizationId };
     const fetchedTable = await coordinator.fetchTasks(coordinatorData);
     return response.json({
       success: true,
@@ -331,7 +331,7 @@ async function deleteEvent(request, response) {
 async function createEvent(request, response) {
   try {
     const {
-      coordinatorId,
+      organizationId,
       eventName,
       eventDescription,
       eventVenue,
@@ -340,7 +340,7 @@ async function createEvent(request, response) {
     } = request.body;
 
     const eventData = {
-      coordinatorId,
+      organizationId,
       eventName,
       eventDescription,
       eventVenue,
@@ -365,9 +365,9 @@ async function createEvent(request, response) {
 
 async function getEvents(request, response) {
   try {
-    const { coordinatorId } = request.body;
+    const { organizationId } = request.body;
 
-    const eventData = { coordinatorId };
+    const eventData = { organizationId };
     const fetchedTable = await coordinator.fetchEvent(eventData);
     return response.json({
       success: true,

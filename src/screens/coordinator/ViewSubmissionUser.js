@@ -4,9 +4,11 @@ import { theme } from "../../../assets/style";
 import SubmitCard from "../../components/SubmitCard";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import ipAddress from "../../database/ipAddress";
 
 const ViewSubmissionUser = ({ route }) => {
   const screenHeight = Dimensions.get("window").height;
+  const localhost = ipAddress;
   const paddingBottom = screenHeight * 0.15;
   const { data, onTaskFetch } = route.params;
   console.log(data);
@@ -29,15 +31,12 @@ const ViewSubmissionUser = ({ route }) => {
   //COORDINATOR ACCEPT SUBMISSION
   const handleComplete = async (data) => {
     try {
-      const response = await axios.post(
-        "http://192.168.1.14:3000/user/updateUser",
-        {
-          verdiPoints: data.TaskPoints,
-          userId: data.UserId,
-        }
-      );
+      const response = await axios.post(`${localhost}/user/updateUser`, {
+        verdiPoints: data.TaskPoints,
+        userId: data.UserId,
+      });
       const responseUserTask = await axios.post(
-        "http://192.168.1.14:3000/coordinator/updateUserTask",
+        `${localhost}/coordinator/updateUserTask`,
         {
           Status: "Complete",
           userDailyTaskId: data.UserDailyTaskId,
@@ -54,7 +53,7 @@ const ViewSubmissionUser = ({ route }) => {
   const handleDecline = async (data) => {
     try {
       const responseUserTask = await axios.post(
-        "http://192.168.1.14:3000/coordinator/updateUserTask",
+        `${localhost}/coordinator/updateUserTask`,
         {
           Status: "Ongoing",
           userDailyTaskId: data.UserDailyTaskId,
