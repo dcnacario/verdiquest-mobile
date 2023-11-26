@@ -268,7 +268,20 @@ class Coordinator extends BaseModel {
   async fetchParticipants(eventData) {
     try {
       const [result] = await this.db.query(
-        "SELECT * FROM person p JOIN participants pt ON p.UserId = pt.UserId JOIN event e ON pt.EventId = e.EventId WHERE pt.EventId = e.EventId",
+        "SELECT * FROM person p JOIN participants pt ON p.UserId = pt.UserId JOIN event e ON pt.EventId = e.EventId WHERE pt.EventId = ? AND pt.Status = 'UNVERIFIED'",
+        [eventData.eventId]
+      );
+      return result.length > 0 ? result : null;
+    } catch (error) {
+      console.error(`Error fetching participants: ${error}`);
+      throw error;
+    }
+  }
+
+  async fetchParticipantsVerified(eventData) {
+    try {
+      const [result] = await this.db.query(
+        "SELECT * FROM person p JOIN participants pt ON p.UserId = pt.UserId JOIN event e ON pt.EventId = e.EventId WHERE pt.EventId = ? AND pt.Status = 'VERIFIED'",
         [eventData.eventId]
       );
       return result.length > 0 ? result : null;

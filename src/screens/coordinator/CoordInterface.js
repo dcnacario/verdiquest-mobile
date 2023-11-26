@@ -22,6 +22,9 @@ const CoordInterface = ({ route }) => {
   const gotoEvents = () => {
     navigation.navigate("EventMaster", { coordinator: coordinator });
   };
+  const gotoReports = () => {
+    navigation.navigate("ReportEvent", { coordinator: coordinator });
+  };
 
   const gotoCoordinators = () => {
     navigation.navigate("CoordinatorMaster", {});
@@ -73,7 +76,7 @@ const CoordInterface = ({ route }) => {
             <Button title="Events" onPress={gotoEvents} />
           </View>
           <View style={styles.rightButton}>
-            <Button title="Report" onPress={gotoTasks} />
+            <Button title="Report" onPress={gotoReports} />
           </View>
         </View>
         <View style={styles.logoutButtonContainer}>

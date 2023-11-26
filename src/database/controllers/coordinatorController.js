@@ -366,6 +366,7 @@ async function createEvent(request, response) {
 async function getEvents(request, response) {
   try {
     const { organizationId } = request.body;
+    console.log(organizationId);
 
     const eventData = { organizationId };
     const fetchedTable = await coordinator.fetchEvent(eventData);
@@ -420,6 +421,22 @@ async function getParticipants(request, response) {
     const { eventId } = request.body;
     const eventData = { eventId };
     const fetchedTable = await coordinator.fetchParticipants(eventData);
+    return response.json({
+      success: true,
+      fetchTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+async function getParticipantsVerified(request, response) {
+  try {
+    const { eventId } = request.body;
+    const eventData = { eventId };
+    const fetchedTable = await coordinator.fetchParticipantsVerified(eventData);
     return response.json({
       success: true,
       fetchTable: fetchedTable,
@@ -498,4 +515,5 @@ module.exports = {
   getParticipants,
   updateParticipant,
   getCountParticipants,
+  getParticipantsVerified,
 };

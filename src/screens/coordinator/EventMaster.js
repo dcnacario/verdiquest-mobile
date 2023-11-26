@@ -13,7 +13,6 @@ const EventMaster = ({ route }) => {
 
   const [fetchedEvents, setFetchedEvents] = useState([]);
   const { coordinator } = route.params;
-
   const goCreateEvent = (coordinator, onFetchEvent) => {
     navigation.navigate("CoordinatorAddEvent", {
       coordinator: coordinator,
@@ -53,7 +52,7 @@ const EventMaster = ({ route }) => {
         }
       );
       const eventWithCount = await Promise.all(
-        response.data.fetchTable.map(async (item) => {
+        (response.data.fetchTable || []).map(async (item) => {
           const participantCount = await countParticipants(item.EventId);
           return { ...item, participantCount };
         })
@@ -85,7 +84,7 @@ const EventMaster = ({ route }) => {
 
   useEffect(() => {
     fetchEvent();
-  }, [coordinator.CoordinatorId]);
+  }, [coordinator.OrganizationId]);
 
   //------------------------------------------------------------
   return (
@@ -101,7 +100,7 @@ const EventMaster = ({ route }) => {
         <View style={{ flex: 1 }}></View>
       </View>
       <ScrollView style={styles.scrollView}>
-        {fetchedEvents != null ? (
+        {fetchedEvents != null && fetchedEvents.length > 0 ? (
           fetchedEvents.map((item) => (
             <CoordEventCard
               key={item.EventId}
@@ -113,7 +112,7 @@ const EventMaster = ({ route }) => {
             />
           ))
         ) : (
-          <Text>No event/s available for this coordinator.</Text>
+          <Text>No event/s available for this organization.</Text>
         )}
       </ScrollView>
     </View>

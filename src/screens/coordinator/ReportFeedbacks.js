@@ -1,53 +1,98 @@
-import React from "react";
-import { View, StyleSheet, Text, ScrollView} from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, Text, ScrollView } from "react-native";
 import { theme } from "../../../assets/style";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons";
+import axios from "axios";
+import ipAddress from "../../database/ipAddress";
 
-const FeedbackScreen = () => {
-  const feedbacks = [
-    {
-      id: '1',
-      user: 'User 1',
-      comment: 'It is great event! I have met people with goals',
-      rating: 5,
-    },
-    // ... Add other feedback objects here
-  ];
+const ReportFeedbacks = ({ route }) => {
+  const { onFetchEvent, coordinator, item } = route.params;
 
-  const renderStars = (rating) => {
-    let stars = [];
-    for (let i = 0; i < 5; i++) {
-      stars.push(
-        <MaterialIcon
-          name={i < rating ? "star" : "star-border"}
-          size={16}
-          color="#ffd700"
-          key={i}
-        />
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const localhost = ipAddress;
+
+  const [fetchedParticipants, setFetchedParticipants] = useState([]);
+
+  //API BACKEND CALL
+  const fetchParticipants = async () => {
+    try {
+      let eventId = item.EventId;
+      if (!eventId) {
+        console.error("No event ID available");
+        setError("No event ID available"); // Set error message
+        setIsLoading(false); // End loading
+        return;
+      }
+      const response = await axios.post(
+        `${localhost}/coordinator/fetchParticipantsVerified`,
+        {
+          eventId,
+        }
       );
+      setFetchedParticipants(response.data.fetchTable);
+      setIsLoading(false); // End loading
+    } catch (error) {
+      console.error("Error fetching participants table", error);
+      setError("Error fetching participants table");
+      setIsLoading(false);
     }
-    return stars;
   };
+
+  useEffect(() => {
+    fetchParticipants();
+  }, [item.EventId || item.eventId]);
+
+  // const renderStars = (rating) => {
+  //   let stars = [];
+  //   for (let i = 0; i < 5; i++) {
+  //     stars.push(
+  //       <MaterialIcon
+  //         name={i < rating ? "star" : "star-border"}
+  //         size={16}
+  //         color="#ffd700"
+  //         key={i}
+  //       />
+  //     );
+  //   }
+  //   return stars;
+  // };
 
   return (
     <View style={styles.background}>
       <View style={styles.header}>
         <Text style={styles.taskName}>Feedbacks</Text>
       </View>
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
-        {feedbacks.map(feedback => (
-          <View key={feedback.id} style={styles.feedbackCard}>
-            <View style={styles.userAvatar} />
-            <View style={styles.feedbackTextContainer}>
-              <Text style={styles.feedbackText}>{feedback.comment}</Text>
-              <View style={styles.starRating}>{renderStars(feedback.rating)}</View>
-              <Text style={styles.userText}>{feedback.user}</Text>
-            </View>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}
+      >
+        <View style={styles.container}>
+          <Text
+            style={{ textAlign: "center", fontWeight: "bold", fontSize: 18 }}
+          >
+            {item.EventName}
+          </Text>
+          {fetchedParticipants != null && fetchedParticipants.length > 0 ? (
+            fetchedParticipants.map((item) => (
+              <View key={item.ParticipantId} style={styles.feedbackCard}>
+                <View style={styles.userAvatar} />
+                <View style={styles.feedbackTextContainer}>
+                  <Text style={styles.feedbackText}>"{item.Feedback}"</Text>
+                  <Text style={styles.userText}>{item.FirstName}</Text>
+                </View>
+              </View>
+            ))
+          ) : (
+            <Text style={{ textAlign: "center", marginTop: 20 }}>
+              No user feedbacks yet!
+            </Text>
+          )}
+
+          <View style={styles.totalRatingContainer}>
+            {/* <Text>Total Rating:</Text>
+            <Text style={styles.totalRating}>4.3</Text> */}
           </View>
-        ))}
-        <View style={styles.totalRatingContainer}>
-          <Text>Total Rating:</Text>
-          <Text style={styles.totalRating}>4.3</Text>
         </View>
       </ScrollView>
     </View>
@@ -57,35 +102,37 @@ const FeedbackScreen = () => {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    backgroundColor: theme.colors.background, // Use your theme background color
+    backgroundColor: theme.colors.background,
   },
   header: {
-    backgroundColor: '#f5f5f5', // Header background color
     paddingVertical: 20, // Padding for the header
     paddingHorizontal: 16, // Padding for the header
-    justifyContent: 'center', // Center content horizontally
-    alignItems: 'center', // Center content vertically
-    width: '100%', // Header width
+    justifyContent: "center", // Center content horizontally
+    alignItems: "center", // Center content vertically
+    width: "100%", // Header width
+    marginTop: "10%",
   },
   taskName: {
     fontSize: 24, // Adjust the size to match your design
-        fontWeight: 'bold',
-        color: 'black', // Adjust the color to match your design
+    fontWeight: "bold",
+    color: "black", // Adjust the color to match your design
   },
   scrollView: {
-    width: '100%'
+    width: "100%",
   },
   scrollViewContent: {
-    alignItems: 'center',
-      paddingVertical: 20,
+    alignItems: "center",
+    paddingVertical: 20,
   },
   feedbackCard: {
-    backgroundColor: theme.colors.cardBackground, // Use your theme card background color
-    flexDirection: 'row',
+    backgroundColor: "rgba(123, 144, 75, 0.4)", // Use your theme card background color
+    flexDirection: "row",
     padding: 10,
+    marginHorizontal: 40,
     borderRadius: 8,
-    marginVertical: 8,
-    alignItems: 'center',
+    marginVertical: 15,
+    alignItems: "center",
+    borderRadius: 16,
   },
   userAvatar: {
     backgroundColor: theme.colors.avatarBackground, // Use your theme avatar background color
@@ -99,29 +146,38 @@ const styles = StyleSheet.create({
   },
   feedbackText: {
     fontSize: 12, // Adjust as needed
-    color: theme.colors.text, // Use your theme text color
+    textAlign: "justify",
+    // Use your theme text color
   },
   starRating: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 4,
   },
   userText: {
-    fontSize: 10,
+    fontSize: 12,
     color: theme.colors.subText, // Use your theme subtext color
     marginTop: 4,
+    fontWeight: "bold",
   },
   totalRatingContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 20,
     paddingHorizontal: 10,
   },
   totalRating: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: theme.colors.highlight, // Use your theme highlight color
+  },
+  container: {
+    backgroundColor: "rgba(123,144,75,0.4)",
+    borderRadius: 20,
+    width: "80%",
+    paddingTop: 20,
+    flex: 1,
   },
   // ... other styles ...
 });
 
-export default FeedbackScreen;
+export default ReportFeedbacks;

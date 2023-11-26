@@ -21,6 +21,10 @@ router.post("/fetchEvents", coordinatorController.getEvents);
 router.post("/updateEvent", coordinatorController.updateEvent);
 router.post("/deleteEvent", coordinatorController.deleteEvent);
 router.post("/fetchParticipants", coordinatorController.getParticipants);
+router.post(
+  "/fetchParticipantsVerified",
+  coordinatorController.getParticipantsVerified
+);
 router.post("/updateParticipant", coordinatorController.updateParticipant);
 router.post(
   "/fetchCountParticipants",

@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, Image } from "react-native";
 import Button from "./Button";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import defaultImage from "../../assets/img/default-image.png";
+import { theme } from "../../assets/style";
 
 const CoordReportCard = ({
   title,
@@ -12,7 +13,8 @@ const CoordReportCard = ({
   description,
   onPress,
   eventName,
-  done,
+  feedback,
+  status,
 }) => {
   return (
     <View style={styles.container}>
@@ -28,16 +30,39 @@ const CoordReportCard = ({
         <View style={styles.buttonContainer}>
           <View style={styles.participantsContainer}>
             <Text style={styles.participantsText}>
-              <MaterialIcon name="people" size={18} />
+              <MaterialIcon name="people" size={20} color={"#56624B"} />
               {participants}
-              <MaterialIcon name="chat" size={18} />
-              {participants}
+            </Text>
+            <Text style={styles.participantsText}>
+              <MaterialIcon name="chat" size={20} color={"#56624B"} />
+              {feedback}
             </Text>
           </View>
           <View style={styles.listItem}>
             <Button title="View" onPress={onPress} style={styles.button} />
-          </View>
 
+            {/* {status === "ONGOING" && (
+              <MaterialIcon
+                name="hourglass-bottom"
+                size={24}
+                color={theme.colors.primary}
+              />
+            )} */}
+            {status === "DONE" && (
+              <MaterialIcon
+                name="done"
+                size={24}
+                color={theme.colors.primary}
+              />
+            )}
+            {/* {status === "INCOMING" && (
+              <MaterialIcon
+                name="lock-clock"
+                size={24}
+                color={theme.colors.primary}
+              />
+            )} */}
+          </View>
         </View>
       </View>
     </View>
@@ -86,25 +111,28 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     justifyContent: "center",
     alignItems: "center",
-    gap: 5,
+    gap: 20,
     marginTop: 20,
   },
   participantsContainer: {
     justifyContent: "center",
+    flexDirection: "row",
+    gap: 20,
   },
   buttonView: {
-    flexDirection: 'row', // Aligns children in a row
-    justifyContent: 'flex-start',
+    flexDirection: "row", // Aligns children in a row
+    justifyContent: "flex-start",
     marginLeft: 80,
     gap: 5,
   },
   listItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: 10,
+    gap: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc', // Adjust the color as needed
+    borderBottomColor: "#ccc", // Adjust the color as needed
   },
 });
 
