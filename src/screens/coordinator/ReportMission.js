@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
   Text,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { theme } from "../../../assets/style";
 import CoordEventCard from "../../components/CoordReportCard";
@@ -15,6 +16,7 @@ import ipAddress from "../../database/ipAddress";
 const ReportMission = ({ route }) => {
   const navigation = useNavigation();
   const { coordinator } = route.params;
+  const [isLoading, setIsLoading] = useState(false);
 
   const localhost = ipAddress;
 
@@ -25,6 +27,47 @@ const ReportMission = ({ route }) => {
       coordinator: coordinator,
     });
   };
+
+  const countTakers = async (taskId) => {
+    try {
+      const response = await axios.post(
+        `${localhost}/coordinator/fetchCountTakers`,
+        {
+          taskId: taskId,
+        }
+      );
+      return response.data.count;
+    } catch (error) {
+      console.error("Error counting Takers", error);
+    }
+  };
+
+  //fetching Events
+  const fetchTasks = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(
+        `${localhost}/coordinator/fetchTasks?organizationId=${coordinator.OrganizationId}`
+      );
+      console.log(response.data);
+      const taskWithCount = await Promise.all(
+        (response.data.fetchTable || []).map(async (item) => {
+          const takersCount = await countTakers(item.TaskId);
+          return { ...item, takersCount };
+        })
+      );
+      setFetchedTasks(taskWithCount);
+    } catch (error) {
+      console.error("Error fetching task table", error);
+      return []; // Return an empty array in case of an error
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTasks();
+  }, [coordinator.OrganizationId]);
 
   return (
     <View style={styles.container}>
@@ -43,20 +86,24 @@ const ReportMission = ({ route }) => {
         </TouchableOpacity>
       </View>
       <ScrollView style={styles.scrollView}>
-        {fetchedTasks != null && fetchedTasks.length > 0 ? (
+        {isLoading ? (
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        ) : fetchedTasks != null && fetchedTasks.length > 0 ? (
           fetchedTasks.map((item) => (
             <CoordEventCard
-              key={item.EventId}
-              participants={item.participantCount || 0}
+              key={item.TaskId}
+              participants={item.takersCount || 0}
               feedback={0}
-              title={item.EventName}
-              description={item.EventDescription}
+              title={item.TaskName}
+              description={item.TaskDescription}
               status={item.EventStatus}
               onPress={() => goToView(item)}
             />
           ))
         ) : (
-          <Text>No event/s available for this organization.</Text>
+          <Text style={{ textAlign: "center" }}>
+            No task/s available for this organization.
+          </Text>
         )}
       </ScrollView>
     </View>
@@ -91,14 +138,14 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     marginHorizontal: 5,
-    borderRadius: 5,
+    borderRadius: 10,
     backgroundColor: "#4CAF50", // Change as per your inactive button color
   },
   buttonActive: {
     backgroundColor: "#3F4A34", // Change as per your active button color
   },
   buttonText: {
-    color: "#000000", // Change as per your inactive text color
+    color: "white", // Change as per your inactive text color
     textAlign: "center",
   },
   buttonTextActive: {

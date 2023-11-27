@@ -92,12 +92,11 @@ class Coordinator extends BaseModel {
   async insertTask(taskData) {
     try {
       const [task] = await this.db.query(
-        "INSERT INTO dailytask (DifficultyId, OrganizationId, TaskName, TaskType, TaskDescription, TaskDuration, TaskPoints, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO dailytask (DifficultyId, OrganizationId, TaskName, TaskDescription, TaskDuration, TaskPoints, Status) VALUES (?, ?, ?, ?, ?, ?, ?)",
         [
           taskData.difficultyId,
           taskData.organizationId,
           taskData.taskName,
-          taskData.taskType,
           taskData.taskDescription,
           taskData.taskDuration,
           taskData.taskPoints,
@@ -123,15 +122,25 @@ class Coordinator extends BaseModel {
   }
 
   async fetchTasks(coordinatorData) {
+    if (!coordinatorData || !coordinatorData.organizationId) {
+      throw new Error("Invalid coordinator data: organizationId is required");
+    }
+
+    const organizationId = coordinatorData.organizationId;
+
     try {
       const [result] = await this.db.query(
-        "SELECT * FROM dailytask WHERE OrganizationId = ? AND isDeleted = 0",
-        [coordinatorData.organizationId]
+        "SELECT * FROM dailytask dt JOIN difficulty d ON dt.DifficultyId = d.DifficultyId WHERE dt.OrganizationId = ? AND dt.isDeleted = 0",
+        [organizationId]
       );
-      return result.length > 0 ? result : null;
+
+      console.log(`Tasks fetched for OrganizationId: ${organizationId}`);
+      return result.length > 0 ? result : [];
     } catch (error) {
-      console.error(`Error fetching tasks: ${error}`);
-      throw error;
+      console.error(
+        `Error fetching tasks for OrganizationId ${organizationId}: ${error}`
+      );
+      throw new Error(`Error fetching tasks: ${error.message}`);
     }
   }
 
@@ -151,13 +160,13 @@ class Coordinator extends BaseModel {
   async updateTask(taskData) {
     try {
       const [task] = await this.db.query(
-        "UPDATE dailytask SET TaskName = ?, TaskType = ?, TaskDescription = ?, TaskPoints = ?, TaskDuration = ? WHERE TaskId = ?",
+        "UPDATE dailytask SET TaskName = ?, TaskDescription = ?, TaskPoints = ?, TaskDuration = ?, DifficultyId = ? WHERE TaskId = ?",
         [
           taskData.taskName,
-          taskData.taskType,
           taskData.taskDescription,
           taskData.taskPoints,
           taskData.taskDuration,
+          taskData.difficultyId,
           taskData.taskId,
         ]
       );
@@ -287,6 +296,46 @@ class Coordinator extends BaseModel {
       return result.length > 0 ? result : null;
     } catch (error) {
       console.error(`Error fetching participants: ${error}`);
+      throw error;
+    }
+  }
+
+  async fetchTaskTakers(taskData) {
+    try {
+      const [rows] = await this.db.query(
+        "SELECT COUNT(*) as totalTakers FROM userdailytask WHERE TaskId = ?",
+        [taskData.taskId]
+      );
+
+      if (!rows || rows.length === 0) {
+        return 0; // Return 0 if no rows are returned
+      }
+
+      const count = rows[0].totalTakers; // Access the count from the first row
+      console.log(count);
+      return count;
+    } catch (error) {
+      console.error(`Error fetching total takers: ${error}`);
+      throw error;
+    }
+  }
+
+  async fetchUserTaskSelected(taskData) {
+    try {
+      const [rows] = await this.db.query(
+        "SELECT COUNT(*) as totalTakers FROM userdailytask WHERE TaskId = ? AND Status = 'DONE'",
+        [taskData.taskId]
+      );
+
+      if (!rows || rows.length === 0) {
+        return 0; // Return 0 if no rows are returned
+      }
+
+      const count = rows[0].totalTakers; // Access the count from the first row
+      console.log(count);
+      return count;
+    } catch (error) {
+      console.error(`Error fetching total takers: ${error}`);
       throw error;
     }
   }

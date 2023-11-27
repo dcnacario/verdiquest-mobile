@@ -5,6 +5,7 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { theme } from "../../../assets/style";
 import CoordEventCard from "../../components/CoordReportCard";
@@ -15,6 +16,7 @@ import axios from "axios";
 const ReportEvent = ({ route }) => {
   const navigation = useNavigation();
   const localhost = ipAddress;
+  const [isLoading, setIsLoading] = useState(false);
 
   const [fetchedEvents, setFetchedEvents] = useState([]);
   const { coordinator } = route.params;
@@ -49,6 +51,7 @@ const ReportEvent = ({ route }) => {
 
   //fetching Events
   const fetchEvent = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.post(
         `${localhost}/coordinator/fetchEvents`,
@@ -66,6 +69,8 @@ const ReportEvent = ({ route }) => {
     } catch (error) {
       console.error("Error fetching events table", error);
       return []; // Return an empty array in case of an error
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -90,7 +95,9 @@ const ReportEvent = ({ route }) => {
         </TouchableOpacity>
       </View>
       <ScrollView style={styles.scrollView}>
-        {fetchedEvents != null && fetchedEvents.length > 0 ? (
+        {isLoading ? (
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        ) : fetchedEvents != null && fetchedEvents.length > 0 ? (
           fetchedEvents.map((item) => (
             <CoordEventCard
               key={item.EventId}
@@ -145,7 +152,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#4CAF50", // Change as per your active button color
   },
   buttonText: {
-    color: "#000000", // Change as per your inactive text color
+    color: "white", // Change as per your inactive text color
     textAlign: "center",
   },
   buttonTextActive: {

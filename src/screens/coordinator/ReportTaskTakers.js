@@ -10,7 +10,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import ipAddress from "../../database/ipAddress";
 
-const ViewSubmission = ({ route }) => {
+const ReportTaskTakers = ({ route }) => {
   const { taskData } = route.params;
   const localhost = ipAddress;
 
@@ -31,7 +31,7 @@ const ViewSubmission = ({ route }) => {
       let taskId = taskData.taskId || taskData.TaskId; // Use taskId if it exists, otherwise use TaskId
       if (!taskId) {
         console.error("No task ID available");
-        return []; // Exit the function if no task ID is provided
+        return; // Exit the function if no task ID is provided
       }
 
       const response = await axios.post(`${localhost}/coordinator/getTasks`, {
@@ -40,7 +40,6 @@ const ViewSubmission = ({ route }) => {
       setFetchedTasks(response.data.fetchTable);
     } catch (error) {
       console.error("Error fetching tasks table", error);
-      return [];
     }
   };
 
@@ -61,27 +60,23 @@ const ViewSubmission = ({ route }) => {
         style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContent}
       >
-        {fetchedTasks != null && fetchedTasks.length > 0 ? (
-          fetchedTasks.map((item) => (
-            <View key={item.TaskId} style={styles.cardContainer}>
-              <View style={styles.imagePlaceholder} />
-              <View style={styles.textContainer}>
-                <Text style={styles.name}>
-                  {item.FirstName} {item.LastName}
-                </Text>
-                <Text style={styles.status}>Status: {item.Status}</Text>
-              </View>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => goToViewSubmissionUser(item, fetchTasks)}
-              >
-                <Text style={styles.buttonText}>View Submission</Text>
-              </TouchableOpacity>
+        {fetchedTasks.map((item) => (
+          <View key={item.TaskId} style={styles.cardContainer}>
+            <View style={styles.imagePlaceholder} />
+            <View style={styles.textContainer}>
+              <Text style={styles.name}>
+                {item.FirstName} {item.LastName}
+              </Text>
+              <Text style={styles.status}>Status: {item.Status}</Text>
             </View>
-          ))
-        ) : (
-          <Text>No user submissions.</Text>
-        )}
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => goToViewSubmissionUser(item, fetchTasks)}
+            >
+              <Text style={styles.buttonText}>View Submission</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
       </ScrollView>
     </View>
   );
@@ -167,4 +162,4 @@ const styles = StyleSheet.create({
   // ... other styles if needed
 });
 
-export default ViewSubmission;
+export default ReportTaskTakers;

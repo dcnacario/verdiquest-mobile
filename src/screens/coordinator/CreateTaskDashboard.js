@@ -22,13 +22,13 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
   const [selectedDifficulty, setSelectedDifficulty] = useState(1);
   const [taskDurationHours, setTaskDurationHours] = useState("");
   const [difficultyData, setDifficultyData] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [taskData, setTaskData] = useState({
     imageUri: null,
     organizationId: coordinator.OrganizationId,
     difficultyId: selectedDifficulty,
     taskName: "",
-    taskType: "",
     taskDescription: "",
     taskDuration: "".toString(),
     taskPoints: "",
@@ -78,6 +78,21 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
     updateTaskData("difficultyId", selectedDifficulty);
   }, [selectedDifficulty]);
 
+  const handleSubmit = async () => {
+    if (isSubmitting) return; // Prevents multiple submissions
+
+    setIsSubmitting(true); // Disable the button
+
+    try {
+      await submitTask(taskData, navigation, coordinator, onTaskCreated);
+      // Handle successful submission
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSubmitting(false); // Re-enable the button
+    }
+  };
+
   return (
     <View style={styles.background}>
       <View style={styles.eventDetailsContainer}>
@@ -97,17 +112,6 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
             value={taskData.taskName}
             onChangeText={(text) => updateTaskData("taskName", text)}
             placeholder="Enter task name"
-          />
-        </View>
-
-        {/* Task Type */}
-        <View style={{ justifyContent: "flex-start" }}>
-          <Text style={styles.textInput}>Task Type</Text>
-          <TextInput
-            style={styles.inputStyle}
-            value={taskData.taskType}
-            onChangeText={(text) => updateTaskData("taskType", text)}
-            placeholder="Enter task type"
           />
         </View>
 
@@ -170,10 +174,9 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
         </View>
 
         <Button
-          title="Create"
-          onPress={() => {
-            submitTask(taskData, navigation, coordinator, onTaskCreated);
-          }}
+          title={isSubmitting ? "Creating..." : "Create"}
+          onPress={handleSubmit}
+          disabled={isSubmitting}
         />
       </View>
     </View>

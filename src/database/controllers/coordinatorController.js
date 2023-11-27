@@ -146,7 +146,6 @@ async function createTask(request, response) {
       difficultyId,
       organizationId,
       taskName,
-      taskType,
       taskDescription,
       taskDuration,
       taskPoints,
@@ -157,7 +156,6 @@ async function createTask(request, response) {
       difficultyId,
       organizationId,
       taskName,
-      taskType,
       taskDescription,
       taskDuration,
       taskPoints,
@@ -234,19 +232,19 @@ async function updateTask(request, response) {
   try {
     const {
       taskName,
-      taskType,
       taskDescription,
       taskPoints,
       taskDuration,
+      difficultyId,
       taskId,
     } = request.body;
 
     const taskData = {
       taskName,
-      taskType,
       taskDescription,
       taskPoints,
       taskDuration,
+      difficultyId,
       taskId,
     };
 
@@ -496,6 +494,39 @@ async function getCountParticipants(request, response) {
       .send({ message: "Server error", error: error.message });
   }
 }
+async function getCountTakers(request, response) {
+  try {
+    const { taskId } = request.body;
+    const taskData = { taskId };
+    const countTakers = await coordinator.fetchUserTaskSelected(taskData);
+    return response.json({
+      success: true,
+      count: countTakers,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function getUserCountTakers(request, response) {
+  try {
+    const { taskId } = request.body;
+    const taskData = { taskId };
+    const countTakers = await coordinator.fetchTaskTakers(taskData);
+    return response.json({
+      success: true,
+      count: countTakers,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
 
 module.exports = {
   registerOrganization,
@@ -516,4 +547,6 @@ module.exports = {
   updateParticipant,
   getCountParticipants,
   getParticipantsVerified,
+  getCountTakers,
+  getUserCountTakers,
 };

@@ -1,5 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, View, Text, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
 import CoordTaskCard from "../../components/CoordTaskCard";
@@ -11,9 +17,10 @@ const TaskMaster = ({ route }) => {
   const [fetchedTasks, setFetchedTasks] = useState([]);
   const localhost = ipAddress;
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigation = useNavigation();
   const { coordinator } = route.params;
-  console.log(coordinator);
   //navigate to creation of task
   const goToCreateTask = () => {
     navigation.navigate("CreateTaskDashboard", {
@@ -22,15 +29,53 @@ const TaskMaster = ({ route }) => {
     });
   };
 
+  const countTakers = async (taskId) => {
+    try {
+      const response = await axios.post(
+        `${localhost}/coordinator/fetchCountTakers`,
+        {
+          taskId: taskId,
+        }
+      );
+      return response.data.count;
+    } catch (error) {
+      console.error("Error counting Takers", error);
+    }
+  };
+
+  const taskTakers = async (taskId) => {
+    try {
+      const response = await axios.post(
+        `${localhost}/coordinator/fetchTaskTakers`,
+        {
+          taskId: taskId,
+        }
+      );
+      return response.data.count;
+    } catch (error) {
+      console.error("Error counting Takers", error);
+    }
+  };
+
   const fetchTasks = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.get(
         `${localhost}/coordinator/fetchTasks?organizationId=${coordinator.OrganizationId}`
       );
-      setFetchedTasks(response.data.fetchTable);
+      const taskWithCount = await Promise.all(
+        (response.data.fetchTable || []).map(async (item) => {
+          const takersCount = await countTakers(item.TaskId);
+          const takersTask = await taskTakers(item.TaskId);
+          return { ...item, takersCount, takersTask };
+        })
+      );
+      setFetchedTasks(taskWithCount);
     } catch (error) {
-      console.error("Error fetching tasks table", error);
+      console.error("Error fetching task table", error);
       return []; // Return an empty array in case of an error
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -51,8 +96,11 @@ const TaskMaster = ({ route }) => {
   }, [coordinator.OrganizationId]);
 
   //navigation for View
-  const gotoCard = (taskData) => {
-    navigation.navigate("TaskView", { taskData: taskData });
+  const gotoCard = (taskData, onTaskFetch) => {
+    navigation.navigate("TaskView", {
+      taskData: taskData,
+      onTaskFetch: onTaskFetch,
+    });
   };
 
   return (
@@ -65,15 +113,17 @@ const TaskMaster = ({ route }) => {
         <View style={{ flex: 1 }}></View>
       </View>
       <ScrollView style={styles.scrollView}>
-        {fetchedTasks != null ? (
+        {isLoading ? (
+          <ActivityIndicator size="large" color={theme.colors.primary} /> // Loading indicator
+        ) : fetchedTasks != null ? (
           fetchedTasks.map((item) => (
             <CoordTaskCard
               key={item.TaskId}
-              participants={0}
-              done={2}
+              participants={item.takersTask || 0}
+              done={item.takersCount || 0}
               title={item.TaskName}
               description={item.TaskDescription}
-              onPress={() => gotoCard(item)}
+              onPress={() => gotoCard(item, fetchTasks)}
               deleteTask={() => deleteTask(item.TaskId)}
             />
           ))

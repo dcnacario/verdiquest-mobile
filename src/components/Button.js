@@ -12,6 +12,7 @@ const Button = ({
   icon,
   textColor = theme.colors.secondary,
   route,
+  disabled,
 }) => {
   const hitSlop = {
     top: 10,
