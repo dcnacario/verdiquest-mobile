@@ -197,7 +197,7 @@ class User extends BaseModel {
 
     async fetchAcceptedTasks(userId) {
         const query = `
-            SELECT udt.*, dt.TaskName, dt.DifficultyId, dt.TaskDescription 
+            SELECT udt.*, dt.TaskName, dt.DifficultyId, dt.TaskDescription, dt.TaskPoints
             FROM userdailytask udt
             JOIN dailytask dt ON udt.TaskId = dt.TaskId
             WHERE udt.UserId = ? AND udt.Status = 'Ongoing'
@@ -205,6 +205,7 @@ class User extends BaseModel {
         const [tasks] = await this.db.query(query, [userId]);
         return tasks;
     }
+    
 
     async getVerdiPoints(userId) {
         const query = `SELECT VerdiPoints FROM user WHERE UserId = ?`;

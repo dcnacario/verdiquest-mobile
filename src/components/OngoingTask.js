@@ -22,9 +22,10 @@ const OngoingTask = ({ tasks }) => {
     };
 
     const calculateTotalPoints = () => {
-        return tasks && tasks.length > 0
+        const totalPoints = tasks && tasks.length > 0
             ? tasks.reduce((acc, task) => acc + (task.TaskPoints || 0), 0)
             : 0;
+        return totalPoints.toLocaleString(); 
     };
 
     return (
