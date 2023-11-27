@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   StyleSheet,
@@ -14,23 +14,46 @@ import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import ipAddress from "../../database/ipAddress";
+import { Picker } from "@react-native-picker/picker";
 
 const TaskView = ({ route }) => {
   const navigation = useNavigation();
-  const { taskData } = route.params;
+  const { taskData, onTaskFetch } = route.params;
   const [isEditing, setIsEditing] = useState(false);
+  const initialValue = Number(taskData.DifficultyId);
+  const [selectedDifficulty, setSelectedDifficulty] = useState(initialValue);
+  const [difficultyData, setDifficultyData] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const localhost = ipAddress;
 
   const [imageUri, setImageUri] = useState(null);
 
   const [editTaskData, setEditTaskData] = useState({
     taskName: taskData.TaskName,
-    taskType: taskData.TaskType,
     taskDescription: taskData.TaskDescription,
+    difficultyId: selectedDifficulty,
     taskPoints: taskData.TaskPoints.toString(),
     taskDuration: taskData.TaskDuration.toString(),
     taskId: taskData.TaskId,
   });
+
+  //API BACKEND CALL
+  const fetchDifficulty = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `${localhost}/coordinator/fetchDifficulty`
+      );
+      if (Array.isArray(response.data.fetchTable)) {
+        setDifficultyData(response.data.fetchTable);
+      } else {
+        console.log("Unexpected format of difficulty data", response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching difficulty table", error);
+    }
+  }, [localhost]);
+
+  ///
 
   const gotoView = () => {
     navigation.navigate("ViewSubmission", { taskData: editTaskData });
@@ -38,14 +61,23 @@ const TaskView = ({ route }) => {
 
   const handleEditSave = async () => {
     if (isEditing) {
+      if (isSubmitting) return;
+      console.log("Submitting starts");
+      setIsSubmitting(true);
+      console.log(isSubmitting);
       try {
         const response = await axios.post(
           `${localhost}/coordinator/updateTask`,
           editTaskData
         );
         console.log("Update response:", response.data);
+        onTaskFetch();
       } catch (error) {
         console.error("Error updating task:", error);
+      } finally {
+        console.log(isSubmitting);
+        setIsSubmitting(false);
+        console.log("Submitting ends");
       }
     }
     setIsEditing(!isEditing);
@@ -78,6 +110,14 @@ const TaskView = ({ route }) => {
     }
   };
 
+  useEffect(() => {
+    fetchDifficulty();
+  }, [fetchDifficulty]);
+
+  useEffect(() => {
+    updateField("difficultyId", selectedDifficulty);
+  }, [selectedDifficulty]);
+
   return (
     <View style={styles.background}>
       <View style={styles.eventDetailsContainer}>
@@ -96,16 +136,6 @@ const TaskView = ({ route }) => {
             value={editTaskData.taskName}
             onChangeText={(text) => updateField("taskName", text)}
             editable={isEditing}
-          />
-        </View>
-        {/* Task Type */}
-        <View style={{ justifyContent: "flex-start" }}>
-          <Text style={styles.textInput}>Task Type</Text>
-          <TextInput
-            style={styles.inputStyle}
-            value={editTaskData.taskType}
-            editable={isEditing}
-            onChangeText={(text) => updateField("taskType", text)}
           />
         </View>
         {/* Task Description */}
@@ -141,6 +171,27 @@ const TaskView = ({ route }) => {
             />
           </View>
         </View>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={selectedDifficulty}
+            onValueChange={(itemValue, itemIndex) =>
+              setSelectedDifficulty(itemValue)
+            }
+            enabled={isEditing}
+            style={styles.pickerStyle}
+            mode="dropdown"
+            dropdownIconColor={"#A7A6A6"}
+            dropdownIconRippleColor={theme.colors.background}
+          >
+            {difficultyData.map((item) => (
+              <Picker.Item
+                key={item.DifficultyId}
+                label={item.Level}
+                value={item.DifficultyId}
+              />
+            ))}
+          </Picker>
+        </View>
         <View style={styles.row}>
           <TouchableOpacity style={styles.column} onPress={() => gotoView()}>
             <MaterialIcon name="check" size={18} />
@@ -149,6 +200,7 @@ const TaskView = ({ route }) => {
           <Button
             title={isEditing ? "Save" : "Edit"}
             onPress={handleEditSave}
+            disabled={isEditing}
           />
         </View>
       </View>
@@ -253,6 +305,16 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     padding: 5,
+  },
+  pickerContainer: {
+    borderColor: "black",
+    borderWidth: 1,
+    borderRadius: 12,
+    marginBottom: 15,
+  },
+  pickerStyle: {
+    height: 20,
+    width: 150,
   },
 });
 

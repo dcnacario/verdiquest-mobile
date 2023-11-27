@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
 import CoordEventCard from "../../components/CoordEventCard";
@@ -10,6 +16,7 @@ import ipAddress from "../../database/ipAddress";
 const EventMaster = ({ route }) => {
   const navigation = useNavigation();
   const localhost = ipAddress;
+  const [isLoading, setIsLoading] = useState(false);
 
   const [fetchedEvents, setFetchedEvents] = useState([]);
   const { coordinator } = route.params;
@@ -44,6 +51,7 @@ const EventMaster = ({ route }) => {
 
   //fetching Events
   const fetchEvent = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.post(
         `${localhost}/coordinator/fetchEvents`,
@@ -61,6 +69,8 @@ const EventMaster = ({ route }) => {
     } catch (error) {
       console.error("Error fetching events table", error);
       return []; // Return an empty array in case of an error
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -100,7 +110,9 @@ const EventMaster = ({ route }) => {
         <View style={{ flex: 1 }}></View>
       </View>
       <ScrollView style={styles.scrollView}>
-        {fetchedEvents != null && fetchedEvents.length > 0 ? (
+        {isLoading ? (
+          <ActivityIndicator size="large" color={theme.colors.primary} /> // Loading indicator)
+        ) : fetchedEvents != null && fetchedEvents.length > 0 ? (
           fetchedEvents.map((item) => (
             <CoordEventCard
               key={item.EventId}
