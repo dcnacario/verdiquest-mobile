@@ -3,12 +3,14 @@ import { Text, View, StyleSheet, ScrollView, Dimensions, TouchableOpacity, } fro
 import axios from "axios";
 import { theme } from "../../assets/style";
 import PointCard from "../components/PointCard";
-import Card from "../components/Card";
+import CardTask from "../components/CardTask";
 import ipAddress from "../database/ipAddress";
 import { useIsFocused } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 
-const Home = ({ route, navigation }) => {
+const Home = ({ route}) => {
   const { user } = route.params;
+  const navigation = useNavigation();
   const [userPoint, setUserPoints] = useState(0);
   const [tasks, setTasks] = useState([]);
   const localhost = ipAddress;
@@ -122,14 +124,13 @@ const Home = ({ route, navigation }) => {
           </View>
           <View style={{ flex: 1, flexDirection: "column", margin: 10 }}>
             {tasks.map((task) => (
-              <Card
-                key={task.key}
-                title={task.TaskName || "No Title"}
-                difficulty={
-                  getDifficultyLevel(task.DifficultyId) || "No Difficulty"
-                }
-                description={task.TaskDescription || "No Description"}
-              />
+                <CardTask
+                    key={task.key}
+                    title={task.TaskName || "No Title"}
+                    difficulty={getDifficultyLevel(task.DifficultyId) || "No Difficulty"}
+                    description={task.TaskDescription || "No Description"}
+                    onPress={() => navigation.navigate('TaskDetails', { taskId: task.TaskId })}
+                />
             ))}
           </View>
         </View>

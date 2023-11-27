@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 import Button from "./Button";
 import DeleteButton from "./DeleteButton";
 
-const Card = ({ title, difficulty, img, description }) => {
+const Card = ({ title, difficulty, img, description, onPress }) => {
     return (
         <View style={styles.container}>
             <Image source={img} style={styles.image} />
@@ -12,7 +12,7 @@ const Card = ({ title, difficulty, img, description }) => {
             <Text style={styles.description}>{description}</Text>
             <View style={styles.buttonContainer}>
                 {/* <DeleteButton title="Remove" /> */}
-                <Button title="View" />
+                <Button title="View" onPress={onPress}/>
             </View>
         </View>
     );
