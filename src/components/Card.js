@@ -11,7 +11,6 @@ const Card = ({ title, difficulty, img, description, onPress }) => {
             <Text style={styles.difficulty}>{difficulty}</Text>
             <Text style={styles.description}>{description}</Text>
             <View style={styles.buttonContainer}>
-                {/* <DeleteButton title="Remove" /> */}
                 <Button title="View" onPress={onPress}/>
             </View>
         </View>

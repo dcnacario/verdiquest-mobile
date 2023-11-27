@@ -4,13 +4,13 @@ import * as Progress from 'react-native-progress';
 import defaultImage from '../../assets/img/default-image.png';
 import { theme } from "../../assets/style";
 
-const ProgressCard = ({img, title, category, progress = 0}) => {
+const ProgressCard = ({img, title, difficulty, progress = 0}) => {
     return (
         <View style={styles.container}>
             {img ? <Image defaultSource={defaultImage} source={img} style={styles.imageStyle}/> : <Image source={defaultImage} style={styles.imageStyle}/> }
             <View>
                 <Text style={styles.titleStyle}>{title}</Text>
-                <Text>{category}</Text>
+                <Text>{difficulty}</Text>
             </View>
             <Progress.Circle textStyle={{fontWeight: 'bold', fontSize: 10,}} showsText={true} strokeCap="round" progress={progress} color={theme.colors.primary}/>
         </View>
