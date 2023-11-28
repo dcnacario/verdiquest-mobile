@@ -48,6 +48,13 @@ async function registerCoordinator(request, response) {
       password,
     } = request.body;
 
+    const existingUser = await coordinator.getUserByUsername(username);
+    if (existingUser) {
+      return response.status(400).send({
+        message: "Username already exists. Please choose a different username.",
+      });
+    }
+
     // Hash the password before storing it in the database
     const hashedPassword = bcrypt.hashSync(password, 10);
 
@@ -528,6 +535,60 @@ async function getUserCountTakers(request, response) {
   }
 }
 
+async function updateCoordinator(request, response) {
+  try {
+    const {
+      userName,
+      newPassword,
+      firstName,
+      middleInitial,
+      lastName,
+      coordinatorId,
+      personId,
+    } = request.body;
+    const hashedPassword = bcrypt.hashSync(newPassword, 10);
+    const coordinatorData = {
+      userName,
+      newPassword: hashedPassword,
+      firstName,
+      middleInitial,
+      lastName,
+      coordinatorId,
+      personId,
+    };
+
+    const result = await coordinator.updateCoordinator(coordinatorData);
+    response.status(200).send({
+      message: "Coordinator updated successfully!",
+      result: result,
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+async function fetchCoordinator(request, response) {
+  try {
+    const { coordinatorId } = request.body;
+    const coordinatorData = { coordinatorId };
+    const fetchedUser = await coordinator.fetchUserByCoordinatorId(
+      coordinatorData
+    );
+    return response.json({
+      success: true,
+      fetchedUser: fetchedUser,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
 module.exports = {
   registerOrganization,
   registerCoordinator,
@@ -549,4 +610,6 @@ module.exports = {
   getParticipantsVerified,
   getCountTakers,
   getUserCountTakers,
+  updateCoordinator,
+  fetchCoordinator,
 };

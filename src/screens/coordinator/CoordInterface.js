@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -11,10 +11,35 @@ import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
+import axios from "axios";
+import ipAddress from "../../database/ipAddress";
 
 const CoordInterface = ({ route }) => {
-  const { coordinator } = route.params;
+  const [coordinator, setCoordinator] = useState(route.params.coordinator);
+  const isFocused = useIsFocused(); // Determines if the screen is focused
+  const localhost = ipAddress;
   const navigation = useNavigation();
+
+  const fetchCoordinatorData = async () => {
+    try {
+      // Replace with your API call to fetch coordinator data
+      const response = await axios.post(
+        `${localhost}/coordinator/fetchCoordinator`,
+        {
+          coordinatorId: coordinator.CoordinatorId,
+        }
+      );
+      setCoordinator(response.data.fetchedUser);
+    } catch (error) {
+      console.log("Error fetching coordinator data:", error);
+    }
+  };
+  useEffect(() => {
+    if (isFocused) {
+      fetchCoordinatorData();
+    }
+  }, [isFocused]);
 
   const gotoTasks = () => {
     navigation.navigate("TaskMaster", { coordinator: coordinator });
@@ -29,6 +54,9 @@ const CoordInterface = ({ route }) => {
   const gotoCoordinators = () => {
     navigation.navigate("CoordinatorMaster", {});
   };
+  const editCoordinator = () => {
+    navigation.navigate("EditProfileCoordinator", { coordinator: coordinator });
+  };
 
   return (
     <ScrollView
@@ -38,23 +66,32 @@ const CoordInterface = ({ route }) => {
       <View style={styles.container}>
         {/* Profile Header Section */}
         <View style={styles.profileHeader}>
-          <Image
-            source={require("../../../assets/img/default-image.png")}
-            style={styles.profileAvatar}
-          />
-          <View style={styles.userNameWithIcon}>
-            <Text
-              style={styles.userName}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {coordinator.FirstName} {coordinator.LastName}
-            </Text>
-            <TouchableOpacity onPress={gotoCoordinators}>
-              <Icon name="pencil" size={20} color="#000" />
-            </TouchableOpacity>
+          <View style={{ alignSelf: "flex-end" }}>
+            <Image
+              source={require("../../../assets/img/default-image.png")}
+              style={styles.profileAvatar}
+            />
           </View>
-          <Text style={styles.role}>Head Coordinator</Text>
+          <View style={{ flex: 1 }}></View>
+          <View style={{ alignItems: "center" }}>
+            <Image
+              source={require("../../../assets/img/default-profile.png")}
+              style={styles.coordinatorAvatar}
+            />
+            <View style={styles.userNameWithIcon}>
+              <Text
+                style={styles.userName}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {coordinator.FirstName} {coordinator.LastName}
+              </Text>
+              <TouchableOpacity onPress={editCoordinator}>
+                <Icon name="pencil" size={20} color="#000" />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.role}>Coordinator</Text>
+          </View>
         </View>
 
         {/* Ongoing Events Section */}
@@ -128,7 +165,8 @@ const styles = StyleSheet.create({
   },
   profileHeader: {
     alignItems: "center",
-    paddingVertical: 20,
+    justifyContent: "center",
+    marginHorizontal: 20,
   },
   userNameContainer: {
     flexDirection: "row",
@@ -148,9 +186,13 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   profileAvatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 70,
+    height: 70,
+    borderRadius: 70 / 2,
+  },
+  coordinatorAvatar: {
+    width: 90,
+    height: 90,
   },
 
   role: {

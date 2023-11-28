@@ -62,9 +62,7 @@ const TaskView = ({ route }) => {
   const handleEditSave = async () => {
     if (isEditing) {
       if (isSubmitting) return;
-      console.log("Submitting starts");
       setIsSubmitting(true);
-      console.log(isSubmitting);
       try {
         const response = await axios.post(
           `${localhost}/coordinator/updateTask`,
@@ -75,9 +73,7 @@ const TaskView = ({ route }) => {
       } catch (error) {
         console.error("Error updating task:", error);
       } finally {
-        console.log(isSubmitting);
         setIsSubmitting(false);
-        console.log("Submitting ends");
       }
     }
     setIsEditing(!isEditing);

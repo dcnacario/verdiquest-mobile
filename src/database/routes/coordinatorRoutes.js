@@ -32,5 +32,7 @@ router.post(
 );
 router.post("/fetchCountTakers", coordinatorController.getCountTakers);
 router.post("/fetchTaskTakers", coordinatorController.getUserCountTakers);
+router.post("/updateCoordinator", coordinatorController.updateCoordinator);
+router.post("/fetchCoordinator", coordinatorController.fetchCoordinator);
 
 module.exports = router;
