@@ -34,3 +34,4 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 src/database/database.js
+src/database/ipAddress.js

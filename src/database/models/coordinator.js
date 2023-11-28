@@ -78,11 +78,38 @@ class Coordinator extends BaseModel {
   async fetchUser(coordinatorData) {
     try {
       const [result] = await this.db.query(
-        "SELECT * FROM organization JOIN coordinator ON coordinator.OrganizationId = organization.OrganizationId JOIN person ON coordinator.PersonId = person.PersonId WHERE username = ?",
+        "SELECT * FROM organization JOIN coordinator ON coordinator.OrganizationId = organization.OrganizationId JOIN person ON coordinator.PersonId = person.PersonId WHERE Username = ?",
         [coordinatorData.username]
       );
       // Return the user data if found, else return null
       return result.length > 0 ? result[0] : null;
+    } catch (error) {
+      console.error(`Error fetching user`, error);
+      throw error;
+    }
+  }
+
+  async fetchUserByCoordinatorId(coordinatorData) {
+    try {
+      const [result] = await this.db.query(
+        "SELECT * FROM organization JOIN coordinator ON coordinator.OrganizationId = organization.OrganizationId JOIN person ON coordinator.PersonId = person.PersonId WHERE CoordinatorId = ?",
+        [coordinatorData.coordinatorId]
+      );
+      // Return the user data if found, else return null
+      return result.length > 0 ? result[0] : null;
+    } catch (error) {
+      console.error(`Error fetching user`, error);
+      throw error;
+    }
+  }
+
+  async getUserByUsername(coordinatorData) {
+    try {
+      const [row] = await this.db.query(
+        "SELECT * FROM coordinator WHERE Username = ?",
+        [coordinatorData.userName]
+      );
+      return RawButton.length > 0 ? result[0] : [];
     } catch (error) {
       console.error(`Error fetching user`, error);
       throw error;
@@ -370,6 +397,48 @@ class Coordinator extends BaseModel {
       return count;
     } catch (error) {
       console.error(`Error fetching number of participants: ${error}`);
+      throw error;
+    }
+  }
+
+  async updateCoordinator(coordinatorData) {
+    try {
+      const [coordinator] = await this.db.query(
+        "UPDATE coordinator SET Username = ?, Password = ? WHERE CoordinatorId = ?",
+        [
+          coordinatorData.userName,
+          coordinatorData.newPassword,
+          coordinatorData.coordinatorId,
+        ]
+      );
+
+      const [person] = await this.db.query(
+        "UPDATE person SET FirstName = ?, Initial = ?, LastName = ? WHERE PersonId = ?",
+        [
+          coordinatorData.firstName,
+          coordinatorData.middleInitial,
+          coordinatorData.lastName,
+          coordinatorData.personId,
+        ]
+      );
+      const coordinatorUpdate = person.affectedRows;
+      return coordinatorUpdate;
+    } catch (error) {
+      console.error(`Error updating coordinator: ${error}`);
+      throw error;
+    }
+  }
+
+  async fetchCoordinator(coordinatorData) {
+    try {
+      const [row] = await this.db.query(
+        "SELECT * FROM coordinator username = ?",
+        [coordinatorData.username]
+      );
+      // Return the user data if found, else return null
+      return result.length > 0 ? result[0] : null;
+    } catch (error) {
+      console.error(`Error fetching user`, error);
       throw error;
     }
   }
