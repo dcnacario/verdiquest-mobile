@@ -570,6 +570,7 @@ async function updateCoordinator(request, response) {
       .send({ message: "Server error", error: error.message });
   }
 }
+
 async function fetchCoordinator(request, response) {
   try {
     const { coordinatorId } = request.body;
@@ -580,6 +581,32 @@ async function fetchCoordinator(request, response) {
     return response.json({
       success: true,
       fetchedUser: fetchedUser,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function updateOrganization(request, response) {
+  try {
+    const { orgImage, orgName, orgAddress, orgType, orgId } = request.body;
+
+    const organizationData = {
+      orgImage,
+      orgName,
+      orgAddress,
+      orgType,
+      orgId,
+    };
+
+    const result = await coordinator.updateOrganization(organizationData);
+    response.status(200).send({
+      message: "Organization updated successfully!",
+      result: result,
+      success: true,
     });
   } catch (error) {
     console.error(error);
@@ -612,4 +639,5 @@ module.exports = {
   getUserCountTakers,
   updateCoordinator,
   fetchCoordinator,
+  updateOrganization,
 };
