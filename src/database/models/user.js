@@ -205,8 +205,26 @@ class User extends BaseModel {
         const [tasks] = await this.db.query(query, [userId]);
         return tasks;
     }
-    
 
+    async removeFromUserDailyTask(userId, taskId) {
+        // Check if the task exists in the user's daily tasks
+        const checkQuery = `SELECT * FROM userdailytask WHERE UserId = ? AND TaskId = ?`;
+        const [existingTasks] = await this.db.query(checkQuery, [userId, taskId]);
+    
+        if (existingTasks.length === 0) {
+            // Task is not in the user's daily tasks
+            return { error: "Task not found in user's daily tasks", taskRemoved: false };
+        }
+    
+        // If the task is found, proceed to delete it
+        const deleteQuery = `DELETE FROM userdailytask WHERE UserId = ? AND TaskId = ?`;
+        await this.db.query(deleteQuery, [userId, taskId]);
+    
+        // Return a successful response
+        return { message: "Task successfully removed from user's daily tasks", taskRemoved: true };
+    }
+    
+    
     async getVerdiPoints(userId) {
         const query = `SELECT VerdiPoints FROM user WHERE UserId = ?`;
         try {

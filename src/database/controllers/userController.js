@@ -305,6 +305,25 @@ async function fetchVerdiPoints(request, response) {
   }
 };
 
+
+async function cancelTask(request, response) {
+  try {
+    const { userId, taskId } = request.body; 
+      const removeFromUserDailyTaskResult = await user.removeFromUserDailyTask(userId, taskId);
+
+      if(!removeFromUserDailyTaskResult.taskRemoved){
+          return response.status(400).json({ 
+            success: false, 
+            message: removeFromUserDailyTaskResult.error 
+        });
+      }
+      response.json({ success: true, message: 'Task cancelled successfully' });
+  } catch (error) {
+      response.status(500).send(error);
+  }
+}
+
+
 module.exports = {
   registerUser,
   loginUser,
@@ -319,4 +338,5 @@ module.exports = {
   fetchAcceptedTasks,
   checkTaskAccepted,
   fetchVerdiPoints,
+  cancelTask,
 };

@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  Image,
-  Text,
-  Modal,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { View, StyleSheet, Image, Text, Modal, TouchableOpacity, Alert, } from "react-native";
 import Details from "../components/Details";
 import Button from "../components/Button";
 import defaultImage from "../../assets/img/default-image.png";
@@ -87,19 +79,27 @@ const TaskDetails = ({ route }) => {
     };
 
     const onPressCancelTask = async () => {
-        try {
-        const response = await axios.post(`${localhost}/user/cancelTask`, {
-            userId: user.UserId,
-            taskId: taskDetails.TaskId,
-        });
-        if (response.data.success) {
-            setIsAccepted(false);
-        } else {
-            Alert.alert("Error", "Failed to cancel the task");
+        console.log(user.UserId)
+        console.log(taskDetails.TaskId)
+        if (!user?.UserId || !taskDetails?.TaskId) {
+            console.log("User ID or Task ID is missing");
+            return;
         }
+        try {
+            const response = await axios.post(`${localhost}/user/cancelTask`, {
+                userId: user.UserId,
+                taskId: taskDetails.TaskId,
+            });
+
+            if (response.data.success) {
+                setIsAccepted(false);
+                Alert.alert('Success', 'Task cancelled successfully');
+            } else {
+                Alert.alert("Error", "Failed to cancel the task");
+            }
         } catch (error) {
-        console.error("Error cancelling task:", error);
-        Alert.alert("Error", "An error occurred while cancelling the task");
+            console.error("Error cancelling task:", error);
+            Alert.alert("Error", "An error occurred while cancelling the task");
         }
     };
 

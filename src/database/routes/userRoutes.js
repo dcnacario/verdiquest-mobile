@@ -16,5 +16,6 @@ router.post('/acceptTask', userController.acceptTask);
 router.get('/fetchAcceptedTasks/:userId', userController.fetchAcceptedTasks);
 router.get('/checkTaskAccepted/:userId/:taskId', userController.checkTaskAccepted);
 router.get('/fetchVerdiPoints/:userId', userController.fetchVerdiPoints);
+router.post('/cancelTask', userController.cancelTask);
 
 module.exports = router;
