@@ -17,5 +17,8 @@ router.get('/fetchAcceptedTasks/:userId', userController.fetchAcceptedTasks);
 router.get('/checkTaskAccepted/:userId/:taskId', userController.checkTaskAccepted);
 router.get('/fetchVerdiPoints/:userId', userController.fetchVerdiPoints);
 router.post('/cancelTask', userController.cancelTask);
+router.get('/organizations', userController.fetchOrganizations);
+router.get('/organizationDetails/:organizationId', userController.fetchOrganizationDetails);
+router.post('/joinOrg', userController.joinOrganization);
 
 module.exports = router;

@@ -323,6 +323,46 @@ async function cancelTask(request, response) {
   }
 }
 
+async function fetchOrganizations(request, response){
+  try{
+    const organizations = await user.fetchAllOrganizations();
+    response.json({
+      success: true,
+      organizations: organizations,
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).send({ message: "Error fetching organizations", error: error.message });
+  }
+
+}
+
+async function fetchOrganizationDetails(request, response) {
+  const organizationId = request.params.organizationId;
+  try {
+    const organizationDetails = await user.getOrganizationDetails(organizationId);
+    if (organizationDetails) {
+        response.json({ success: true, organization: organizationDetails });
+    } else {
+        response.status(404).send('Organization not found');
+    }
+  } catch (error) {
+      response.status(500).send('Error fetching organization details: ' + error.message);
+  }
+}
+
+async function joinOrganization(request, response) {
+  const userId = request.body.userId;
+  const organizationId = request.body.organizationId;
+
+  try {
+      await user.updateUserOrganization(userId, organizationId);
+      response.json({ success: true, message: 'Successfully joined organization' });
+  } catch (error) {
+      response.status(500).send('Error joining organization: ' + error.message);
+  }
+}
+
 
 module.exports = {
   registerUser,
@@ -339,4 +379,7 @@ module.exports = {
   checkTaskAccepted,
   fetchVerdiPoints,
   cancelTask,
+  fetchOrganizations,
+  fetchOrganizationDetails,
+  joinOrganization,
 };

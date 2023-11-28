@@ -234,6 +234,37 @@ class User extends BaseModel {
             throw error;
         }
     }
+
+    async fetchAllOrganizations(){
+        const query = `SELECT * FROM organization`;
+        try {
+            const [rows] = await this.db.execute(query);
+            return rows;
+        } catch (error) {
+            throw new Error('Error fetching organizations: ' + error.message);
+        }
+    }
+
+    async getOrganizationDetails(organizationId) {
+        const query = 'SELECT * FROM organization WHERE OrganizationId = ?';
+        try {
+            const [rows] = await this.db.execute(query, [organizationId]);
+            return rows.length > 0 ? rows[0] : null;
+        } catch (error) {
+            throw new Error('Error fetching organization details: ' + error.message);
+        }
+    }
+
+    async updateUserOrganization(userId, organizationId) {
+        const query = 'UPDATE user SET OrganizationId = ? WHERE UserId = ?';
+        try {
+            const [result] = await this.db.execute(query, [organizationId, userId]);
+            return result;
+        } catch (error) {
+            throw new Error('Error updating user organization: ' + error.message);
+        }
+    }
+    
 }
 
 module.exports = User;

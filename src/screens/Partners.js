@@ -1,30 +1,54 @@
-import React from "react";
-import {View, StyleSheet, Text} from 'react-native';
-import { theme } from "../../assets/style";
-import TaskCategoriesCard from "../components/TaskCategoriesCard";
-import { ScrollView } from "react-native-gesture-handler";
-import { useNavigation } from "@react-navigation/native";
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Text, ScrollView } from 'react-native';
+import { theme } from '../../assets/style';
+import TaskCategoriesCard from '../components/TaskCategoriesCard';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios'; 
+import ipAddress from "../database/ipAddress";
 
-
-const Partners = ({route}) => {
-
-    const {user} = route.params;
-
+const Partners = ({ route }) => {
+    const { user } = route.params;
+    const [organizations, setOrganizations] = useState([]);
     const navigation = useNavigation();
+    const localhost = ipAddress;
 
+    useEffect(() => {
+        const fetchOrganizations = async () => {
+            try {
+                const response = await axios.get(`${localhost}/user/organizations`);
+                if (response.data && response.data.success) {
+                    setOrganizations(response.data.organizations);
+                } else {
+                    throw new Error('Failed to fetch organizations');
+                }
+            } catch (error) {
+                console.error('Error fetching organizations:', error);
+            }
+        };
+        fetchOrganizations();
+    }, []);
 
-    const handleOrganizationView = () => {
-        navigation.navigate('PartnerOverview', { user: user , title:`Environmental Protection`});
+    const handleOrganizationView = (organization) => {
+        console.log(organization)
+        if(organization != null){
+            navigation.navigate('OrgHome', { user: user, organization: organization});
+        } else {
+            navigation.navigate('PartnerOverview', { user: user, organization: organization});
+        }
     };
 
-    return(
+    return (
         <ScrollView>
             <View style={styles.container}>
                 <Text style={styles.titleStyle}>Organization Partners</Text>
                 <View style={styles.cardContainer}>
-                    <TaskCategoriesCard title='Organization Name' onPress={handleOrganizationView}/>
-                    <TaskCategoriesCard title='Organization Name'/>
-                    <TaskCategoriesCard title='Organization Name'/>
+                    {organizations.map((organization) => (
+                        <TaskCategoriesCard
+                            key={organization.OrganizationId}
+                            title={organization.OrganizationName}
+                            onPress={() => handleOrganizationView(organization)}
+                        />
+                    ))}
                 </View>
             </View>
         </ScrollView>
