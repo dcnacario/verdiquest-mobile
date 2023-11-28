@@ -79,8 +79,6 @@ const TaskDetails = ({ route }) => {
     };
 
     const onPressCancelTask = async () => {
-        console.log(user.UserId)
-        console.log(taskDetails.TaskId)
         if (!user?.UserId || !taskDetails?.TaskId) {
             console.log("User ID or Task ID is missing");
             return;
