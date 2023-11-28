@@ -20,5 +20,6 @@ router.post('/cancelTask', userController.cancelTask);
 router.get('/organizations', userController.fetchOrganizations);
 router.get('/organizationDetails/:organizationId', userController.fetchOrganizationDetails);
 router.post('/joinOrg', userController.joinOrganization);
+router.get('/isMember', userController.checkMembership);
 
 module.exports = router;

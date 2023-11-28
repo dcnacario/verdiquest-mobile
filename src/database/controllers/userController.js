@@ -363,6 +363,18 @@ async function joinOrganization(request, response) {
   }
 }
 
+async function checkMembership(request, response) {
+  const userId = request.query.userId;
+  const organizationId = request.query.organizationId;
+
+  try {
+      const isMember = await user.isMember(userId, organizationId);
+      response.json({ success: true, isMember });
+  } catch (error) {
+      response.status(500).send('Error checking membership: ' + error.message);
+  }
+}
+
 
 module.exports = {
   registerUser,
@@ -382,4 +394,5 @@ module.exports = {
   fetchOrganizations,
   fetchOrganizationDetails,
   joinOrganization,
+  checkMembership,
 };

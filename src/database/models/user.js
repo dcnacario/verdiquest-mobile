@@ -264,6 +264,16 @@ class User extends BaseModel {
             throw new Error('Error updating user organization: ' + error.message);
         }
     }
+
+    async isMember(userId, organizationId) {
+        const query = 'SELECT COUNT(*) AS memberCount FROM user WHERE UserId = ? AND OrganizationId = ?';
+        try {
+            const [rows] = await this.db.execute(query, [userId, organizationId]);
+            return rows[0].memberCount > 0;
+        } catch (error) {
+            throw new Error('Error checking membership: ' + error.message);
+        }
+    }
     
 }
 

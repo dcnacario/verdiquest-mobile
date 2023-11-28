@@ -28,14 +28,25 @@ const Partners = ({ route }) => {
         fetchOrganizations();
     }, []);
 
-    const handleOrganizationView = (organization) => {
-        console.log(organization)
-        if(organization != null){
-            navigation.navigate('OrgHome', { user: user, organization: organization});
-        } else {
-            navigation.navigate('PartnerOverview', { user: user, organization: organization});
+    const handleOrganizationView = async (organization) => {
+        try {
+            const response = await axios.get(`${localhost}/user/isMember`, {
+                params: {
+                    userId: user.UserId, 
+                    organizationId: organization.OrganizationId
+                }
+            });
+            
+            if (response.data && response.data.isMember) {
+                navigation.navigate('OrgHome', { user: user, organization: organization });
+            } else {
+                navigation.navigate('PartnerOverview', { user: user, organization: organization });
+            }
+        } catch (error) {
+            console.error('Error checking membership:', error);
         }
     };
+    
 
     return (
         <ScrollView>
