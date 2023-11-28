@@ -442,6 +442,26 @@ class Coordinator extends BaseModel {
       throw error;
     }
   }
+
+  async updateOrganization(organizationData) {
+    try {
+      const [organization] = await this.db.query(
+        "UPDATE organization  SET OrganizationImage = ?, OrganizationName = ?, OrganizationAddress = ?, OrganizationType = ? WHERE OrganizationId = ?",
+        [
+          organizationData.orgImage,
+          organizationData.orgName,
+          organizationData.orgAddress,
+          organizationData.orgType,
+          organizationData.orgId,
+        ]
+      );
+      const organizationUpdate = organization.affectedRows;
+      return organizationUpdate;
+    } catch (error) {
+      console.error(`Error updating organization: ${error}`);
+      throw error;
+    }
+  }
 }
 
 module.exports = Coordinator;

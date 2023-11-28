@@ -57,6 +57,9 @@ const CoordInterface = ({ route }) => {
   const editCoordinator = () => {
     navigation.navigate("EditProfileCoordinator", { coordinator: coordinator });
   };
+  const goToOrganizationProfile = () => {
+    navigation.navigate("ViewOrganization", { coordinator: coordinator });
+  };
 
   return (
     <ScrollView
@@ -67,10 +70,12 @@ const CoordInterface = ({ route }) => {
         {/* Profile Header Section */}
         <View style={styles.profileHeader}>
           <View style={{ alignSelf: "flex-end" }}>
-            <Image
-              source={require("../../../assets/img/default-image.png")}
-              style={styles.profileAvatar}
-            />
+            <TouchableOpacity onPress={goToOrganizationProfile}>
+              <Image
+                source={require("../../../assets/img/default-image.png")}
+                style={styles.profileAvatar}
+              />
+            </TouchableOpacity>
           </View>
           <View style={{ flex: 1 }}></View>
           <View style={{ alignItems: "center" }}>
