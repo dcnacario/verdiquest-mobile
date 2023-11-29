@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, TouchableOpacity, FlatList } from 'react-native
 import { theme } from "../../assets/style";
 import CardTask from "./CardTask";
 import axios from 'axios';
+import ipAddress from "../database/ipAddress";
 import { useNavigation } from "@react-navigation/native";
 
 const TaskListHeader = ({ route }) => {
@@ -10,6 +11,7 @@ const TaskListHeader = ({ route }) => {
     const user = route?.params?.user || {};
     const [tasks, setTasks] = useState([]);
     const [selectedDifficulty, setSelectedDifficulty] = useState('All');
+    const localhost = ipAddress;
 
     useEffect(() => {
         fetchTasksByDifficulty('All');
@@ -19,8 +21,8 @@ const TaskListHeader = ({ route }) => {
         try {
             setSelectedDifficulty(difficultyTitle);
             let endpoint = difficultyTitle === 'All'
-                ? `http://192.168.68.110:3000/user/fetchAllDifficulty`
-                : `http://192.168.68.110:3000/user/fetch${difficultyTitle}Task`;
+                ? `${localhost}/user/fetchAllDifficulty`
+                : `${localhost}/user/fetch${difficultyTitle}Task`;
 
             const response = await axios.get(endpoint);
             if (response.data.success) {
