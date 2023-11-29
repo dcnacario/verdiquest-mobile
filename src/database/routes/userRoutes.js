@@ -21,5 +21,7 @@ router.get('/organizations', userController.fetchOrganizations);
 router.get('/organizationDetails/:organizationId', userController.fetchOrganizationDetails);
 router.post('/joinOrg', userController.joinOrganization);
 router.get('/isMember', userController.checkMembership);
+router.get('/tasks/:organizationId', userController.fetchTasksByOrganization);
+
 
 module.exports = router;

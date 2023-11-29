@@ -375,6 +375,16 @@ async function checkMembership(request, response) {
   }
 }
 
+async function fetchTasksByOrganization(request, response) {
+  const organizationId = request.params.organizationId;
+
+  try {
+      const tasks = await user.getTasksByOrganization(organizationId);
+      response.json({ success: true, tasks });
+  } catch (error) {
+      response.status(500).send('Error fetching tasks: ' + error.message);
+  }
+}
 
 module.exports = {
   registerUser,
@@ -395,4 +405,5 @@ module.exports = {
   fetchOrganizationDetails,
   joinOrganization,
   checkMembership,
+  fetchTasksByOrganization,
 };

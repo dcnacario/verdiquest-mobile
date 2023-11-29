@@ -274,6 +274,16 @@ class User extends BaseModel {
             throw new Error('Error checking membership: ' + error.message);
         }
     }
+
+    async getTasksByOrganization(organizationId) {
+        const query = 'SELECT * FROM dailytask WHERE OrganizationId = ?';
+        try {
+            const [tasks] = await this.db.execute(query, [organizationId]);
+            return tasks;
+        } catch (error) {
+            throw new Error('Error fetching tasks: ' + error.message);
+        }
+    }
     
 }
 
