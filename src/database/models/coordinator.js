@@ -488,6 +488,19 @@ class Coordinator extends BaseModel {
       throw error;
     }
   }
+
+  async deleteOrganization(organizationData) {
+    try {
+      const [row] = await this.db.query(
+        "UPDATE organization SET isDeleted = 1 WHERE OrganizationId = ?",
+        [organizationData.orgId]
+      );
+      return row;
+    } catch (error) {
+      console.error(`Error removing the member!: ${error}`);
+      throw error;
+    }
+  }
 }
 
 module.exports = Coordinator;

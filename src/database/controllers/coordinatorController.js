@@ -653,6 +653,25 @@ async function removeUserFromOrg(request, response) {
   }
 }
 
+async function deleteOrganization(request, response) {
+  try {
+    const { orgId } = request.body;
+
+    const orgData = { orgId };
+    const result = await coordinator.deleteOrganization(orgData);
+    return response.json({
+      success: true,
+      result: result,
+      message: "Organization successfully deleted!",
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
 module.exports = {
   registerOrganization,
   registerCoordinator,
@@ -679,4 +698,5 @@ module.exports = {
   updateOrganization,
   getUsersByOrg,
   removeUserFromOrg,
+  deleteOrganization,
 };

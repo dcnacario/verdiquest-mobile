@@ -6,6 +6,7 @@ import {
   Image,
   ActivityIndicator,
   FlatList,
+  Alert,
 } from "react-native";
 import { theme } from "../../../assets/style";
 import OrganizationMemberCard from "../../components/OrganizationMemberCard";
@@ -14,6 +15,7 @@ import ipAddress from "../../database/ipAddress";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
 import { useIsFocused } from "@react-navigation/native";
+import Button from "../../components/Button";
 
 const Organization = ({ route }) => {
   const { coordinator } = route.params;
@@ -52,6 +54,41 @@ const Organization = ({ route }) => {
     });
   };
 
+  // SOFT DELETION OF ORG ------------------------------------
+  const deleteOrg = async (orgId) => {
+    try {
+      const response = await axios.post(`${localhost}/coordinator/deleteOrg`, {
+        orgId: orgId,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting the org!", error);
+    }
+  };
+  //----------------------------------------------------------
+
+  // DELETE PROMPT -------------------------------------------
+  const confirmDeletion = (orgId) => {
+    Alert.alert(
+      "Confirm Deletion",
+      "Are you sure you want to delete this organization?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Deletion cancelled"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => deleteOrg(orgId),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  //----------------------------------------------------------
+
   useEffect(() => {
     if (isFocused) {
       fetchUsers();
@@ -65,7 +102,13 @@ const Organization = ({ route }) => {
         <View style={styles.header}>
           <View style={{ flex: 1 }}></View>
           <Text style={styles.textStyle}>{coordinator.OrganizationName}</Text>
-          <View style={{ flex: 1, alignItems: "flex-end" }}></View>
+          <View style={{ flex: 1, alignItems: "flex-end" }}>
+            <Button
+              title={"Delete"}
+              color={"#BA1A1A"}
+              onPress={() => confirmDeletion(coordinator.OrganizationId)}
+            />
+          </View>
         </View>
         <View style={styles.divider}></View>
         <View>
