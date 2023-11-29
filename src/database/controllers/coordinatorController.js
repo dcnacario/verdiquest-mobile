@@ -616,6 +616,43 @@ async function updateOrganization(request, response) {
   }
 }
 
+async function getUsersByOrg(request, response) {
+  try {
+    const { orgId } = request.body;
+
+    const organizationData = { orgId };
+    const fetchedTable = await coordinator.getUsersByOrg(organizationData);
+    return response.json({
+      success: true,
+      fetchTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function removeUserFromOrg(request, response) {
+  try {
+    const { userId } = request.body;
+
+    const userData = { userId };
+    const result = await coordinator.removeUserFromOrg(userData);
+    return response.json({
+      success: true,
+      result: result,
+      message: "Member removed successfully!",
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
 module.exports = {
   registerOrganization,
   registerCoordinator,
@@ -640,4 +677,6 @@ module.exports = {
   updateCoordinator,
   fetchCoordinator,
   updateOrganization,
+  getUsersByOrg,
+  removeUserFromOrg,
 };

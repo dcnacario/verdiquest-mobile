@@ -35,7 +35,6 @@ const CoordInterface = ({ route }) => {
       console.log("Error fetching coordinator data:", error);
     }
   };
-  console.log(coordinator.OrganizationImage);
   useEffect(() => {
     if (isFocused) {
       fetchCoordinatorData();
@@ -60,6 +59,9 @@ const CoordInterface = ({ route }) => {
   };
   const goToOrganizationProfile = () => {
     navigation.navigate("ViewOrganization", { coordinator: coordinator });
+  };
+  const goToOrganization = () => {
+    navigation.navigate("Organization", { coordinator: coordinator });
   };
 
   return (
@@ -122,6 +124,14 @@ const CoordInterface = ({ route }) => {
           </View>
           <View style={styles.rightButton}>
             <Button title="Report" onPress={gotoReports} />
+          </View>
+        </View>
+        <View style={styles.row}>
+          <View style={styles.leftButton}>
+            <Button title="Organization" onPress={goToOrganization} />
+          </View>
+          <View style={styles.rightButton}>
+            <Button title="Rewards" onPress={gotoReports} />
           </View>
         </View>
         <View style={styles.logoutButtonContainer}>

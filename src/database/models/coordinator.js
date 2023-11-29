@@ -109,7 +109,7 @@ class Coordinator extends BaseModel {
         "SELECT * FROM coordinator WHERE Username = ?",
         [coordinatorData.userName]
       );
-      return RawButton.length > 0 ? result[0] : [];
+      return row.length > 0 ? row[0] : [];
     } catch (error) {
       console.error(`Error fetching user`, error);
       throw error;
@@ -459,6 +459,32 @@ class Coordinator extends BaseModel {
       return organizationUpdate;
     } catch (error) {
       console.error(`Error updating organization: ${error}`);
+      throw error;
+    }
+  }
+
+  async getUsersByOrg(organizationData) {
+    try {
+      const [organization] = await this.db.query(
+        "SELECT * FROM user u JOIN person p ON u.UserId = p.UserId WHERE OrganizationId = ?",
+        [organizationData.orgId]
+      );
+      return organization.length > 0 ? organization : null;
+    } catch (error) {
+      console.error("Error creating event:", error);
+      throw error;
+    }
+  }
+
+  async removeUserFromOrg(userData) {
+    try {
+      const [row] = await this.db.query(
+        "UPDATE user SET OrganizationId = NULL WHERE UserId = ?",
+        [userData.userId]
+      );
+      return row;
+    } catch (error) {
+      console.error(`Error removing the member!: ${error}`);
       throw error;
     }
   }
