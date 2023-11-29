@@ -35,6 +35,7 @@ const CoordInterface = ({ route }) => {
       console.log("Error fetching coordinator data:", error);
     }
   };
+  console.log(coordinator.OrganizationImage);
   useEffect(() => {
     if (isFocused) {
       fetchCoordinatorData();
@@ -72,7 +73,9 @@ const CoordInterface = ({ route }) => {
           <View style={{ alignSelf: "flex-end" }}>
             <TouchableOpacity onPress={goToOrganizationProfile}>
               <Image
-                source={require("../../../assets/img/default-image.png")}
+                source={{
+                  uri: `${localhost}/img/organization/${coordinator.OrganizationImage}`,
+                }}
                 style={styles.profileAvatar}
               />
             </TouchableOpacity>
