@@ -17,7 +17,8 @@ const EventMaster = ({ route }) => {
   const navigation = useNavigation();
   const localhost = ipAddress;
   const [isLoading, setIsLoading] = useState(false);
-
+  const imageSource = { uri: `` };
+  const [eventCover, setEventCover] = useState({});
   const [fetchedEvents, setFetchedEvents] = useState([]);
   const { coordinator } = route.params;
   const goCreateEvent = (coordinator, onFetchEvent) => {

@@ -17,17 +17,17 @@ import ipAddress from "../../database/ipAddress";
 
 const CoordinatorAddEvent = ({ route }) => {
   const navigation = useNavigation();
+  const { coordinator, onFetchEvent } = route.params;
   const localhost = ipAddress;
-  const [imageUri, setImageUri] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(new Date());
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const imageSource = {
     uri: `${localhost}/img/task/${coordinator.EventImage}`,
   };
   const [taskCover, setTaskCover] = useState(imageSource);
-  const { coordinator, onFetchEvent } = route.params;
   const minimumDate = new Date();
   const [eventData, setEventData] = useState({
     organizationId: coordinator.OrganizationId,
@@ -70,6 +70,8 @@ const CoordinatorAddEvent = ({ route }) => {
     setShowDatePicker(false);
     if (selectedDate) {
       setSelectedDate(selectedDate); // Update the selected date
+      const combinedDateTime = combineDateTime(selectedDate, selectedTime);
+      updateEventData("eventDate", combinedDateTime);
     }
   };
 
@@ -77,6 +79,8 @@ const CoordinatorAddEvent = ({ route }) => {
     setShowTimePicker(false);
     if (selectedTime) {
       setSelectedTime(selectedTime); // Update the selected time
+      const combinedDateTime = combineDateTime(selectedDate, selectedTime);
+      updateEventData("eventDate", combinedDateTime);
     }
   };
 
@@ -95,21 +99,42 @@ const CoordinatorAddEvent = ({ route }) => {
   //------------------
 
   //API CALL FOR BACKEND
-  const handleCreateEvent = async () => {
+  const uploadImage = async () => {
     const combinedDateTime = combineDateTime();
     const updatedEventData = {
       ...eventData,
       eventDate: combinedDateTime,
     };
+    let formData = new FormData();
+    formData.append("filePath", "/images/task");
+    for (const key in updatedEventData) {
+      if (updatedEventData.hasOwnProperty(key)) {
+        formData.append(key, updatedEventData[key]);
+      }
+    }
+    formData.append("image", {
+      uri: taskCover.uri,
+      type: "image/jpeg",
+      name: "upload.jpg",
+    });
+
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     try {
       const response = await axios.post(
-        `${localhost}/coordinator/createEvent`,
-        updatedEventData
+        `${localhost}/coordinator/upload/insertEvent`,
+        formData
       );
-      onFetchEvent();
+      console.log(response.data.status);
+
+      const result = await response.data;
       navigation.navigate("EventMaster", { coordinator: coordinator });
     } catch (error) {
-      console.log("Error! creating an event", error);
+      console.error("Error during image upload: ", error.message);
+      return null;
+    } finally {
+      setIsSubmitting(false); // Re-enable the button
     }
   };
   //-------------------------------------------------------
@@ -118,8 +143,8 @@ const CoordinatorAddEvent = ({ route }) => {
     <View style={styles.background}>
       <View style={styles.eventDetailsContainer}>
         <TouchableOpacity onPress={pickImage} style={styles.imagePlaceholder}>
-          {imageUri ? (
-            <Image source={{ uri: imageUri }} style={styles.img} />
+          {taskCover ? (
+            <Image source={taskCover} style={styles.img} />
           ) : (
             <Text style={styles.imagePlaceholderText}>Select Image</Text>
           )}
@@ -212,7 +237,7 @@ const CoordinatorAddEvent = ({ route }) => {
             />
           </View>
         </View>
-        <Button title="Create" onPress={handleCreateEvent} />
+        <Button title="Create" onPress={uploadImage} />
       </View>
     </View>
   );
