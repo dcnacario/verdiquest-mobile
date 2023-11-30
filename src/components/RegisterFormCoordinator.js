@@ -50,6 +50,9 @@ const RegisterFormCoordinator = ({}) => {
       })
       .catch((error) => {
         console.error(error);
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
         Alert.alert("Error", "Failed to register. Please try again.");
       });
   };

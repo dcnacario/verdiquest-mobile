@@ -48,12 +48,12 @@ async function registerCoordinator(request, response) {
       password,
     } = request.body;
 
-    const existingUser = await coordinator.getUserByUsername(username);
-    if (existingUser) {
-      return response.status(400).send({
-        message: "Username already exists. Please choose a different username.",
-      });
-    }
+    // const existingUser = await coordinator.getUserByUsername(username);
+    // if (existingUser) {
+    //   return response.status(400).send({
+    //     message: "Username already exists. Please choose a different username.",
+    //   });
+    // }
 
     // Hash the password before storing it in the database
     const hashedPassword = bcrypt.hashSync(password, 10);
