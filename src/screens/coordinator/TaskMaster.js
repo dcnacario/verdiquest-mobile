@@ -12,11 +12,12 @@ import CoordTaskCard from "../../components/CoordTaskCard";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import ipAddress from "../../database/ipAddress";
+import { useIsFocused } from "@react-navigation/native";
 
 const TaskMaster = ({ route }) => {
   const [fetchedTasks, setFetchedTasks] = useState([]);
   const localhost = ipAddress;
-
+  const isFocused = useIsFocused;
   const [isLoading, setIsLoading] = useState(false);
 
   const navigation = useNavigation();
@@ -25,7 +26,7 @@ const TaskMaster = ({ route }) => {
   const goToCreateTask = () => {
     navigation.navigate("CreateTaskDashboard", {
       coordinator: coordinator,
-      onTaskCreated: fetchTasks,
+      // onTaskCreated: fetchTasks,
     });
   };
 
@@ -92,8 +93,8 @@ const TaskMaster = ({ route }) => {
   };
 
   useEffect(() => {
-    fetchTasks();
-  }, [coordinator.OrganizationId]);
+    if (isFocused) fetchTasks();
+  }, [isFocused]);
 
   //navigation for View
   const gotoCard = (taskData, onTaskFetch) => {
@@ -102,7 +103,6 @@ const TaskMaster = ({ route }) => {
       onTaskFetch: onTaskFetch,
     });
   };
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -118,6 +118,7 @@ const TaskMaster = ({ route }) => {
         ) : fetchedTasks != null ? (
           fetchedTasks.map((item) => (
             <CoordTaskCard
+              img={`${localhost}/img/task/${item.TaskImage}`}
               key={item.TaskId}
               participants={item.takersTask || 0}
               done={item.takersCount || 0}
