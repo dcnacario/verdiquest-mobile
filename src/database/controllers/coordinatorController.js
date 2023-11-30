@@ -147,43 +147,6 @@ async function loginCoordinator(request, response) {
   }
 }
 
-async function createTask(request, response) {
-  try {
-    const {
-      difficultyId,
-      organizationId,
-      taskName,
-      taskDescription,
-      taskDuration,
-      taskPoints,
-      Status,
-    } = request.body;
-
-    const taskData = {
-      difficultyId,
-      organizationId,
-      taskName,
-      taskDescription,
-      taskDuration,
-      taskPoints,
-      Status,
-    };
-
-    const insertTaskId = await coordinator.insertTask(taskData);
-
-    response.status(200).send({
-      message: "Task registered successfully!",
-      taskId: insertTaskId,
-      success: true,
-    });
-  } catch (error) {
-    console.error(error);
-    response
-      .status(500)
-      .send({ message: "Server error", error: error.message });
-  }
-}
-
 async function getDifficulty(request, response) {
   try {
     const fetchedTable = await coordinator.fetchDifficulty();
@@ -676,7 +639,6 @@ module.exports = {
   registerOrganization,
   registerCoordinator,
   loginCoordinator,
-  createTask,
   getDifficulty,
   getTasks,
   deleteTask,
