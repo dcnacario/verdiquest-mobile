@@ -327,6 +327,16 @@ class User extends BaseModel {
             throw new Error('Error fetching event id '+error.message);
         }
     }
+
+    async fetchProducts() {
+        try {
+            const query = 'SELECT ProductName, ProductDescription, PointsRequired FROM products';
+            const [products] = await this.db.query(query);
+            return products;
+        } catch (error) {
+            throw new Error('Error fetching products: ' + error.message);
+        }
+    }
     
 }
 

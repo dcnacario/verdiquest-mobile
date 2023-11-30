@@ -399,6 +399,16 @@ async function fetchEventDetails(req, res) {
   }
 }
 
+async function fetchProducts(request, response) {
+  try {
+      const products = await user.fetchProducts();
+      response.json(products);
+  } catch (error) {
+      response.status(500).send(error.message);
+  }
+}
+
+
 module.exports = {
   registerUser,
   loginUser,
@@ -421,4 +431,5 @@ module.exports = {
   fetchTasksByOrganization,
   fetchEvents,
   fetchEventDetails,
+  fetchProducts,
 };

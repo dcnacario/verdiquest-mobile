@@ -25,10 +25,6 @@ const OrgView = ({ route, img }) => {
 
         fetchEventDetails();
     }, [eventId]);
-    const formatDate = (dateString) => {
-        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '12', minute: '2-digit' };
-        return new Intl.DateTimeFormat('en-US', options).format(new Date(dateString));
-    };
 
     if (!eventDetails) {
         return <Text>Loading...</Text>; 
@@ -68,7 +64,7 @@ const styles = StyleSheet.create({
     imageStyle: {
         borderRadius: 15,
         width: '90%',
-        height: 250,
+        height: 150,
         resizeMode: 'center',
     },
     detailsContainer: {

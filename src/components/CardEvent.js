@@ -50,12 +50,12 @@ const styles = StyleSheet.create({
     cardDescription: {
         fontSize: 15,
         color: 'black', 
-        marginBottom: 8,
+        marginBottom: 16,
     },
     cardVenue: {
         fontSize: 14,
         color: '#646464',
-        marginBottom: 16,
+        marginBottom: 4,
     },
     viewButton: {
         backgroundColor: '#3D691B', 
