@@ -199,7 +199,7 @@ class Coordinator extends BaseModel {
   async updateUserDailyTask(userTask) {
     try {
       const [usertask] = await this.db.query(
-        "UPDATE userdailytask SET Status = ? WHERE UserDailyTaskId = ?",
+        "UPDATE userdailytask SET TaskStatus = ? WHERE UserDailyTaskId = ?",
         [userTask.Status, userTask.userDailyTaskId]
       );
 
@@ -328,7 +328,7 @@ class Coordinator extends BaseModel {
   async fetchUserTaskSelected(taskData) {
     try {
       const [rows] = await this.db.query(
-        "SELECT COUNT(*) as totalTakers FROM userdailytask WHERE TaskId = ? AND Status = 'DONE'",
+        "SELECT COUNT(*) as totalTakers FROM userdailytask WHERE TaskId = ? AND TaskStatus = 'Ongoing'",
         [taskData.taskId]
       );
 

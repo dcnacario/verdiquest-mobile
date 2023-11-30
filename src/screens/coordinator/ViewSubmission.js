@@ -79,12 +79,20 @@ const ViewSubmission = ({ route }) => {
                   <Text style={styles.name}>
                     {item.FirstName} {item.LastName}
                   </Text>
-                  <Text style={styles.status}>Status: {item.Status}</Text>
+                  <Text style={styles.status}>Status: {item.TaskStatus}</Text>
                 </View>
                 <TouchableOpacity
-                  style={styles.button}
+                  style={[
+                    styles.button,
+                    {
+                      backgroundColor:
+                        item.TaskStatus == "Complete" ? "grey" : "#3D691B",
+                    },
+                  ]}
                   onPress={() => goToViewSubmissionUser(item, fetchTasks)}
+                  disabled={item.TaskStatus == "Complete" ? true : false}
                 >
+                  {console.log(item)}
                   <Text style={styles.buttonText}>View Submission</Text>
                 </TouchableOpacity>
               </View>
@@ -164,7 +172,6 @@ const styles = StyleSheet.create({
     color: "grey",
   },
   button: {
-    backgroundColor: "#4CAF50",
     paddingVertical: 6,
     paddingHorizontal: 16,
     borderRadius: 20,

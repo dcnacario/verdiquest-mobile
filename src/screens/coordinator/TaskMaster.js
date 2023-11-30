@@ -1,10 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   StyleSheet,
   View,
   Text,
   ScrollView,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
@@ -19,6 +20,7 @@ const TaskMaster = ({ route }) => {
   const localhost = ipAddress;
   const isFocused = useIsFocused;
   const [isLoading, setIsLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const navigation = useNavigation();
   const { coordinator } = route.params;
@@ -29,6 +31,14 @@ const TaskMaster = ({ route }) => {
       // onTaskCreated: fetchTasks,
     });
   };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+      fetchTasks();
+    }, 2000);
+  }, []);
 
   const countTakers = async (taskId) => {
     try {
@@ -93,7 +103,9 @@ const TaskMaster = ({ route }) => {
   };
 
   useEffect(() => {
-    if (isFocused) fetchTasks();
+    if (isFocused) {
+      fetchTasks();
+    }
   }, [isFocused]);
 
   //navigation for View
@@ -113,7 +125,12 @@ const TaskMaster = ({ route }) => {
         <View style={{ flex: 1 }}></View>
       </View>
       <View style={styles.divider}></View>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+        style={styles.scrollView}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {isLoading ? (
           <ActivityIndicator size="large" color={theme.colors.primary} /> // Loading indicator
         ) : fetchedTasks != null ? (

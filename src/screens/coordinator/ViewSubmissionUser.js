@@ -93,7 +93,7 @@ const ViewSubmissionUser = ({ route }) => {
           <SubmitCard
             startTime={formatDate(data.DateTaken)}
             name={data.FirstName}
-            status={data.Status}
+            status={data.TaskStatus}
             endTime={formatDate(data.DateFinished)}
             onComplete={() => handleComplete(data)}
             onDecline={() => handleDecline(data)}
