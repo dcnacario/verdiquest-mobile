@@ -134,9 +134,6 @@ const CoordInterface = ({ route }) => {
             <Button title="Rewards" onPress={gotoReports} />
           </View>
         </View>
-        <View style={styles.logoutButtonContainer}>
-          <Button title="Logout" onPress={gotoTasks} />
-        </View>
       </View>
     </ScrollView>
   );
@@ -204,9 +201,11 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   profileAvatar: {
-    width: 70,
-    height: 70,
-    borderRadius: 70 / 2,
+    width: 80,
+    height: 80,
+    borderRadius: 80 / 2,
+    borderColor: "black",
+    borderWidth: 1,
   },
   coordinatorAvatar: {
     width: 90,
