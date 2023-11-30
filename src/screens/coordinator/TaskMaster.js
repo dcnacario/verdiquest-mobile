@@ -112,6 +112,7 @@ const TaskMaster = ({ route }) => {
         <Text style={styles.textStyle}>Tasks</Text>
         <View style={{ flex: 1 }}></View>
       </View>
+      <View style={styles.divider}></View>
       <ScrollView style={styles.scrollView}>
         {isLoading ? (
           <ActivityIndicator size="large" color={theme.colors.primary} /> // Loading indicator
@@ -159,6 +160,12 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     width: "90%", // Ensures ScrollView takes full width
+  },
+  divider: {
+    width: "80%",
+    height: 1,
+    backgroundColor: "#161616",
+    marginTop: -10,
   },
 });
 

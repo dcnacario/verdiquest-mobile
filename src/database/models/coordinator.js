@@ -116,28 +116,6 @@ class Coordinator extends BaseModel {
     }
   }
 
-  async insertTask(taskData) {
-    try {
-      const [task] = await this.db.query(
-        "INSERT INTO dailytask (DifficultyId, OrganizationId, TaskName, TaskDescription, TaskDuration, TaskPoints, Status) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [
-          taskData.difficultyId,
-          taskData.organizationId,
-          taskData.taskName,
-          taskData.taskDescription,
-          taskData.taskDuration,
-          taskData.taskPoints,
-          taskData.Status,
-        ]
-      );
-      const insertedTaskId = task.insertId;
-      return insertedTaskId;
-    } catch (error) {
-      console.error(`Error inserting task`, error);
-      throw error;
-    }
-  }
-
   async fetchDifficulty() {
     try {
       const [result] = await this.db.query("SELECT * FROM difficulty");
@@ -208,7 +186,7 @@ class Coordinator extends BaseModel {
   async fetchUserTasks(taskData) {
     try {
       const [result] = await this.db.query(
-        "SELECT * FROM person p JOIN userdailytask u ON p.UserId = u.UserId JOIN dailytask d ON d.TaskId = u.TaskId WHERE u.TaskId = ?",
+        "SELECT * FROM person p JOIN user us ON p.UserId = us.UserId JOIN userdailytask u ON us.UserId = u.UserId JOIN dailytask d ON d.TaskId = u.TaskId WHERE u.TaskId = ?",
         [taskData.taskId]
       );
       return result.length > 0 ? result : null;
