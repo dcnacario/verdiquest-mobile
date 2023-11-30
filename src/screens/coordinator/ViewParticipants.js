@@ -9,6 +9,7 @@ import {
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import ipAddress from "../../database/ipAddress";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ViewParticipants = ({ route }) => {
   const { eventData } = route.params;
@@ -74,59 +75,62 @@ const ViewParticipants = ({ route }) => {
   }, [eventData.EventId || eventData.eventId]);
 
   return (
-    <View style={styles.background}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.taskName}>
-          {eventData.eventName || eventData.EventName}
-        </Text>
-      </View>
-      {isLoading && (
-        <Text>Loading...</Text> // Simple loading text, can be replaced with a spinner
-      )}
-      {/* Content ScrollView */}
-      {error ? (
-        <Text style={styles.errorMessage}>{error}</Text> // Display error message
-      ) : (
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollViewContent}
-        >
-          {fetchedParticipants != null ? (
-            fetchedParticipants.map((item) => (
-              <View key={item.ParticipantId} style={styles.cardContainer}>
-                <View style={styles.imagePlaceholder} />
-                <View style={styles.textContainer}>
-                  <Text style={styles.name}>
-                    {item.FirstName} {item.LastName}
-                  </Text>
-                  <Text style={styles.status}>Status: {item.Status}</Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.background}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.taskName}>
+            {eventData.eventName || eventData.EventName}
+          </Text>
+          <View style={styles.divider}></View>
+        </View>
+        {isLoading && (
+          <Text>Loading...</Text> // Simple loading text, can be replaced with a spinner
+        )}
+        {/* Content ScrollView */}
+        {error ? (
+          <Text style={styles.errorMessage}>{error}</Text> // Display error message
+        ) : (
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollViewContent}
+          >
+            {fetchedParticipants != null ? (
+              fetchedParticipants.map((item) => (
+                <View key={item.ParticipantId} style={styles.cardContainer}>
+                  <View style={styles.imagePlaceholder} />
+                  <View style={styles.textContainer}>
+                    <Text style={styles.name}>
+                      {item.FirstName} {item.LastName}
+                    </Text>
+                    <Text style={styles.status}>Status: {item.Status}</Text>
+                  </View>
+                  <TouchableOpacity
+                    style={
+                      item.Status == "VERIFIED"
+                        ? {
+                            backgroundColor: "grey",
+                            paddingVertical: 6,
+                            paddingHorizontal: 16,
+                            borderRadius: 20,
+                            justifyContent: "center",
+                          }
+                        : styles.button
+                    }
+                    onPress={() => handleVerify(item)}
+                    disabled={item.Status == "VERIFIED" ? true : false}
+                  >
+                    <Text style={styles.buttonText}>Verify</Text>
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity
-                  style={
-                    item.Status == "VERIFIED"
-                      ? {
-                          backgroundColor: "grey",
-                          paddingVertical: 6,
-                          paddingHorizontal: 16,
-                          borderRadius: 20,
-                          justifyContent: "center",
-                        }
-                      : styles.button
-                  }
-                  onPress={() => handleVerify(item)}
-                  disabled={item.Status == "VERIFIED" ? true : false}
-                >
-                  <Text style={styles.buttonText}>Verify</Text>
-                </TouchableOpacity>
-              </View>
-            ))
-          ) : (
-            <Text>No participants yet!</Text>
-          )}
-        </ScrollView>
-      )}
-    </View>
+              ))
+            ) : (
+              <Text>No participants yet!</Text>
+            )}
+          </ScrollView>
+        )}
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -211,6 +215,12 @@ const styles = StyleSheet.create({
     color: "red", // Example error message color
     textAlign: "center",
     marginTop: 20,
+  },
+  divider: {
+    width: "80%",
+    height: 1,
+    backgroundColor: "#161616",
+    marginTop: 10,
   },
   // ... other styles if needed
 });

@@ -23,6 +23,10 @@ const CoordinatorAddEvent = ({ route }) => {
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(new Date());
+  const imageSource = {
+    uri: `${localhost}/img/task/${coordinator.EventImage}`,
+  };
+  const [taskCover, setTaskCover] = useState(imageSource);
   const { coordinator, onFetchEvent } = route.params;
   const minimumDate = new Date();
   const [eventData, setEventData] = useState({
@@ -57,7 +61,7 @@ const CoordinatorAddEvent = ({ route }) => {
     });
 
     if (!result.canceled && result.assets) {
-      setImageUri(result.assets[0].uri);
+      setTaskCover({ uri: result.uri });
     }
   };
 

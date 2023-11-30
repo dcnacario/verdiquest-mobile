@@ -45,7 +45,7 @@ class Coordinator extends BaseModel {
           coordinatorData.firstName,
           coordinatorData.lastName,
           coordinatorData.middleInitial,
-          "",
+          coordinatorData.birthDate,
           coordinatorData.phoneNumber,
           coordinatorData.gender,
           coordinatorData.street,
@@ -109,7 +109,7 @@ class Coordinator extends BaseModel {
         "SELECT * FROM coordinator WHERE Username = ?",
         [coordinatorData.userName]
       );
-      return row.length > 0 ? row[0] : null;
+      return row.length > 0 ? row[0] : [];
     } catch (error) {
       console.error(`Error fetching user`, error);
       throw error;

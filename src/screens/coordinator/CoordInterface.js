@@ -14,6 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useIsFocused } from "@react-navigation/native";
 import axios from "axios";
 import ipAddress from "../../database/ipAddress";
+import defaultImage from "../../../assets/img/default-image.png";
 
 const CoordInterface = ({ route }) => {
   const [coordinator, setCoordinator] = useState(route.params.coordinator);
@@ -74,12 +75,16 @@ const CoordInterface = ({ route }) => {
         <View style={styles.profileHeader}>
           <View style={{ alignSelf: "flex-end" }}>
             <TouchableOpacity onPress={goToOrganizationProfile}>
-              <Image
-                source={{
-                  uri: `${localhost}/img/organization/${coordinator.OrganizationImage}`,
-                }}
-                style={styles.profileAvatar}
-              />
+              {coordinator.OrganizationImage != null ? (
+                <Image
+                  source={{
+                    uri: `${localhost}/img/organization/${coordinator.OrganizationImage}`,
+                  }}
+                  style={styles.profileAvatar}
+                />
+              ) : (
+                <Image source={defaultImage} style={styles.profileAvatar} />
+              )}
             </TouchableOpacity>
           </View>
           <View style={{ flex: 1 }}></View>
