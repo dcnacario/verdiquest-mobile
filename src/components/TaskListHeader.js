@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, FlatList } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, FlatList , ScrollView} from 'react-native';
 import { theme } from "../../assets/style";
 import CardTask from "./CardTask";
 import axios from 'axios';
@@ -76,16 +76,22 @@ const TaskListHeader = ({ route }) => {
                 showsHorizontalScrollIndicator={false}
                 extraData={selectedDifficulty}
             />
-            {tasks.map((task, index) => (
-                <CardTask
-                    key={index}
-                    img={`${localhost}/img/task/${task.TaskImage}`}
-                    title={task.TaskName}
-                    difficulty={getDifficultyLevel(task.DifficultyId)}
-                    description={task.TaskDescription}
-                    onPress={() => navigation.navigate('TaskDetails', { taskId: task.TaskId })}
-                />
-            ))}
+            <ScrollView style={{ width: '100%' }}>
+                {tasks.length > 0 ? (
+                    tasks.map((task, index) => (
+                        <CardTask
+                            key={index}
+                            img={`${localhost}/img/task/${task.TaskImage}`}
+                            title={task.TaskName}
+                            difficulty={task.DifficultyId} // Assuming DifficultyId is the difficulty level
+                            description={task.TaskDescription}
+                            onPress={() => navigation.navigate('TaskDetails', { taskId: task.TaskId })}
+                        />
+                    ))
+                ) : (
+                    <Text style={styles.noTasksText}>No available tasks, come back tomorrow.</Text>
+                )}
+            </ScrollView>
         </View>
     );
 };
@@ -120,6 +126,12 @@ const styles = StyleSheet.create({
     difficultyText: {
         color: 'white',
         textAlign: 'center',
+    },
+    noTasksText: {
+        fontSize: 16,
+        color: 'grey',
+        textAlign: 'center',
+        marginTop: 20,
     },
 });
 

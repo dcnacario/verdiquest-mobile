@@ -123,17 +123,20 @@ const Home = ({ route}) => {
             </Text>
           </View>
           <View style={{ flex: 1, flexDirection: "column", margin: 10 }}>
-            {tasks.map((task) => (
+            {tasks.length > 0 ? (
+              tasks.map((task) => (
                 <CardTask
-                    key={task.key}
-                    img={`${localhost}/img/task/${task.TaskImage}`}
-                    title={task.TaskName || "No Title"}
-                    difficulty={getDifficultyLevel(task.DifficultyId) || "No Difficulty"}
-                    description={task.TaskDescription || "No Description"}
-                    onPress={() => navigation.navigate('Tasks', { screen: 'TaskDetails', params: { taskId: task.TaskId }})}
+                  key={task.key}
+                  img={`${localhost}/img/task/${task.TaskImage}`}
+                  title={task.TaskName || "No Title"}
+                  difficulty={getDifficultyLevel(task.DifficultyId) || "No Difficulty"}
+                  description={task.TaskDescription || "No Description"}
+                  onPress={() => navigation.navigate('Tasks', { screen: 'TaskDetails', params: { taskId: task.TaskId }})}
                 />
-
-            ))}
+              ))
+            ) : (
+              <Text style={styles.noTasksText}>You have not yet accepted any tasks.</Text>
+            )}
           </View>
         </View>
       </View>
@@ -156,6 +159,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: 10,
+  },
+  noTasksText: {
+    fontSize: 16,
+    color: 'grey', 
+    textAlign: 'center',
+    marginTop: 20, 
   },
 });
 

@@ -75,7 +75,7 @@ const OrgHome = ({route}) => {
             <Image
                     source={user.ProfilePicture ? { uri: user.ProfilePicture } : defaultImage}
                     style={styles.imageStyle}
-                />
+            />
                 <View style={{alignSelf: 'center', flex: 1,}}>
                     <FlatList 
                         data={data}

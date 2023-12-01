@@ -116,14 +116,20 @@ const TaskDetails = ({ route }) => {
             }
             rewardPoints={taskDetails.TaskPoints || 0}
         />
-        <View style={{ alignSelf: "center", flexDirection: "row" }}>
+        <View style={styles.buttonContainer}>
             {isAccepted ? (
-            <>
-                <Button title="Ongoing" onPress={onPressOngoingTask} />
-                <Button title="Cancel" onPress={onPressCancelTask} />
-            </>
+                <>
+                    <View style={styles.buttonWrapper}>
+                        <Button title="Ongoing" onPress={onPressOngoingTask} />
+                    </View>
+                    <View style={styles.buttonWrapper}>
+                        <Button title="Cancel" onPress={onPressCancelTask} />
+                    </View>
+                </>
             ) : (
-            <Button title="ACCEPT" onPress={onPressAccept} />
+                <View style={styles.buttonWrapper}>
+                    <Button title="ACCEPT" onPress={onPressAccept} />
+                </View>
             )}
         </View>
         <Modal
@@ -159,36 +165,45 @@ const TaskDetails = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    justifyContent: "center",
-  },
-  imageStyle: {
-    width: "100%",
-    height: 250,
-    resizeMode: "center",
-    borderRadius: 15,
-    borderColor: "black",
-    borderWidth: 1,
-  },
-  imageContainer: {
-    margin: 20,
-  },
-  textStyle: {
-    fontWeight: "bold",
-    textAlign: "center",
-    fontSize: 28,
-  },
-  modalStyle: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalInnerStyle: {
-    backgroundColor: "#7b904b",
-    padding: 50,
-    borderRadius: 10,
-  },
+    container: {
+        justifyContent: "center",
+    },
+    imageStyle: {
+        width: "100%",
+        height: 250,
+        resizeMode: "center",
+        borderRadius: 15,
+        borderColor: "black",
+        borderWidth: 1,
+    },
+    imageContainer: {
+        margin: 20,
+    },
+    textStyle: {
+        fontWeight: "bold",
+        textAlign: "center",
+        fontSize: 28,
+    },
+    modalStyle: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalInnerStyle: {
+        backgroundColor: "#7b904b",
+        padding: 50,
+        borderRadius: 10,
+    },
+    buttonContainer: {
+        alignSelf: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+    },
+    
+    buttonWrapper: {
+        marginHorizontal: 10, 
+    },
 });
 
 export default TaskDetails;

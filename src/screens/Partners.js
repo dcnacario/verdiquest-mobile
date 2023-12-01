@@ -56,6 +56,7 @@ const Partners = ({ route }) => {
                     {organizations.map((organization) => (
                         <TaskCategoriesCard
                             key={organization.OrganizationId}
+                            img={`${localhost}/img/organization/${organization.OrganizationImage}`}
                             title={organization.OrganizationName}
                             onPress={() => handleOrganizationView(organization)}
                         />
