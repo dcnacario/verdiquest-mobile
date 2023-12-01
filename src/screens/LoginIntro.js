@@ -15,6 +15,7 @@ const LoginIntro = () => {
   const goToCoordinatorLogin = () => {
     navigation.navigate("CoordinatorStack");
   };
+ 
   
   return (
     <ScrollView
