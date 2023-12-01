@@ -149,6 +149,19 @@ class Coordinator extends BaseModel {
     }
   }
 
+  async getFileNameForTask(taskId) {
+    try {
+      const [rows] = await this.db.query(
+        "SELECT TaskImage FROM dailytask WHERE TaskId= ?",
+        [taskId]
+      );
+      return rows.length > 0 ? rows[0].TaskImage : null;
+    } catch (error) {
+      console.error(`Error retrieving task image:`, error);
+      throw error;
+    }
+  }
+
   async deleteTasks(coordinatorData) {
     try {
       const [result] = await this.db.query(

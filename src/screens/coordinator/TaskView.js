@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   Text,
+  ActivityIndicator,
 } from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
@@ -24,6 +25,7 @@ const TaskView = ({ route }) => {
   const [selectedDifficulty, setSelectedDifficulty] = useState(initialValue);
   const [difficultyData, setDifficultyData] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [initial, setInitial] = useState(true);
   const localhost = ipAddress;
   const imageSource = { uri: `${localhost}/img/task/${taskData.TaskImage}` };
@@ -60,7 +62,17 @@ const TaskView = ({ route }) => {
     navigation.navigate("ViewSubmission", { taskData: editTaskData });
   };
 
-  const uploadImage = async () => {
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const updateImage = async () => {
+    if (!taskCover.uri) {
+      console.error("Image URI is not valid for upload.");
+      return null;
+    }
+
+    setIsUploading(true); // Start loading
+    setIsSubmitting(true);
+
     let formData = new FormData();
     formData.append("filePath", "/images/task");
     formData.append("taskId", editTaskData.taskId);
@@ -76,11 +88,19 @@ const TaskView = ({ route }) => {
         formData
       );
 
-      const result = await response.data;
-      return result; // Assuming the server returns the path of the uploaded image
+      if (response.data.success && response.data.newImageUri) {
+        setTaskCover({
+          uri: `${localhost}/img/task/${response.data.newImageUri}`,
+        });
+      }
+
+      onTaskFetch();
     } catch (error) {
       console.error("Error during image upload: ", error.message);
-      return null;
+    } finally {
+      await delay(3000);
+      setIsUploading(false); // End loading
+      setIsSubmitting(false);
     }
   };
 
@@ -89,7 +109,7 @@ const TaskView = ({ route }) => {
       if (isSubmitting) return;
       setIsSubmitting(true);
       try {
-        await uploadImage();
+        await updateImage();
         const response = await axios.post(
           `${localhost}/coordinator/updateTask`,
           editTaskData
@@ -124,7 +144,16 @@ const TaskView = ({ route }) => {
       return;
     }
 
-    setTaskCover({ uri: pickerResult.uri });
+    if (!pickerResult.canceled && pickerResult.assets) {
+      const imageUri = pickerResult.assets[0].uri;
+      // Validate the URI
+      if (imageUri) {
+        setTaskCover({ uri: imageUri });
+      } else {
+        // Handle the case where the URI is not valid
+        console.error("Selected image URI is invalid.");
+      }
+    }
   };
   //-------------------------------------------------------------------------------
 
@@ -138,6 +167,9 @@ const TaskView = ({ route }) => {
 
   return (
     <View style={styles.background}>
+      {isUploading && (
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      )}
       <View style={styles.eventDetailsContainer}>
         <TouchableOpacity
           style={styles.imagePlaceholder}
