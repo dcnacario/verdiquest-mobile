@@ -77,16 +77,28 @@ class Image {
     }
   }
 
-  async updateEventImage(fileName, eventId) {
+  async getEventImage(eventId) {
     try {
-      const [row] = await this.db.query(
-        "UPDATE event SET EventImage = ? WHERE EventId = ?",
-        [fileName, eventId]
+      const [rows] = await this.db.query(
+        "SELECT * FROM event WHERE EventId = ?",
+        [eventId]
       );
-      const updateEventTask = row.affectedrows;
-      return updateEventTask;
+      return rows.length > 0 ? rows[0].EventImage : null;
     } catch (error) {
-      console.error(`Error inserting Image`, error);
+      console.error(`Error retrieving event image:`, error);
+      throw error;
+    }
+  }
+
+  async updateEventImage(eventId, filename) {
+    try {
+      const [result] = await this.db.query(
+        "UPDATE event SET EventImage = ? WHERE EventId = ?",
+        [filename, eventId]
+      );
+      return result.affectedRows;
+    } catch (error) {
+      console.error(`Error updating event image:`, error);
       throw error;
     }
   }

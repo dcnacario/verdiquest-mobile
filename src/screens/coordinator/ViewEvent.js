@@ -29,7 +29,6 @@ const ViewEvent = ({ route }) => {
   const [taskCover, setTaskCover] = useState(imageSource);
 
   const [isEditing, setIsEditing] = useState(false);
-  console.log(item);
 
   const minimumDate = new Date();
   const [eventData, setEventData] = useState({
@@ -112,15 +111,11 @@ const ViewEvent = ({ route }) => {
       type: "image/jpeg",
       name: "upload.jpg",
     });
-
     try {
       const response = await axios.post(
         `${localhost}/coordinator/upload/updateEventImage`,
         formData
       );
-
-      const result = await response.data;
-      return result; // Assuming the server returns the path of the uploaded image
     } catch (error) {
       console.error("Error during image upload: ", error.message);
       return null;

@@ -1,4 +1,4 @@
-const upload = require("../middleware/multerConfig");
+const { upload, deleteFile } = require("../middleware/multerConfig");
 const Image = require("../models/image");
 const db = require("../database");
 
@@ -126,20 +126,24 @@ async function uploadEventImage(request, response) {
 }
 
 async function updateEventImage(request, response) {
-  upload.single("image")(request, response, async (err) => {
-    if (err) {
-      return response.status(500).json({ error: err.message });
-    }
-    const filename = request.file.filename; // Assuming this is the path of the uploaded image
+  try {
     const eventId = request.body.eventId;
+    const newFilename = request.file.filename;
+    console.log(eventId);
+    console.log(newFilename);
 
-    try {
-      const result = await img.updateEventImage(filename, eventId);
-      response.json(result);
-    } catch (error) {
-      response.status(500).json({ error: error.message });
+    const currentImage = await img.getEventImage(eventId);
+    console.log(currentImage);
+    if (currentImage) {
+      deleteFile("images/event/" + currentImage);
     }
-  });
+
+    await img.updateEventImage(eventId, newFilename);
+    response.send("Event image updated successfully");
+  } catch (error) {
+    console.error("Error updating event image:", error);
+    response.status(500).send("Error updating event image");
+  }
 }
 
 module.exports = {

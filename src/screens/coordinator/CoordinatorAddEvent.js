@@ -126,7 +126,6 @@ const CoordinatorAddEvent = ({ route }) => {
         `${localhost}/coordinator/upload/insertEvent`,
         formData
       );
-      console.log(response.data.status);
 
       const result = await response.data;
       onFetchEvent();

@@ -9,6 +9,7 @@ const storage = multer.diskStorage({
 
     // Ensure directory exists or create it
     const dir = path.join(__dirname, "../", dest);
+    console.log(dir);
     fs.mkdirSync(dir, { recursive: true });
 
     cb(null, dir);
@@ -23,4 +24,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-module.exports = upload;
+const deleteFile = (filePath) => {
+  const fullPath = path.join(__dirname, "../", filePath);
+  if (fs.existsSync(fullPath)) {
+    try {
+      fs.unlinkSync(fullPath);
+    } catch (err) {
+      console.error("Error deleting file:", err);
+    }
+  }
+};
+
+module.exports = { upload, deleteFile };
