@@ -19,7 +19,11 @@ const CoordEventCard = ({
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image source={img || defaultImage} style={styles.imageStyle} />
+        {img != null ? (
+          <Image source={{ uri: img }} style={styles.imageStyle} />
+        ) : (
+          <Image source={defaultImage} style={styles.imageStyle} />
+        )}
       </View>
 
       <View style={styles.textContainer}>

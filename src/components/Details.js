@@ -6,7 +6,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 const Details = ({ timeCompleted, taskDescription = 'No description available.', rewardPoints = 0 }) => {
     return (
         <View style={styles.container}>
-            <Text style={styles.headerStyle}>Environmental Cleaning</Text>
             <View style={styles.timeContainer}>
                 <MaterialIcons name='access-time' size={20} color={theme.colors.primary}/>
                 <Text style={styles.textStyle}>Time Completion: {timeCompleted}</Text>

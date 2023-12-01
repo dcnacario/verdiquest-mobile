@@ -186,7 +186,7 @@ class User extends BaseModel {
     
             // If not accepted, insert the task
             const insertQuery = `
-                INSERT INTO userdailytask (UserId, TaskId, DateTaken, Status) 
+                INSERT INTO userdailytask (UserId, TaskId, DateTaken, TaskStatus) 
                 VALUES (?, ?, ?, 'Ongoing')
             `;
             await this.db.query(insertQuery, [userId, taskId, dateTaken]);
@@ -213,17 +213,17 @@ class User extends BaseModel {
     
 
     async checkTaskAccepted(userId, taskId) {
-        const query = "SELECT * FROM userdailytask WHERE UserId = ? AND TaskId = ? AND Status = 'Ongoing'";
+        const query = "SELECT * FROM userdailytask WHERE UserId = ? AND TaskId = ? AND TaskStatus = 'Ongoing'";
         const [results] = await this.db.query(query, [userId, taskId]);
         return results.length > 0; // true if task is accepted
     }
 
     async fetchAcceptedTasks(userId) {
         const query = `
-            SELECT udt.*, dt.TaskName, dt.DifficultyId, dt.TaskDescription, dt.TaskPoints
+            SELECT udt.*, dt.TaskImage, dt.TaskName, dt.DifficultyId, dt.TaskDescription, dt.TaskPoints
             FROM userdailytask udt
             JOIN dailytask dt ON udt.TaskId = dt.TaskId
-            WHERE udt.UserId = ? AND udt.Status = 'Ongoing'
+            WHERE udt.UserId = ? AND udt.TaskStatus = 'Ongoing'
         `;
         const [tasks] = await this.db.query(query, [userId]);
         return tasks;

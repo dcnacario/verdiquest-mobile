@@ -2,9 +2,11 @@ import React from "react";
 import {View, StyleSheet, Text} from 'react-native';
 import { theme } from "../../assets/style";
 import ProgressCard from "./ProgressCard";
+import ipAddress from "../database/ipAddress";
 
 
 const OngoingTask = ({ tasks }) => {
+    const localhost = ipAddress;
     const getDifficultyLevel = (difficultyId) => {
         const difficultyString = String(difficultyId);
         switch (difficultyString) {
@@ -45,8 +47,9 @@ const OngoingTask = ({ tasks }) => {
                     tasks.map((task) => (
                         <ProgressCard
                             key={task.key}
-                            img={task.img} 
+                            img={`${localhost}/img/task/${task.TaskImage}`}
                             title={task.TaskName || "No Title"}
+                            description={task.TaskDescription || "No Description"}
                             difficulty={getDifficultyLevel(task.DifficultyId) || "No Difficulty"}
                             progress={task.progress}
                         />

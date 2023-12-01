@@ -79,6 +79,7 @@ const TaskListHeader = ({ route }) => {
             {tasks.map((task, index) => (
                 <CardTask
                     key={index}
+                    img={`${localhost}/img/task/${task.TaskImage}`}
                     title={task.TaskName}
                     difficulty={getDifficultyLevel(task.DifficultyId)}
                     description={task.TaskDescription}

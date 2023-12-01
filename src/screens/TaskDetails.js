@@ -20,8 +20,8 @@ const TaskDetails = ({ route }) => {
 
     useEffect(() => {
         async function fetchDetailsAndCheckAcceptance() {
-        const taskId = route.params.taskId;
-        const userId = user.UserId;
+            const taskId = route.params.taskId;
+            const userId = user.UserId;
             try {
                 const detailsResponse = await axios.get(`${localhost}/user/fetchTaskDetails/${taskId}`);
 
@@ -62,7 +62,6 @@ const TaskDetails = ({ route }) => {
                 setShowErrorModal(true);
             }
         } catch (error) {
-            console.error("Error accepting task:", error);
             setErrorMessage("Error accepting task.");
             setShowErrorModal(true);
         }
@@ -104,7 +103,7 @@ const TaskDetails = ({ route }) => {
         <View style={styles.imageContainer}>
             <Image
             source={
-                taskDetails.ImageUrl ? { uri: taskDetails.ImageUrl } : defaultImage
+                taskDetails.TaskImage ? { uri:`${localhost}/img/task/${taskDetails.TaskImage}` } : defaultImage
             }
             style={styles.imageStyle}
             />

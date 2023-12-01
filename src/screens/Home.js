@@ -126,11 +126,13 @@ const Home = ({ route}) => {
             {tasks.map((task) => (
                 <CardTask
                     key={task.key}
+                    img={`${localhost}/img/task/${task.TaskImage}`}
                     title={task.TaskName || "No Title"}
                     difficulty={getDifficultyLevel(task.DifficultyId) || "No Difficulty"}
                     description={task.TaskDescription || "No Description"}
-                    onPress={() => navigation.navigate('TaskDetails', { taskId: task.TaskId })}
+                    onPress={() => navigation.navigate('Tasks', { screen: 'TaskDetails', params: { taskId: task.TaskId }})}
                 />
+
             ))}
           </View>
         </View>
@@ -140,10 +142,6 @@ const Home = ({ route}) => {
 };
 
 const styles = StyleSheet.create({
-  img: {
-    height: 120,
-    width: 120,
-  },
   profileContainer: {
     height: 100,
     width: 100,

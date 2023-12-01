@@ -90,6 +90,7 @@ const OrgHome = ({route}) => {
                     tasks.map(task => (
                         <CardTask
                             key={task.TaskId}
+                            img={`${localhost}/img/task/${task.TaskImage}`}
                             title={task.TaskName}
                             eventDifficulty={task.TaskDifficulty} 
                             description={task.TaskDescription}
