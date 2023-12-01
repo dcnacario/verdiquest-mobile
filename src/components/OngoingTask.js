@@ -30,6 +30,15 @@ const OngoingTask = ({ tasks }) => {
         return totalPoints.toLocaleString(); 
     };
 
+    const truncateText = (text, maxLength = 20) => {
+        if (text.length > maxLength) {
+            return `${text.substring(0, maxLength)}...`; 
+        }
+        return text;
+    };
+
+
+
     return (
         <View style={styles.container}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 20 }}>
@@ -38,8 +47,8 @@ const OngoingTask = ({ tasks }) => {
                     <Text style={styles.textStyle}>Task</Text>
                 </View>
                 <View>
-                    <Text style={styles.textStyle}>Possible Points to </Text>
-                    <Text style={styles.textStyle}>be earned: {calculateTotalPoints()} </Text>
+                    <Text style={styles.subTextStyle}>Possible Points to </Text>
+                    <Text style={styles.subTextStyle}>be earned: {calculateTotalPoints()} </Text>
                 </View>
             </View>
             <View>
@@ -48,8 +57,8 @@ const OngoingTask = ({ tasks }) => {
                         <ProgressCard
                             key={task.key}
                             img={`${localhost}/img/task/${task.TaskImage}`}
-                            title={task.TaskName || "No Title"}
-                            description={task.TaskDescription || "No Description"}
+                            title={truncateText(task.TaskName || "No Title", 15)} 
+                            description={truncateText(task.TaskDescription || "No Description")}
                             difficulty={getDifficultyLevel(task.DifficultyId) || "No Difficulty"}
                             progress={task.progress}
                         />
@@ -72,12 +81,19 @@ const styles = StyleSheet.create({
     },
     textStyle: {
         color: 'white',
-        fontSize: 16,
-        textAlign: 'center',
+        fontSize: 14,
+        fontWeight: 'bold',
+        textAlign: 'left',
+        
+    },
+    subTextStyle: {
+        color: 'white',
+        fontSize: 14,
+        textAlign: 'right',
     },
     noTasksText: {
         textAlign: 'center',
-        color: '#666',
+        color: '#36454F',
         marginTop: 20,
     },
 });

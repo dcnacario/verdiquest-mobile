@@ -63,6 +63,22 @@ const OrgHome = ({route}) => {
         }
     };
 
+    const getDifficulty = (difficultyId) => {
+        const difficultyString = String(difficultyId);
+        switch (difficultyString) {
+            case "0":
+                return "All";
+            case "1":
+                return "Easy";
+            case "2":
+                return "Normal";
+            case "3":
+                return "Hard";
+            default:
+                return "Unknown";
+            }
+    };
+
     useEffect(() => {
         fetchOrganizationTasks();
         fetchOrganizationEvents();
@@ -92,7 +108,7 @@ const OrgHome = ({route}) => {
                             key={task.TaskId}
                             img={`${localhost}/img/task/${task.TaskImage}`}
                             title={task.TaskName}
-                            eventDifficulty={task.TaskDifficulty} 
+                            difficulty={getDifficulty(task.DifficultyId) || "No Difficulty"}
                             description={task.TaskDescription}
                             onPress={() => navigation.navigate('TaskDetails', { taskId: task.TaskId })}
                         />

@@ -224,10 +224,12 @@ class User extends BaseModel {
             FROM userdailytask udt
             JOIN dailytask dt ON udt.TaskId = dt.TaskId
             WHERE udt.UserId = ? AND udt.TaskStatus = 'Ongoing'
+            ORDER BY dt.DifficultyId ASC
         `;
         const [tasks] = await this.db.query(query, [userId]);
         return tasks;
     }
+    
 
     async removeFromUserDailyTask(userId, taskId) {
         // Check if the task exists in the user's daily tasks

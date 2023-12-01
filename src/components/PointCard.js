@@ -1,15 +1,27 @@
-import React from "react";
+import React, { useState, useEffect} from "react";
 import {View, StyleSheet, Text} from 'react-native';
 import { theme } from "../../assets/style";
 
 
 
 const PointCard = ({points = 0}) => {
+    const [currentDate, setCurrentDate] = useState('');
+
+    useEffect(() => {
+        const date = new Date();
+        const dateString = date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        }); 
+        setCurrentDate(dateString);
+    }, []);
+
     return (
         <View style={styles.container}>
             <Text style={styles.verdiPointsLabel}> {points} VP</Text>
             <Text style={styles.availablePointsLabel}>Available Points</Text>
-            <Text style={styles.dateLabel}>October 29, 2023</Text>
+            <Text style={styles.dateLabel}>{currentDate}</Text>
         </View>
     );
 };
@@ -33,7 +45,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     verdiPointsLabel: {
-        fontSize: 32,
+        fontSize: 36,
         fontWeight: 'bold',
         color: theme.colors.primary,
     },
@@ -42,6 +54,7 @@ const styles = StyleSheet.create({
     },
     dateLabel: {
         fontWeight: 'bold',
+        fontSize: 14,
     }
 });
 

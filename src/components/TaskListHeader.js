@@ -42,7 +42,7 @@ const TaskListHeader = ({ route }) => {
         { id: '3', title: 'Hard' },
     ];
 
-    const getDifficultyLevel = (difficultyId) => {
+    const getDifficulty = (difficultyId) => {
         const difficultyString = String(difficultyId);
         switch (difficultyString) {
             case '0': return 'All';
@@ -83,7 +83,7 @@ const TaskListHeader = ({ route }) => {
                             key={index}
                             img={`${localhost}/img/task/${task.TaskImage}`}
                             title={task.TaskName}
-                            difficulty={task.DifficultyId} // Assuming DifficultyId is the difficulty level
+                            difficulty={getDifficulty(task.DifficultyId)} 
                             description={task.TaskDescription}
                             onPress={() => navigation.navigate('TaskDetails', { taskId: task.TaskId })}
                         />
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     },
     noTasksText: {
         fontSize: 16,
-        color: 'grey',
+        color: '#36454F',
         textAlign: 'center',
         marginTop: 20,
     },

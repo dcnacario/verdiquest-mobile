@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Dimensions} from 'react-native';
 import PointCard from '../components/PointCard';
 import { theme } from "../../assets/style";
 import OngoingTask from "../components/OngoingTask";
@@ -15,6 +15,11 @@ const MyPoints = ({ route}) => {
     const [userPoint, setUserPoints] = useState(0);
     const isFocused = useIsFocused();
     const localhost = ipAddress;
+    
+    const screenHeight = Dimensions.get("window").height;
+    const paddingBottom = screenHeight * 0.15;
+
+
     useEffect(() => {
         if (isFocused && user && user.UserId) {
             fetchTasksAccepted();
@@ -57,14 +62,18 @@ const MyPoints = ({ route}) => {
     };
 
     return(
-        <View style={styles.container}>
-            <View style={styles.pointsContainer}>
-                <PointCard points={formatPoints(userPoint)}  />
+        <ScrollView
+        keyboardShouldPersistTaps="handled"
+        style={{ backgroundColor: theme.colors.background, flex: 1 }}
+        contentContainerStyle={{ paddingBottom: paddingBottom }}
+        >
+            <View style={styles.container}>
+                <View style={styles.pointsContainer}>
+                    <PointCard points={formatPoints(userPoint)} />
+                </View>
+                <OngoingTask tasks={tasks} />
             </View>
-            <ScrollView>
-                <OngoingTask tasks={tasks}/>
-            </ScrollView>
-        </View>
+        </ScrollView>
     );
 };
 

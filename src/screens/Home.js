@@ -77,6 +77,13 @@ const Home = ({ route}) => {
     }
   };
 
+  const truncateDescription = (description, maxLength = 40) => {
+    if (description.length > maxLength) {
+      return `${description.substring(0, maxLength)}...`; 
+    }
+    return description;
+  };
+
   return (
     <ScrollView
       keyboardShouldPersistTaps="handled"
@@ -130,7 +137,7 @@ const Home = ({ route}) => {
                   img={`${localhost}/img/task/${task.TaskImage}`}
                   title={task.TaskName || "No Title"}
                   difficulty={getDifficultyLevel(task.DifficultyId) || "No Difficulty"}
-                  description={task.TaskDescription || "No Description"}
+                  description={truncateDescription(task.TaskDescription || "No Description")}
                   onPress={() => navigation.navigate('Tasks', { screen: 'TaskDetails', params: { taskId: task.TaskId }})}
                 />
               ))
