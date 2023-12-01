@@ -106,7 +106,7 @@ const CoordinatorAddEvent = ({ route }) => {
       eventDate: combinedDateTime,
     };
     let formData = new FormData();
-    formData.append("filePath", "/images/task");
+    formData.append("filePath", "/images/event");
     for (const key in updatedEventData) {
       if (updatedEventData.hasOwnProperty(key)) {
         formData.append(key, updatedEventData[key]);
@@ -129,6 +129,7 @@ const CoordinatorAddEvent = ({ route }) => {
       console.log(response.data.status);
 
       const result = await response.data;
+      onFetchEvent();
       navigation.navigate("EventMaster", { coordinator: coordinator });
     } catch (error) {
       console.error("Error during image upload: ", error.message);

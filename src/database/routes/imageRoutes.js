@@ -7,5 +7,6 @@ router.post("/imageUpload", imageController.updateOrgProfile);
 router.post("/insertTask", imageController.uploadTaskImage);
 router.post("/updateTaskImage", imageController.updateTaskImage);
 router.post("/insertEvent", imageController.uploadEventImage);
+router.post("/updateEventImage", imageController.updateEventImage);
 
 module.exports = router;

@@ -125,9 +125,27 @@ async function uploadEventImage(request, response) {
   });
 }
 
+async function updateEventImage(request, response) {
+  upload.single("image")(request, response, async (err) => {
+    if (err) {
+      return response.status(500).json({ error: err.message });
+    }
+    const filename = request.file.filename; // Assuming this is the path of the uploaded image
+    const eventId = request.body.eventId;
+
+    try {
+      const result = await img.updateEventImage(filename, eventId);
+      response.json(result);
+    } catch (error) {
+      response.status(500).json({ error: error.message });
+    }
+  });
+}
+
 module.exports = {
   updateOrgProfile,
   uploadTaskImage,
   updateTaskImage,
   uploadEventImage,
+  updateEventImage,
 };

@@ -116,6 +116,11 @@ const EventMaster = ({ route }) => {
         ) : fetchedEvents != null && fetchedEvents.length > 0 ? (
           fetchedEvents.map((item) => (
             <CoordEventCard
+              img={
+                item.EventImage != ""
+                  ? `${localhost}/img/event/${item.EventImage}`
+                  : null
+              }
               key={item.EventId}
               participants={item.participantCount || 0}
               title={item.EventName}

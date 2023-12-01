@@ -76,5 +76,19 @@ class Image {
       throw error;
     }
   }
+
+  async updateEventImage(fileName, eventId) {
+    try {
+      const [row] = await this.db.query(
+        "UPDATE event SET EventImage = ? WHERE EventId = ?",
+        [fileName, eventId]
+      );
+      const updateEventTask = row.affectedrows;
+      return updateEventTask;
+    } catch (error) {
+      console.error(`Error inserting Image`, error);
+      throw error;
+    }
+  }
 }
 module.exports = Image;

@@ -20,14 +20,16 @@ const ViewEvent = ({ route }) => {
   const { coordinator, onFetchEvent, item } = route.params;
   const navigation = useNavigation();
   const dateOfEvent = new Date(item.EventDate);
-  const [imageUri, setImageUri] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(dateOfEvent);
   const [selectedTime, setSelectedTime] = useState(dateOfEvent);
   const localhost = ipAddress;
+  const imageSource = { uri: `${localhost}/img/event/${item.EventImage}` };
+  const [taskCover, setTaskCover] = useState(imageSource);
 
   const [isEditing, setIsEditing] = useState(false);
+  console.log(item);
 
   const minimumDate = new Date();
   const [eventData, setEventData] = useState({
@@ -62,7 +64,7 @@ const ViewEvent = ({ route }) => {
     });
 
     if (!result.canceled && result.assets) {
-      setImageUri(result.assets[0].uri);
+      setTaskCover({ uri: result.assets[0].uri });
     }
   };
 
@@ -101,6 +103,30 @@ const ViewEvent = ({ route }) => {
     });
   };
 
+  const uploadImage = async () => {
+    let formData = new FormData();
+    formData.append("filePath", "/images/event");
+    formData.append("eventId", eventData.eventId);
+    formData.append("image", {
+      uri: taskCover.uri,
+      type: "image/jpeg",
+      name: "upload.jpg",
+    });
+
+    try {
+      const response = await axios.post(
+        `${localhost}/coordinator/upload/updateEventImage`,
+        formData
+      );
+
+      const result = await response.data;
+      return result; // Assuming the server returns the path of the uploaded image
+    } catch (error) {
+      console.error("Error during image upload: ", error.message);
+      return null;
+    }
+  };
+
   //API CALL FOR BACKEND
 
   const handleEditSave = async () => {
@@ -111,11 +137,12 @@ const ViewEvent = ({ route }) => {
         eventDate: combinedDateTime,
       };
       try {
+        await uploadImage();
         const response = await axios.post(
           `${localhost}/coordinator/updateEvent`,
           updatedEventData
         );
-        onFetchEvent;
+        onFetchEvent();
         console.log("Update response:", response.data);
       } catch (error) {
         console.error("Error updating task:", error);
@@ -131,8 +158,8 @@ const ViewEvent = ({ route }) => {
       <View style={styles.eventDetailsContainer}>
         <View style={styles.row}>
           <TouchableOpacity onPress={pickImage} style={styles.imagePlaceholder}>
-            {imageUri ? (
-              <Image source={{ uri: imageUri }} style={styles.img} />
+            {taskCover ? (
+              <Image source={taskCover} style={styles.img} />
             ) : (
               <Text style={styles.imagePlaceholderText}>Select Image</Text>
             )}
