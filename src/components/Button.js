@@ -26,7 +26,12 @@ const Button = ({
       <TouchableOpacity
         onPress={onPress}
         hitSlop={hitSlop}
-        style={[styles.button, styles.shadow, { backgroundColor: color }]}
+        style={[
+          styles.button,
+          styles.shadow,
+          { backgroundColor: disabled ? "grey" : color },
+        ]}
+        disabled={disabled}
       >
         {img ? <Image source={img} style={styles.img} /> : null}
         <Text style={[styles.buttonText, { color: textColor }]}>

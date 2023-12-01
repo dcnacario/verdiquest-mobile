@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   Text,
+  ActivityIndicator,
 } from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
@@ -20,6 +21,7 @@ const ViewEvent = ({ route }) => {
   const { coordinator, onFetchEvent, item } = route.params;
   const navigation = useNavigation();
   const dateOfEvent = new Date(item.EventDate);
+  const [isUploading, setIsUploading] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(dateOfEvent);
@@ -29,6 +31,7 @@ const ViewEvent = ({ route }) => {
   const [taskCover, setTaskCover] = useState(imageSource);
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isSubmit, setIsSubmitting] = useState(false);
 
   const minimumDate = new Date();
   const [eventData, setEventData] = useState({
@@ -109,11 +112,17 @@ const ViewEvent = ({ route }) => {
     });
   };
 
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
   const updateImage = async () => {
     if (!taskCover.uri) {
       console.error("Image URI is not valid for upload.");
       return null;
     }
+
+    setIsUploading(true); // Start loading
+    setIsSubmitting(true);
+
     let formData = new FormData();
     formData.append("filePath", "/images/event");
     formData.append("eventId", eventData.eventId);
@@ -122,22 +131,26 @@ const ViewEvent = ({ route }) => {
       type: "image/jpeg",
       name: "upload.jpg",
     });
+
     try {
       const response = await axios.post(
         `${localhost}/coordinator/upload/updateEventImage`,
         formData
       );
+
       if (response.data.success && response.data.newImageUri) {
-        // Update taskCover with the new URI
         setTaskCover({
           uri: `${localhost}/img/event/${response.data.newImageUri}`,
         });
       }
-      console.log(response.data);
+
       onFetchEvent();
     } catch (error) {
       console.error("Error during image upload: ", error.message);
-      return null;
+    } finally {
+      await delay(3000);
+      setIsUploading(false); // End loading
+      setIsSubmitting(false);
     }
   };
 
@@ -168,6 +181,10 @@ const ViewEvent = ({ route }) => {
 
   return (
     <View style={styles.background}>
+      {isUploading && (
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      )}
+
       <View style={styles.eventDetailsContainer}>
         <View style={styles.row}>
           <TouchableOpacity
@@ -301,6 +318,7 @@ const ViewEvent = ({ route }) => {
           <Button
             title={isEditing ? "Save" : "Edit"}
             onPress={handleEditSave}
+            disabled={isSubmit}
           />
         </View>
       </View>
