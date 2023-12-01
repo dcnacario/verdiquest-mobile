@@ -6,6 +6,7 @@ import {
   ScrollView,
   ActivityIndicator,
   RefreshControl,
+  Modal,
 } from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
@@ -14,6 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import ipAddress from "../../database/ipAddress";
 import { useIsFocused } from "@react-navigation/native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const TaskMaster = ({ route }) => {
   const [fetchedTasks, setFetchedTasks] = useState([]);
@@ -21,6 +23,7 @@ const TaskMaster = ({ route }) => {
   const isFocused = useIsFocused;
   const [isLoading, setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const navigation = useNavigation();
   const { coordinator } = route.params;
@@ -30,6 +33,37 @@ const TaskMaster = ({ route }) => {
       coordinator: coordinator,
       // onTaskCreated: fetchTasks,
     });
+  };
+
+  //CREATING A CONFIRMATION MODAL FOR DELETING
+  const ConfirmModal = ({ isVisible, onConfirm, onCancel, title }) => {
+    return (
+      <Modal
+        transparent={true}
+        animationType="slide"
+        visible={isVisible}
+        onRequestClose={onCancel}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>
+              Are you sure to delete this Task?
+            </Text>
+            <Text style={styles.modalText}>{title}</Text>
+            <View
+              style={{ flexDirection: "row", alignSelf: "flex-end", gap: 10 }}
+            >
+              <TouchableOpacity style={styles.button} onPress={onCancel}>
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={onConfirm}>
+                <Text style={styles.buttonText}>Confirm</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
   };
 
   const onRefresh = useCallback(() => {
@@ -131,6 +165,12 @@ const TaskMaster = ({ route }) => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+        <ConfirmModal
+          isVisible={modalVisible}
+          message="Are you sure you want to delete this item?"
+          onConfirm={deleteTask}
+          onCancel={() => setModalVisible(false)}
+        />
         {isLoading ? (
           <ActivityIndicator size="large" color={theme.colors.primary} /> // Loading indicator
         ) : fetchedTasks != null ? (
@@ -143,7 +183,7 @@ const TaskMaster = ({ route }) => {
               title={item.TaskName}
               description={item.TaskDescription}
               onPress={() => gotoCard(item, fetchTasks)}
-              deleteTask={() => deleteTask(item.TaskId)}
+              deleteTask={() => setModalVisible(true)}
             />
           ))
         ) : (
@@ -183,6 +223,48 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#161616",
     marginTop: -10,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Dim the background
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    backgroundColor: "#2196F3",
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
 
