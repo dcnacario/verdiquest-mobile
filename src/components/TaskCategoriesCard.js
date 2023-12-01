@@ -3,9 +3,6 @@ import {View, StyleSheet, Text, Image} from 'react-native';
 import defaultImage from '../../assets/img/default-image.png';
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-
-
-
 const TaskCategoriesCard = ({img, title, onPress}) => {
     return (
         <View style={styles.container}>
