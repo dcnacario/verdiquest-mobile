@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken");
 const SECRET_KEY = "5bh(76Hn7B5<pdz";
 const bcrypt = require("bcrypt");
 const Coordinator = require("../models/coordinator");
+const fs = require("fs");
+const path = require("path");
 
 const coordinator = new Coordinator(db);
 
@@ -184,6 +186,23 @@ async function getTasks(request, response) {
 async function deleteTask(request, response) {
   try {
     const { taskId } = request.body;
+
+    // const fileName = await coordinator.getFileNameForTask(taskId);
+    // if (!fileName) {
+    //   return response.status(404).send({ message: "Task or file not found" });
+    // }
+    // const filePath = path.join(__dirname, "../images/task/", fileName);
+
+    // // Delete the file
+    // fs.unlink(filePath, (err) => {
+    //   if (err) {
+    //     console.error("Error deleting the file:", err);
+    //     return response
+    //       .status(500)
+    //       .send({ message: "Error deleting file", error: err.message });
+    //   }
+    //   console.log(`File at ${filePath} successfully deleted`);
+    // });
 
     const coordinatorData = { taskId };
     const result = await coordinator.deleteTasks(coordinatorData);

@@ -41,11 +41,24 @@ class Image {
     }
   }
 
-  async updateTaskImage(fileName, organizationId) {
+  async getTaskImage(taskId) {
+    try {
+      const [rows] = await this.db.query(
+        "SELECT * FROM dailytask WHERE taskId = ?",
+        [taskId]
+      );
+      return rows.length > 0 ? rows[0].TaskImage : null;
+    } catch (error) {
+      console.error(`Error retrieving task image:`, error);
+      throw error;
+    }
+  }
+
+  async updateTaskImage(fileName, taskId) {
     try {
       const [row] = await this.db.query(
         "UPDATE dailytask SET TaskImage = ? WHERE TaskId = ?",
-        [fileName, organizationId]
+        [fileName, taskId]
       );
       const updateTaskImage = row.affectedrows;
       return updateTaskImage;
