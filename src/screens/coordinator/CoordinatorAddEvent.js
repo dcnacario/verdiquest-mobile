@@ -61,7 +61,7 @@ const CoordinatorAddEvent = ({ route }) => {
     });
 
     if (!result.canceled && result.assets) {
-      setTaskCover({ uri: result.uri });
+      setTaskCover({ uri: result.assets[0].uri });
     }
   };
 

@@ -83,63 +83,61 @@ async function updateTaskImage(request, response) {
 }
 
 async function uploadEventImage(request, response) {
-  upload.single("image")(request, response, async (err) => {
-    if (err) {
-      return response.status(500).json({ error: err.message });
-    }
+  try {
     const filename = request.file.filename;
+    const {
+      organizationId,
+      eventName,
+      eventDescription,
+      eventVenue,
+      eventDate,
+      eventPoints,
+    } = request.body;
 
-    try {
-      const {
-        organizationId,
-        eventName,
-        eventDescription,
-        eventVenue,
-        eventDate,
-        eventPoints,
-      } = request.body;
+    const eventData = {
+      organizationId,
+      eventName,
+      eventDescription,
+      eventVenue,
+      eventDate,
+      eventPoints,
+    };
 
-      const eventData = {
-        organizationId,
-        eventName,
-        eventDescription,
-        eventVenue,
-        eventDate,
-        eventPoints,
-      };
-      console.log(eventDate);
+    const insertEventId = await img.insertEventImage(filename, eventData);
 
-      const insertEventId = await img.insertEventImage(filename, eventData);
-
-      response.status(200).send({
-        message: "Event registered successfully!",
-        taskId: insertEventId,
-        success: true,
-      });
-    } catch (error) {
-      console.error(error);
-      response
-        .status(500)
-        .send({ message: "Server error", error: error.message });
-    }
-  });
+    response.status(200).send({
+      message: "Event registered successfully!",
+      taskId: insertEventId,
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
 }
 
 async function updateEventImage(request, response) {
   try {
     const eventId = request.body.eventId;
-    const newFilename = request.file.filename;
-    console.log(eventId);
-    console.log(newFilename);
+    const newFilename = request.file.filename; // Filename of the new image
 
     const currentImage = await img.getEventImage(eventId);
     console.log(currentImage);
     if (currentImage) {
+      // Delete the current image file
       deleteFile("images/event/" + currentImage);
     }
 
+    // Update the database record with the new filename
     await img.updateEventImage(eventId, newFilename);
-    response.send("Event image updated successfully");
+
+    // Send response with success status and new image URI
+    response.send({
+      success: true,
+      newImageUri: `/${newFilename}`, // Send the newFilename in the URI
+    });
   } catch (error) {
     console.error("Error updating event image:", error);
     response.status(500).send("Error updating event image");

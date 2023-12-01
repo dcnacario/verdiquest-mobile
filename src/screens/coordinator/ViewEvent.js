@@ -63,7 +63,14 @@ const ViewEvent = ({ route }) => {
     });
 
     if (!result.canceled && result.assets) {
-      setTaskCover({ uri: result.assets[0].uri });
+      const imageUri = result.assets[0].uri;
+      // Validate the URI
+      if (imageUri) {
+        setTaskCover({ uri: imageUri });
+      } else {
+        // Handle the case where the URI is not valid
+        console.error("Selected image URI is invalid.");
+      }
     }
   };
 
@@ -102,7 +109,11 @@ const ViewEvent = ({ route }) => {
     });
   };
 
-  const uploadImage = async () => {
+  const updateImage = async () => {
+    if (!taskCover.uri) {
+      console.error("Image URI is not valid for upload.");
+      return null;
+    }
     let formData = new FormData();
     formData.append("filePath", "/images/event");
     formData.append("eventId", eventData.eventId);
@@ -116,6 +127,14 @@ const ViewEvent = ({ route }) => {
         `${localhost}/coordinator/upload/updateEventImage`,
         formData
       );
+      if (response.data.success && response.data.newImageUri) {
+        // Update taskCover with the new URI
+        setTaskCover({
+          uri: `${localhost}/img/event/${response.data.newImageUri}`,
+        });
+      }
+      console.log(response.data);
+      onFetchEvent();
     } catch (error) {
       console.error("Error during image upload: ", error.message);
       return null;
@@ -132,12 +151,11 @@ const ViewEvent = ({ route }) => {
         eventDate: combinedDateTime,
       };
       try {
-        await uploadImage();
+        await updateImage();
         const response = await axios.post(
           `${localhost}/coordinator/updateEvent`,
           updatedEventData
         );
-        onFetchEvent();
         console.log("Update response:", response.data);
       } catch (error) {
         console.error("Error updating task:", error);
@@ -152,7 +170,11 @@ const ViewEvent = ({ route }) => {
     <View style={styles.background}>
       <View style={styles.eventDetailsContainer}>
         <View style={styles.row}>
-          <TouchableOpacity onPress={pickImage} style={styles.imagePlaceholder}>
+          <TouchableOpacity
+            onPress={pickImage}
+            style={styles.imagePlaceholder}
+            disabled={isEditing === false ? true : false}
+          >
             {taskCover ? (
               <Image source={taskCover} style={styles.img} />
             ) : (
