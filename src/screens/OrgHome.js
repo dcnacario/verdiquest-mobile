@@ -116,6 +116,7 @@ const OrgHome = ({route}) => {
                     events.map(event => (
                         <CardEvent
                             key={event.EventId}
+                            img={`${localhost}/img/event/${event.EventImage}`}
                             title={event.EventName}
                             venue={event.EventVenue}
                             description={event.EventDescription}

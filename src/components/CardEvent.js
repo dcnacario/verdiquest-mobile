@@ -1,10 +1,17 @@
 import React from "react";
 import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
+import defaultImage from "../../assets/img/default-image.png";
 
 const CardEvent = ({ img, title, description, venue, onPress }) => {
     return (
         <View style={styles.cardContainer}>
-            <Image source={{ uri: img }} style={styles.cardImage} />
+            <View style={styles.imageAlignment}>    
+                {img != null ? (
+                    <Image source={{ uri: img }} style={styles.imageStyle} />
+                ) : (
+                    <Image source={defaultImage} style={styles.imageStyle} />
+                )}
+            </View>
             <View style={styles.cardContent}>
                 <Text style={styles.cardTitle}>{title}</Text>
                 <Text style={styles.cardVenue}>{venue}</Text>
@@ -35,9 +42,17 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         width: '90%',
     },
-    cardImage: {
-        width: '100%',
-        height: 150, 
+    imageAlignment: {
+        alignItems: 'center',
+    },
+    imageStyle: {
+        width: 260, 
+        height: 150,
+        resizeMode: "cover",
+        borderTopLeftRadius: 15,
+        borderTopRightRadius: 15,
+        borderBottomLeftRadius: 15,
+        borderBottomRightRadius: 15,
     },
     cardContent: {
         padding: 16,

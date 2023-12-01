@@ -102,8 +102,7 @@ const TaskDetails = ({ route }) => {
         <View style={styles.container}>
         <View style={styles.imageContainer}>
             <Image
-            source={
-                taskDetails.TaskImage ? { uri:`${localhost}/img/task/${taskDetails.TaskImage}` } : defaultImage
+            source={taskDetails.TaskImage ? { uri:`${localhost}/img/task/${taskDetails.TaskImage}` } : defaultImage
             }
             style={styles.imageStyle}
             />
@@ -111,8 +110,7 @@ const TaskDetails = ({ route }) => {
         <Text style={styles.textStyle}>{taskDetails.TaskName}</Text>
         <Details
             timeCompleted={taskDetails.TaskDuration || "N/A"}
-            taskDescription={
-            taskDetails.TaskDescription || "No description available."
+            taskDescription={taskDetails.TaskDescription || "No description available."
             }
             rewardPoints={taskDetails.TaskPoints || 0}
         />

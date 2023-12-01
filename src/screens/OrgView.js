@@ -26,19 +26,26 @@ const OrgView = ({ route, img }) => {
         fetchEventDetails();
     }, [eventId]);
 
+    const truncateDescription = (description, maxLength = 30) => {
+        if (description.length > maxLength) {
+            return `${description.substring(0, maxLength)}...`; 
+        }
+        return description;
+    };
+
     if (!eventDetails) {
         return <Text>Loading...</Text>; 
     }
     return (
         <View style={styles.container}>
-            { img ?  
-            <Image defaultSource={defaultImage} source={img} style={styles.imageStyle}/> 
-            : <Image source={defaultImage} style={styles.imageStyle}/>
-            }
+            <Image 
+                source={eventDetails.EventImage ? { uri: `${localhost}/img/event/${eventDetails.EventImage}` } : defaultImage} 
+                style={styles.imageStyle} 
+            />
             <Text style={styles.titleStyle}>{eventDetails.EventName}</Text>
             <View style={styles.detailsContainer}>
-                <Text style={styles.textStyle}>Details</Text>
-                <Text>{eventDetails.EventDescription}</Text>
+                <Text style={styles.textStyle}>Event Details</Text>
+                <Text>Description: {truncateDescription(eventDetails.EventDescription)}</Text>
                 <Text>Location: {eventDetails.EventVenue}</Text>
                 <Text>Event Date: {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(eventDetails.EventDate))}</Text>
                 <Text>Points Reward: {eventDetails.EventPoints}</Text>
@@ -63,9 +70,13 @@ const styles = StyleSheet.create({
     },
     imageStyle: {
         borderRadius: 15,
-        width: '90%',
+        width: "90%",
         height: 150,
-        resizeMode: 'center',
+        resizeMode: "cover",
+        borderTopLeftRadius: 15,
+        borderTopRightRadius: 15,
+        borderBottomLeftRadius: 15,
+        borderBottomRightRadius: 15,
     },
     detailsContainer: {
         backgroundColor: '#D9D9D9',
@@ -76,6 +87,8 @@ const styles = StyleSheet.create({
     textStyle: {
         fontSize: 20,
         fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 20,
     },
     titleStyle: {
         fontSize: 26,
