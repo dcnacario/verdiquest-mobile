@@ -20,6 +20,7 @@ async function updateOrgProfile(request, response) {
     }
   });
 }
+
 async function uploadTaskImage(request, response) {
   upload.single("image")(request, response, async (err) => {
     if (err) {
@@ -81,4 +82,70 @@ async function updateTaskImage(request, response) {
   });
 }
 
-module.exports = { updateOrgProfile, uploadTaskImage, updateTaskImage };
+async function uploadEventImage(request, response) {
+  upload.single("image")(request, response, async (err) => {
+    if (err) {
+      return response.status(500).json({ error: err.message });
+    }
+    const filename = request.file.filename;
+
+    try {
+      const {
+        organizationId,
+        eventName,
+        eventDescription,
+        eventVenue,
+        eventDate,
+        eventPoints,
+      } = request.body;
+
+      const eventData = {
+        organizationId,
+        eventName,
+        eventDescription,
+        eventVenue,
+        eventDate,
+        eventPoints,
+      };
+      console.log(eventDate);
+
+      const insertEventId = await img.insertEventImage(filename, eventData);
+
+      response.status(200).send({
+        message: "Event registered successfully!",
+        taskId: insertEventId,
+        success: true,
+      });
+    } catch (error) {
+      console.error(error);
+      response
+        .status(500)
+        .send({ message: "Server error", error: error.message });
+    }
+  });
+}
+
+async function updateEventImage(request, response) {
+  upload.single("image")(request, response, async (err) => {
+    if (err) {
+      return response.status(500).json({ error: err.message });
+    }
+    const filename = request.file.filename; // Assuming this is the path of the uploaded image
+    const eventId = request.body.eventId;
+
+    try {
+      const result = await img.updateEventImage(filename, eventId);
+      response.json(result);
+    } catch (error) {
+      response.status(500).json({ error: error.message });
+    }
+  });
+}
+
+module.exports = {
+  updateOrgProfile,
+  uploadTaskImage,
+  updateTaskImage,
+  uploadEventImage,
+  updateEventImage,
+};

@@ -54,5 +54,41 @@ class Image {
       throw error;
     }
   }
+
+  async insertEventImage(fileName, eventData) {
+    try {
+      const [event] = await this.db.query(
+        "INSERT INTO event (OrganizationId, EventName, EventImage, EventDescription, EventVenue, EventDate, EventPoints) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [
+          eventData.organizationId,
+          eventData.eventName,
+          fileName,
+          eventData.eventDescription,
+          eventData.eventVenue,
+          eventData.eventDate,
+          eventData.eventPoints,
+        ]
+      );
+      const insertedEventId = event.insertId;
+      return insertedEventId;
+    } catch (error) {
+      console.error(`Error inserting event`, error);
+      throw error;
+    }
+  }
+
+  async updateEventImage(fileName, eventId) {
+    try {
+      const [row] = await this.db.query(
+        "UPDATE event SET EventImage = ? WHERE EventId = ?",
+        [fileName, eventId]
+      );
+      const updateEventTask = row.affectedrows;
+      return updateEventTask;
+    } catch (error) {
+      console.error(`Error inserting Image`, error);
+      throw error;
+    }
+  }
 }
 module.exports = Image;

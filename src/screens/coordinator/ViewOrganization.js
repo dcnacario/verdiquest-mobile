@@ -12,6 +12,7 @@ import { theme } from "../../../assets/style";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import ipAddress from "../../database/ipAddress";
+import defaultImage from "../../../assets/img/default-image.png";
 
 const ViewOrganization = ({ route }) => {
   const localhost = ipAddress;
@@ -112,7 +113,11 @@ const ViewOrganization = ({ route }) => {
       <Text style={styles.headerText}>Organization Profile</Text>
 
       <View style={styles.logoContainer}>
-        <Image source={logo} style={styles.logo} />
+        {logo != null ? (
+          <Image source={logo} style={styles.logo} />
+        ) : (
+          <Image source={defaultImage} style={styles.logo} />
+        )}
         <TouchableOpacity onPress={handleEditPress} style={styles.editIcon}>
           <MaterialIcons name="edit" size={24} color="black" />
         </TouchableOpacity>

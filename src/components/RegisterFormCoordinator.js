@@ -20,6 +20,7 @@ const RegisterFormCoordinator = ({}) => {
     middleInitial: "",
     lastName: "",
     phoneNumber: "",
+    birthDate: "",
     gender: "",
     street: "",
     barangay: "",
@@ -32,6 +33,13 @@ const RegisterFormCoordinator = ({}) => {
 
   const handleInputChange = (name, text) => {
     setUserData((prev) => ({ ...prev, [name]: text }));
+  };
+
+  const handleBirthDateChange = (date) => {
+    setUserData((prev) => ({
+      ...prev,
+      birthDate: date.toISOString().slice(0, 10),
+    }));
   };
 
   const handleSubmit = () => {
@@ -90,7 +98,7 @@ const RegisterFormCoordinator = ({}) => {
         <RadioButton.Group
           onValueChange={(value) => {
             setSelectedValue(value);
-            handleInputChange("gender", selectedValue); // Update userData with the selected gender
+            handleInputChange("gender", value);
           }}
           value={selectedValue}
         >
@@ -122,7 +130,7 @@ const RegisterFormCoordinator = ({}) => {
           </View>
         </RadioButton.Group>
       </View>
-      <Birthday />
+      <Birthday onValueChange={handleBirthDateChange} />
       <View style={{ flex: 1, marginHorizontal: 20, alignSelf: "stretch" }}>
         <Text style={styles.textInput}>Phone Number</Text>
         <TextInput
