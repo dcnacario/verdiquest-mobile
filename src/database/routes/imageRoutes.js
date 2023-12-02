@@ -4,7 +4,11 @@ const { upload } = require("../middleware/multerConfig");
 
 const router = express.Router();
 
-router.post("/imageUpload", imageController.updateOrgProfile);
+router.post(
+  "/imageUpload",
+  upload.single("image"),
+  imageController.updateOrgProfile
+);
 router.post(
   "/insertTask",
   upload.single("image"),

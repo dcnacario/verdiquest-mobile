@@ -5,20 +5,27 @@ const db = require("../database");
 const img = new Image(db);
 
 async function updateOrgProfile(request, response) {
-  upload.single("image")(request, response, async (err) => {
-    if (err) {
-      return response.status(500).json({ error: err.message });
-    }
+  try {
     const filename = request.file.filename; // Assuming this is the path of the uploaded image
     const organizationId = request.body.organizationId;
-
-    try {
-      const result = await img.insertImageOrgProfile(filename, organizationId);
-      response.json(result);
-    } catch (error) {
-      response.status(500).json({ error: error.message });
+    const currentImage = await img.getOrganizationImage(organizationId);
+    console.log(currentImage);
+    if (currentImage) {
+      // Delete the current image file
+      deleteFile("images/organization/" + currentImage);
     }
-  });
+
+    // Update the database record with the new filename
+    await img.insertImageOrgProfile(filename, organizationId);
+
+    // Send response with success status and new image URI
+    response.send({
+      success: true,
+      newImageUri: `/${filename}`, // Send the newFilename in the URI
+    });
+  } catch (error) {
+    response.status(500).json({ error: error.message });
+  }
 }
 
 async function uploadTaskImage(request, response) {
