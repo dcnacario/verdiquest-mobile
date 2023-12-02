@@ -25,6 +25,7 @@ router.get('/tasks/:organizationId', userController.fetchTasksByOrganization);
 router.get('/organization/events/:organizationId', userController.fetchEvents);
 router.get('/event/details/:eventId', userController.fetchEventDetails);
 router.get('/products', userController.fetchProducts);
-
+router.post('/applyEvent', userController.applyForEvent);
+router.get('/eventApplyStatus', userController.eventApplicationStatus);
 
 module.exports = router;

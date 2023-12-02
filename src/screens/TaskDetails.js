@@ -43,6 +43,7 @@ const TaskDetails = ({ route }) => {
     }, [route.params.taskId, user.UserId]);
 
     const onPressAccept = async () => {
+        
         if (!user?.UserId || !taskDetails?.TaskId) {
             console.log("User ID or Task ID is missing");
             return;

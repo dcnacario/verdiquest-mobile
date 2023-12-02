@@ -408,6 +408,47 @@ async function fetchProducts(request, response) {
   }
 }
 
+async function applyForEvent(request, response) {
+  try {
+      const { userId, eventId } = request.body;
+
+      // Attempt to apply for the event
+      const applyResult = await user.applyEvent(userId, eventId);
+
+      // Check if the user has already applied
+      if (applyResult.alreadyApplied) {
+          return response.status(400).send({ success: false, message: 'User has already applied for this event' });
+      }
+
+      // Respond with success message
+      response.json({ success: true, message: 'Applied successfully', apply: applyResult });
+  } catch (error) {
+      console.error(error);
+      response.status(500).send({ message: 'Error applying for event', error: error.message });
+  }
+}
+
+
+
+async function eventApplicationStatus(request, response) {
+  try {
+      const { userId, eventId } = request.query;
+
+      if (!userId || !eventId) {
+          return response.status(400).send({ message: 'UserId and EventId are required' });
+      }
+
+      const status = await user.eventApplyStatus(userId, eventId);
+      response.json({ success: true, status: status });
+  } catch (error) {
+      console.error(error);
+      response.status(500).send({ message: 'Error fetching application status', error: error.message });
+  }
+}
+
+
+
+
 
 module.exports = {
   registerUser,
@@ -432,4 +473,6 @@ module.exports = {
   fetchEvents,
   fetchEventDetails,
   fetchProducts,
+  applyForEvent,
+  eventApplicationStatus,
 };

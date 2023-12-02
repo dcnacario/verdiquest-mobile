@@ -339,7 +339,54 @@ class User extends BaseModel {
             throw new Error('Error fetching products: ' + error.message);
         }
     }
+
+    async applyEvent(userId, eventId) {
+        // Firstly, retrieve the OrganizationId from the event
+        const eventQuery = `SELECT OrganizationId FROM event WHERE EventId = ?`;
+        const [eventData] = await this.db.query(eventQuery, [eventId]);
+
+        if (!eventData || eventData.length === 0) {
+            return { error: "Event not found or invalid EventId" };
+        }
+        
+        const organizationId = eventData[0].OrganizationId;
+        
+        // Check if the user has already applied for the event
+        const checkQuery = `SELECT * FROM participants WHERE UserId = ? AND EventId = ?`;
+        const [existingApplications] = await this.db.query(checkQuery, [userId, eventId]);
     
+        if (existingApplications.length > 0) {
+            // User has already applied for the event
+            return { alreadyApplied: true };
+        }
+    
+        try {
+            // Start a transaction
+            await this.db.query('START TRANSACTION');
+    
+            // If not applied, insert the application
+            const insertQuery = `
+                INSERT INTO participants (UserId, EventId, OrganizationId, Status, Feedback) 
+                VALUES (?, ?, ?, 'UNVERIFIED', NULL)
+            `;
+            await this.db.query(insertQuery, [userId, eventId, organizationId]);
+    
+            // Commit the transaction
+            await this.db.query('COMMIT');
+    
+            return { result: "Event Application Successful", alreadyApplied: false };
+        } catch (error) {
+            // If an error occurs, rollback the transaction
+            await this.db.query('ROLLBACK');
+            throw error;
+        }
+    }
+    
+    async eventApplyStatus(userId, eventId) {
+        const query = "SELECT * FROM participants WHERE UserId = ? AND EventId = ? AND Status = 'UNVERIFIED'";
+        const [results] = await this.db.query(query, [userId, eventId]);
+        return results.length > 0; 
+    }
 }
 
 module.exports = User;
