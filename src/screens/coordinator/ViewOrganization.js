@@ -19,6 +19,7 @@ const ViewOrganization = ({ route }) => {
   const { coordinator } = route.params;
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const imageSource = {
     uri: `${localhost}/img/organization/${coordinator.OrganizationImage}`,
   };
@@ -32,8 +33,6 @@ const ViewOrganization = ({ route }) => {
     orgId: coordinator.OrganizationId,
   });
 
-  console.log(logo);
-
   const updateOrganization = (field, text) => {
     setEditData({ ...editData, [field]: text });
   };
@@ -46,15 +45,29 @@ const ViewOrganization = ({ route }) => {
       return;
     }
 
-    const pickerResult = await ImagePicker.launchImageLibraryAsync();
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
     if (pickerResult.canceled) {
       return;
     }
 
-    setLogo({ uri: pickerResult.uri });
+    setLogo({ uri: pickerResult.assets[0].uri });
   };
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  const uploadImage = async () => {
+  const updateImage = async () => {
+    if (!logo.uri) {
+      console.error("Image URI is not valid for upload.");
+      return null;
+    }
+
+    setIsUploading(true); // Start loading
+    setIsSubmitting(true);
+
     let formData = new FormData();
     formData.append("filePath", "/images/organization");
     formData.append("organizationId", editData.orgId);
@@ -70,11 +83,17 @@ const ViewOrganization = ({ route }) => {
         formData
       );
 
-      const result = await response.data;
-      return result; // Assuming the server returns the path of the uploaded image
+      if (response.data.success && response.data.newImageUri) {
+        setLogo({
+          uri: `${localhost}/img/organization/${response.data.newImageUri}`,
+        });
+      }
     } catch (error) {
       console.error("Error during image upload: ", error.message);
-      return null;
+    } finally {
+      await delay(3000);
+      setIsUploading(false); // End loading
+      setIsSubmitting(false);
     }
   };
 
@@ -87,7 +106,7 @@ const ViewOrganization = ({ route }) => {
         // If the logo has been changed, upload it first
         let imagePath = null;
         if (logo.uri && logo.uri.startsWith("file:")) {
-          imagePath = await uploadImage();
+          imagePath = await updateImage();
           if (!imagePath) {
             throw new Error("Failed to upload image.");
           }

@@ -17,6 +17,18 @@ class Image {
       throw error;
     }
   }
+  async getOrganizationImage(organizationId) {
+    try {
+      const [rows] = await this.db.query(
+        "SELECT * FROM organization WHERE OrganizationId = ?",
+        [organizationId]
+      );
+      return rows.length > 0 ? rows[0].OrganizationImage : null;
+    } catch (error) {
+      console.error(`Error retrieving task image:`, error);
+      throw error;
+    }
+  }
 
   async insertTaskImage(fileName, taskData) {
     try {
