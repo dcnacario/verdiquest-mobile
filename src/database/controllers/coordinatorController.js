@@ -621,6 +621,24 @@ async function deleteOrganization(request, response) {
   }
 }
 
+async function fetchProducts(request, response) {
+  try {
+    const { organizationId } = request.body;
+
+    const productData = { organizationId };
+    const fetchedTable = await coordinator.fetchProduct(productData);
+    return response.json({
+      success: true,
+      fetchTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
 module.exports = {
   registerOrganization,
   registerCoordinator,
@@ -646,4 +664,5 @@ module.exports = {
   getUsersByOrg,
   removeUserFromOrg,
   deleteOrganization,
+  fetchProducts,
 };

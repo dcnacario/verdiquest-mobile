@@ -231,7 +231,7 @@ class Coordinator extends BaseModel {
       );
       return result.length > 0 ? result : null;
     } catch (error) {
-      console.error("Error creating event:", error);
+      console.error("Error fetching event:", error);
       throw error;
     }
   }
@@ -465,6 +465,19 @@ class Coordinator extends BaseModel {
       return row;
     } catch (error) {
       console.error(`Error removing the member!: ${error}`);
+      throw error;
+    }
+  }
+
+  async fetchProduct(productData) {
+    try {
+      const [products] = await this.db.query(
+        "SELECT * FROM products WHERE OrganizationId = ?",
+        [productData.organizationId]
+      );
+      return products.length > 0 ? products : null;
+    } catch (error) {
+      console.error("Error fetching product:", error);
       throw error;
     }
   }

@@ -1,16 +1,58 @@
-import React from "react";
-import { StyleSheet, View, Text, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
 import { useNavigation } from "@react-navigation/native";
 import ProductCard from "../../components/ProductCard";
+import axios from "axios";
+import ipAddress from "../../database/ipAddress";
+import { useIsFocused } from "@react-navigation/native";
 
 const CoordinatorProduct = ({ route }) => {
   const navigation = useNavigation();
+  const localhost = ipAddress;
   const { coordinator } = route.params;
+
+  //Use States
+  const [isLoading, setIsLoading] = useState(false);
+  const [fetchedProducts, setFetchProducts] = useState([]);
+  const isFocused = useIsFocused();
+
   const goCreateProduct = () => {
     navigation.navigate("CoordinatorAddProduct", { coordinator: coordinator });
   };
+
+  //FETCHING PRODUCT FROM DB
+  const fetchProducts = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        `${localhost}/coordinator/fetchProducts`,
+        {
+          organizationId: coordinator.OrganizationId,
+        }
+      );
+      setFetchProducts(response.data.fetchTable);
+    } catch (error) {
+      console.error("Error fetching product table", error);
+      return []; // Return an empty array in case of an error
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isFocused) {
+      fetchProducts();
+    }
+  }, [isFocused]);
 
   return (
     <View style={styles.container}>
@@ -22,59 +64,27 @@ const CoordinatorProduct = ({ route }) => {
         <View style={{ flex: 1 }}></View>
       </View>
       <View style={styles.card}>
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollViewContent}
-        >
-          <View style={styles.cardRow}>
-            <ProductCard
-              imageUrl={"../../../assets/img/verdiquestlogo-ver2.png"}
-              title="Assault Cuirass"
-              quantity={20}
+        <View>
+          {isLoading ? (
+            <ActivityIndicator size="large" color={theme.colors.primary} /> // Loading indicator)
+          ) : fetchedProducts != null && fetchedProducts.length > 0 ? (
+            <FlatList
+              data={fetchedProducts}
+              renderItem={({ item }) => (
+                <ProductCard
+                  title={item.ProductName}
+                  imageUrl={item.ProductImage}
+                  quantity={item.ProductQuantity}
+                  onPress={() => goToMember(item)}
+                />
+              )}
+              keyExtractor={(item) => item.ProductId}
+              numColumns={2}
             />
-            <ProductCard
-              imageUrl={"../../../assets/img/verdiquestlogo-ver2.png"}
-              title="Eclipse"
-              quantity={40}
-            />
-          </View>
-          <View style={styles.cardRow}>
-            <ProductCard
-              imageUrl={"../../../assets/img/verdiquestlogo-ver2.png"}
-              title="Assault Cuirass"
-              quantity={20}
-            />
-            <ProductCard
-              imageUrl={"../../../assets/img/verdiquestlogo-ver2.png"}
-              title="Enchanted Book of Bilat Eclipse"
-              quantity={40}
-            />
-          </View>
-          <View style={styles.cardRow}>
-            <ProductCard
-              imageUrl={"../../../assets/img/verdiquestlogo-ver2.png"}
-              title="Enchanted Book of Oten Cuirass"
-              quantity={20}
-            />
-            <ProductCard
-              imageUrl={"../../../assets/img/verdiquestlogo-ver2.png"}
-              title="Enchanted Book of Bolbol"
-              quantity={40}
-            />
-          </View>
-          <View style={styles.cardRow}>
-            <ProductCard
-              imageUrl={"../../../assets/img/verdiquestlogo-ver2.png"}
-              title="Assault Betlog ni Lester"
-              quantity={20}
-            />
-            <ProductCard
-              imageUrl={"../../../assets/img/verdiquestlogo-ver2.png"}
-              title="Eclipse bugan ni Danmar"
-              quantity={40}
-            />
-          </View>
-        </ScrollView>
+          ) : (
+            <Text>No members yet for this organization.</Text>
+          )}
+        </View>
       </View>
     </View>
   );
