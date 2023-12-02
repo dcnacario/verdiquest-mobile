@@ -35,3 +35,9 @@ yarn-error.*
 *.tsbuildinfo
 src/database/database.js
 src/database/ipAddress.js
+src/database/images/event/image-1701445710026.jpg
+src/database/images/event/image-1701486961168.jpg
+src/database/images/event/image-1701487099631.jpg
+src/database/images/task/image-1701453385904.jpg
+src/database/images/task/image-1701488447523.jpg
+src/database/images/organization/image-1701486684910.jpg

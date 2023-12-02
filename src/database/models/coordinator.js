@@ -139,7 +139,6 @@ class Coordinator extends BaseModel {
         [organizationId]
       );
 
-      console.log(`Tasks fetched for OrganizationId: ${organizationId}`);
       return result.length > 0 ? result : [];
     } catch (error) {
       console.error(
@@ -309,7 +308,6 @@ class Coordinator extends BaseModel {
       }
 
       const count = rows[0].totalTakers; // Access the count from the first row
-      console.log(count);
       return count;
     } catch (error) {
       console.error(`Error fetching total takers: ${error}`);
@@ -329,7 +327,6 @@ class Coordinator extends BaseModel {
       }
 
       const count = rows[0].totalTakers; // Access the count from the first row
-      console.log(count);
       return count;
     } catch (error) {
       console.error(`Error fetching total takers: ${error}`);
