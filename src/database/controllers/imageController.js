@@ -152,10 +152,74 @@ async function updateEventImage(request, response) {
   }
 }
 
+async function uploadProductImage(request, response) {
+  try {
+    const filename = request.file.filename;
+    const {
+      organizationId,
+      productName,
+      productDescription,
+      productSize,
+      productQuantity,
+      pointsRequired,
+    } = request.body;
+
+    const productData = {
+      organizationId,
+      productName,
+      productDescription,
+      productSize,
+      productQuantity,
+      pointsRequired,
+    };
+
+    const insertProductId = await img.insertProductImage(filename, productData);
+
+    response.status(200).send({
+      message: "Product registered successfully!",
+      productId: insertProductId,
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function updateProductImage(request, response) {
+  try {
+    const productId = request.body.productId;
+    const newFilename = request.file.filename; // Filename of the new image
+
+    const currentImage = await img.getProductImage(productId);
+    console.log(currentImage);
+    if (currentImage) {
+      // Delete the current image file
+      deleteFile("images/product/" + currentImage);
+    }
+
+    // Update the database record with the new filename
+    await img.updateProductImage(productId, newFilename);
+
+    // Send response with success status and new image URI
+    response.send({
+      success: true,
+      newImageUri: `/${newFilename}`, // Send the newFilename in the URI
+    });
+  } catch (error) {
+    console.error("Error updating product image:", error);
+    response.status(500).send("Error updating product image");
+  }
+}
+
 module.exports = {
   updateOrgProfile,
   uploadTaskImage,
   updateTaskImage,
   uploadEventImage,
   updateEventImage,
+  uploadProductImage,
+  updateProductImage,
 };

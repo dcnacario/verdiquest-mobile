@@ -25,6 +25,9 @@ import EditProfileCoordinator from "../screens/coordinator/EditProfileCoordinato
 import ViewOrganization from "../screens/coordinator/ViewOrganization";
 import Organization from "../screens/coordinator/Organization";
 import MemberView from "../screens/coordinator/MemberView";
+import CoordinatorViewProduct from "../screens/coordinator/CoordinatorViewProduct";
+import CoordinatorProduct from "../screens/coordinator/CoordinatorProduct";
+import CoordinatorAddProduct from "../screens/coordinator/CoordinatorAddProduct";
 
 const AppCoordinatorStack = createStackNavigator();
 
@@ -207,6 +210,27 @@ const CoordinatorStack = ({ route }) => {
       <AppCoordinatorStack.Screen
         name="MemberView"
         component={MemberView}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <AppCoordinatorStack.Screen
+        name="CoordinatorViewProduct"
+        component={CoordinatorViewProduct}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <AppCoordinatorStack.Screen
+        name="CoordinatorProduct"
+        component={CoordinatorProduct}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <AppCoordinatorStack.Screen
+        name="CoordinatorAddProduct"
+        component={CoordinatorAddProduct}
         options={{
           headerShown: false,
         }}

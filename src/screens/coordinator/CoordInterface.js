@@ -64,6 +64,9 @@ const CoordInterface = ({ route }) => {
   const goToOrganization = () => {
     navigation.navigate("Organization", { coordinator: coordinator });
   };
+  const goToReward = () => {
+    navigation.navigate("CoordinatorProduct", { coordinator: coordinator });
+  };
 
   return (
     <ScrollView
@@ -136,7 +139,7 @@ const CoordInterface = ({ route }) => {
             <Button title="Organization" onPress={goToOrganization} />
           </View>
           <View style={styles.rightButton}>
-            <Button title="Rewards" onPress={gotoReports} />
+            <Button title="Rewards" onPress={goToReward} />
           </View>
         </View>
       </View>

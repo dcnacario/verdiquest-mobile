@@ -127,5 +127,54 @@ class Image {
       throw error;
     }
   }
+
+  //Product
+  async insertProductImage(fileName, productData) {
+    try {
+      const [product] = await this.db.query(
+        "INSERT INTO products (OrganizationId, ProductName, ProductImage, ProductDescription, ProductSize, ProductQuantity, PointsRequired) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [
+          productData.organizationId,
+          productData.productName,
+          fileName,
+          productData.productDescription,
+          productData.productSize,
+          productData.productQuantity,
+          productData.pointsRequired,
+        ]
+      );
+      const insertedProductId = product.insertId;
+      return insertedProductId;
+    } catch (error) {
+      console.error(`Error inserting product`, error);
+      throw error;
+    }
+  }
+
+  async getProductImage(productId) {
+    try {
+      const [rows] = await this.db.query(
+        "SELECT * FROM products WHERE ProductId = ?",
+        [productId]
+      );
+      return rows.length > 0 ? rows[0].ProductImage : null;
+    } catch (error) {
+      console.error(`Error retrieving product image:`, error);
+      throw error;
+    }
+  }
+
+  async updateProductImage(productId, filename) {
+    try {
+      const [result] = await this.db.query(
+        "UPDATE products SET ProductImage = ? WHERE ProductId = ?",
+        [filename, productId]
+      );
+      return result.affectedRows;
+    } catch (error) {
+      console.error(`Error updating product image:`, error);
+      throw error;
+    }
+  }
 }
 module.exports = Image;

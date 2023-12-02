@@ -29,5 +29,15 @@ router.post(
   upload.single("image"),
   imageController.updateEventImage
 );
+router.post(
+  "/insertProduct",
+  upload.single("image"),
+  imageController.uploadProductImage
+);
+router.post(
+  "/ipdateProductImage",
+  upload.single("image"),
+  imageController.updateProductImage
+);
 
 module.exports = router;
