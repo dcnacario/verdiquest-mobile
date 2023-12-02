@@ -16,7 +16,7 @@ const OrgHome = ({route}) => {
     const screenHeight = Dimensions.get('window').height;
     const paddingBottom = screenHeight * 0.15;
 
-    const {user} = route.params;
+    const {user, organization} = route.params;
     const navigation = useNavigation();
     const [tasks, setTasks] = useState([]);
     const [events, setEvents] = useState([]);
@@ -88,10 +88,11 @@ const OrgHome = ({route}) => {
         <ScrollView keyboardShouldPersistTaps='handled' style={{backgroundColor: theme.colors.background, flex: 1,}} contentContainerStyle
         ={{paddingBottom: paddingBottom}} showsVerticalScrollIndicator={false}>
             <View style={styles.container}>
-            <Image
-                    source={user.ProfilePicture ? { uri: user.ProfilePicture } : defaultImage}
-                    style={styles.imageStyle}
-            />
+                <Image 
+                    source={organization.OrganizationImage ? { uri: `${localhost}/img/organization/${organization.OrganizationImage}` } : defaultImage} 
+                    style={styles.imageStyle} 
+                />
+                <View style={styles.divider} />
                 <View style={{alignSelf: 'center', flex: 1,}}>
                     <FlatList 
                         data={data}
@@ -110,7 +111,7 @@ const OrgHome = ({route}) => {
                             title={task.TaskName}
                             difficulty={getDifficulty(task.DifficultyId) || "No Difficulty"}
                             description={task.TaskDescription}
-                            onPress={() => navigation.navigate('TaskDetails', { taskId: task.TaskId })}
+                            onPress={() => navigation.navigate('Tasks', { screen: 'TaskDetails', params: { taskId: task.TaskId }})}
                         />
                     )) : 
                     events.map(event => (
@@ -137,6 +138,14 @@ const styles = StyleSheet.create({
         backgroundColor: theme.colors.background,
         justifyContent: 'center',
         marginHorizontal: 30,
+    },
+    divider: {
+        height: 1, 
+        backgroundColor: '#B0A695', 
+        width: '70%', 
+        alignSelf: 'center', 
+        marginTop: 10, 
+        marginBottom: 10, 
     },
     imageStyle: {
         width: '90%',
