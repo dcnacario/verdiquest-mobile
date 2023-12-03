@@ -35,7 +35,7 @@ router.post(
   imageController.uploadProductImage
 );
 router.post(
-  "/ipdateProductImage",
+  "/updateProductImage",
   upload.single("image"),
   imageController.updateProductImage
 );
