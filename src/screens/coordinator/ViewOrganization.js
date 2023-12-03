@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Modal,
 } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { theme } from "../../../assets/style";
@@ -13,6 +14,7 @@ import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import ipAddress from "../../database/ipAddress";
 import defaultImage from "../../../assets/img/default-image.png";
+import Button from "../../components/Button";
 
 const ViewOrganization = ({ route }) => {
   const localhost = ipAddress;
@@ -20,10 +22,14 @@ const ViewOrganization = ({ route }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [initial, setIsInitial] = useState(true);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [deleteConfirmationText, setDeleteConfirmationText] = useState("");
   const imageSource = {
     uri: `${localhost}/img/organization/${coordinator.OrganizationImage}`,
   };
   const [logo, setLogo] = useState(imageSource);
+  console.log(coordinator);
 
   const [editData, setEditData] = useState({
     orgImage: coordinator.OrganizationImage,
@@ -35,6 +41,35 @@ const ViewOrganization = ({ route }) => {
 
   const updateOrganization = (field, text) => {
     setEditData({ ...editData, [field]: text });
+  };
+
+  //DELETION OF ORG ------------------------------------
+  const deleteOrg = async (orgId) => {
+    try {
+      const response = await axios.post(`${localhost}/coordinator/deleteOrg`, {
+        orgId: orgId,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting the org!", error);
+    }
+  };
+  //---------------------------------------------------------
+
+  const handleDeletePress = () => {
+    setShowConfirmDelete(!showConfirmDelete);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (
+      deleteConfirmationText.toUpperCase() ===
+      coordinator.OrganizationName.toUpperCase()
+    ) {
+      await deleteOrg(editData.orgId);
+      setShowConfirmDelete(false);
+    } else {
+      alert("Please type DELETE to confirm.");
+    }
   };
 
   const handleEditPress = async () => {
@@ -102,6 +137,8 @@ const ViewOrganization = ({ route }) => {
       if (isSubmitting) return;
       setIsSubmitting(true);
 
+      setIsInitial(false);
+
       try {
         // If the logo has been changed, upload it first
         let imagePath = null;
@@ -125,6 +162,7 @@ const ViewOrganization = ({ route }) => {
       }
     }
     setIsEditing(!isEditing);
+    setIsInitial(!initial);
   };
 
   return (
@@ -137,7 +175,11 @@ const ViewOrganization = ({ route }) => {
         ) : (
           <Image source={defaultImage} style={styles.logo} />
         )}
-        <TouchableOpacity onPress={handleEditPress} style={styles.editIcon}>
+        <TouchableOpacity
+          onPress={handleEditPress}
+          style={styles.editIcon}
+          disabled={initial}
+        >
           <MaterialIcons name="edit" size={24} color="black" />
         </TouchableOpacity>
       </View>
@@ -179,6 +221,42 @@ const ViewOrganization = ({ route }) => {
           {isEditing ? "Save changes" : "Edit info"}
         </Text>
       </TouchableOpacity>
+      <View style={{ marginVertical: 50 }}>
+        {/* <Button
+          title={"Delete"}
+          color={"#BA1A1A"}
+          onPress={() => confirmDeletion(coordinator.OrganizationId)}
+        /> */}
+        {showConfirmDelete ? (
+          <View>
+            <View style={styles.labelContainer}>
+              <Text style={styles.label}>
+                Input Organization Name to Delete
+              </Text>
+            </View>
+            <TextInput
+              style={styles.inputStyle}
+              value={deleteConfirmationText}
+              onChangeText={setDeleteConfirmationText}
+              placeholder="Type here in UPPERCASE"
+            />
+            <View>
+              <TouchableOpacity
+                onPress={handleConfirmDelete}
+                style={styles.deleteButton}
+              >
+                <Text style={styles.deleteButtonText}>Confirm Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          <TouchableOpacity onPress={handleDeletePress}>
+            <Text style={{ color: "#BA1A1A", fontWeight: "bold" }}>
+              Delete Organization
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
@@ -224,7 +302,8 @@ const styles = StyleSheet.create({
   logo: {
     width: 100,
     height: 100,
-    resizeMode: "contain",
+    resizeMode: "cover",
+    borderRadius: 100 / 2,
   },
   editIcon: {
     position: "absolute",
@@ -242,6 +321,35 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFF",
     fontSize: 18,
+  },
+  confirmationLabel: {
+    fontSize: 12,
+    backgroundColor: theme.colors.background,
+  },
+  deleteButton: {
+    // A contrasting color
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    marginTop: 10,
+    alignSelf: "center", // Center the button in its container
+  },
+  deleteButtonText: {
+    color: "#BA1A1A",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  labelContainer: {
+    position: "absolute",
+    top: -23,
+    left: 21,
+    backgroundColor: theme.colors.background,
+    paddingHorizontal: 4,
+    zIndex: 10,
+  },
+  label: {
+    fontSize: 12,
+    color: "#496900", // color of the text
   },
 });
 

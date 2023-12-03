@@ -36,12 +36,6 @@ const CoordinatorLogin = () => {
           source={require("../../../assets/img/verdiquestlogo-ver2.png")}
           style={styles.img}
         />
-        <Button title="Login with Google" img={logoGoogle} />
-        <View style={styles.dividerContainer}>
-          <View style={styles.divider} />
-          <Text style={{ top: 8 }}>or</Text>
-          <View style={styles.divider} />
-        </View>
         {/* Username */}
         <Text
           style={{
@@ -76,17 +70,14 @@ const CoordinatorLogin = () => {
             </Text>
           </TouchableOpacity>
         </View>
-        <Button
-          title="LOGIN"
-          onPress={() => {
-            loginCoordinator(username, password, navigation);
-          }}
-        />
-        <TouchableOpacity onPress={handleRegister}>
-          <Text style={{ fontWeight: "bold", fontSize: 14, marginTop: 50 }}>
-            Create a new account
-          </Text>
-        </TouchableOpacity>
+        <View style={{ paddingBottom: 50 }}>
+          <Button
+            title="LOGIN"
+            onPress={() => {
+              loginCoordinator(username, password, navigation);
+            }}
+          />
+        </View>
       </View>
     </ScrollView>
   );

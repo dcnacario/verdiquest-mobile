@@ -54,19 +54,6 @@ const Organization = ({ route }) => {
     });
   };
 
-  // SOFT DELETION OF ORG ------------------------------------
-  const deleteOrg = async (orgId) => {
-    try {
-      const response = await axios.post(`${localhost}/coordinator/deleteOrg`, {
-        orgId: orgId,
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Error deleting the org!", error);
-    }
-  };
-  //----------------------------------------------------------
-
   // DELETE PROMPT -------------------------------------------
   const confirmDeletion = (orgId) => {
     Alert.alert(
@@ -102,13 +89,7 @@ const Organization = ({ route }) => {
         <View style={styles.header}>
           <View style={{ flex: 1 }}></View>
           <Text style={styles.textStyle}>{coordinator.OrganizationName}</Text>
-          <View style={{ flex: 1, alignItems: "flex-end" }}>
-            <Button
-              title={"Delete"}
-              color={"#BA1A1A"}
-              onPress={() => confirmDeletion(coordinator.OrganizationId)}
-            />
-          </View>
+          <View style={{ flex: 1 }}></View>
         </View>
         <View style={styles.divider}></View>
         <View>

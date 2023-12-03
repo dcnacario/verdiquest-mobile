@@ -15,6 +15,7 @@ import ipAddress from "../../database/ipAddress";
 import Button from "../../components/Button";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
+import DeleteButton from "../../components/DeleteButton";
 
 const CoordinatorViewProduct = ({ route }) => {
   const navigation = useNavigation();
@@ -207,12 +208,7 @@ const CoordinatorViewProduct = ({ route }) => {
         </View>
 
         <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={[styles.button, styles.deleteButton]}
-            onPress={() => console.log("Delete button pressed")}
-          >
-            <Text style={styles.buttonText}>Delete</Text>
-          </TouchableOpacity>
+          <DeleteButton title={"Delete"} color="#BA1A1A" textColor="#FFFFFF" />
 
           <Button
             title={isEditing ? "Save" : "Edit"}

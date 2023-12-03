@@ -459,7 +459,7 @@ class Coordinator extends BaseModel {
   async deleteOrganization(organizationData) {
     try {
       const [row] = await this.db.query(
-        "UPDATE organization SET isDeleted = 1 WHERE OrganizationId = ?",
+        "DELETE FROM organization WHERE OrganizationId = ?",
         [organizationData.orgId]
       );
       return row;
@@ -499,6 +499,19 @@ class Coordinator extends BaseModel {
       return productUpdate;
     } catch (error) {
       console.error(`Error updating organization: ${error}`);
+      throw error;
+    }
+  }
+
+  async deleteProduct(productId) {
+    try {
+      const [result] = await this.db.query(
+        "DELETE FROM products ProductId = ?",
+        [productId]
+      );
+      return result;
+    } catch (error) {
+      console.error(`Error deleting product: ${error}`);
       throw error;
     }
   }
