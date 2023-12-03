@@ -171,20 +171,35 @@ class User extends BaseModel {
 
 
     async acceptTask(userId, taskId, dateTaken) {
-        // Check if the task is already accepted by the user
-        const checkQuery = `SELECT * FROM userdailytask WHERE UserId = ? AND TaskId = ?`;
+        // Check if the task is already accepted or previously accepted and then canceled
+        const checkQuery = `
+            SELECT *, IF(HasBeenCanceled, true, false) as PreviouslyCanceled 
+            FROM userdailytask 
+            WHERE UserId = ? AND TaskId = ?
+        `;
         const [existingTasks] = await this.db.query(checkQuery, [userId, taskId]);
     
         if (existingTasks.length > 0) {
-            // Task is already accepted
-            return { alreadyAccepted: true };
+            if (existingTasks[0].PreviouslyCanceled) {
+                // If previously canceled, update the record instead of inserting a new one
+                const updateQuery = `
+                    UPDATE userdailytask 
+                    SET HasBeenCanceled = false, DateTaken = ?, TaskStatus = 'Ongoing' 
+                    WHERE UserId = ? AND TaskId = ?
+                `;
+                await this.db.query(updateQuery, [dateTaken, userId, taskId]);
+                return { reaccepted: true, alreadyAccepted: false };
+            } else {
+                // Task is already accepted
+                return { alreadyAccepted: true };
+            }
         }
-    
+        
         try {
             // Start a transaction
             await this.db.query('START TRANSACTION');
     
-            // If not accepted, insert the task
+            // If not accepted or previously canceled, insert the task
             const insertQuery = `
                 INSERT INTO userdailytask (UserId, TaskId, DateTaken, TaskStatus) 
                 VALUES (?, ?, ?, 'Ongoing')
@@ -202,7 +217,7 @@ class User extends BaseModel {
             // Commit the transaction
             await this.db.query('COMMIT');
     
-            return { result: "Task Accepted", alreadyAccepted: false };
+            return { accepted: true, alreadyAccepted: false };
         } catch (error) {
             // If an error occurs, rollback the transaction
             await this.db.query('ROLLBACK');
@@ -211,44 +226,42 @@ class User extends BaseModel {
     }
     
     
+    
 
     async checkTaskAccepted(userId, taskId) {
-        const query = "SELECT * FROM userdailytask WHERE UserId = ? AND TaskId = ? AND TaskStatus = 'Ongoing'";
+        const query = `
+            SELECT * FROM userdailytask 
+            WHERE UserId = ? AND TaskId = ? 
+            AND TaskStatus = 'Ongoing' AND HasBeenCanceled = 0
+        `;
         const [results] = await this.db.query(query, [userId, taskId]);
-        return results.length > 0; // true if task is accepted
+        return results.length > 0; 
     }
+    
 
     async fetchAcceptedTasks(userId) {
         const query = `
             SELECT udt.*, dt.TaskImage, dt.TaskName, dt.DifficultyId, dt.TaskDescription, dt.TaskPoints
             FROM userdailytask udt
             JOIN dailytask dt ON udt.TaskId = dt.TaskId
-            WHERE udt.UserId = ? AND udt.TaskStatus = 'Ongoing'
+            WHERE udt.UserId = ? AND udt.TaskStatus = 'Ongoing' AND udt.HasBeenCanceled = 0
             ORDER BY dt.DifficultyId ASC
         `;
         const [tasks] = await this.db.query(query, [userId]);
         return tasks;
     }
     
+    
 
-    async removeFromUserDailyTask(userId, taskId) {
-        // Check if the task exists in the user's daily tasks
-        const checkQuery = `SELECT * FROM userdailytask WHERE UserId = ? AND TaskId = ?`;
-        const [existingTasks] = await this.db.query(checkQuery, [userId, taskId]);
-    
-        if (existingTasks.length === 0) {
-            // Task is not in the user's daily tasks
-            return { error: "Task not found in user's daily tasks", taskRemoved: false };
+    async cancelUserDailyTask(userId, taskId) {
+        const updateQuery = `UPDATE userdailytask SET HasBeenCanceled = true WHERE UserId = ? AND TaskId = ?`;
+        const [result] = await this.db.query(updateQuery, [userId, taskId]);
+        if (result.affectedRows === 0) {
+            return { error: "Task not found or already canceled", taskRemoved: false };
         }
-    
-        // If the task is found, proceed to delete it
-        const deleteQuery = `DELETE FROM userdailytask WHERE UserId = ? AND TaskId = ?`;
-        await this.db.query(deleteQuery, [userId, taskId]);
-    
         // Return a successful response
-        return { message: "Task successfully removed from user's daily tasks", taskRemoved: true };
+        return { message: "Task marked as canceled", taskRemoved: true };
     }
-    
     
     async getVerdiPoints(userId) {
         const query = `SELECT VerdiPoints FROM user WHERE UserId = ?`;

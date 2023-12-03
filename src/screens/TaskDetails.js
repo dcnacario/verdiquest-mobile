@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Image, Text, Modal, TouchableOpacity, Alert, } from "react-native";
+import { View, StyleSheet, Image, Text, Modal, TouchableOpacity, Alert, BackHandler} from "react-native";
 import Details from "../components/Details";
 import Button from "../components/Button";
 import defaultImage from "../../assets/img/default-image.png";
@@ -43,23 +43,26 @@ const TaskDetails = ({ route }) => {
     }, [route.params.taskId, user.UserId]);
 
     const onPressAccept = async () => {
-        
-        if (!user?.UserId || !taskDetails?.TaskId) {
-            console.log("User ID or Task ID is missing");
-            return;
-        }
-
+        // if (!user?.UserId || !taskDetails?.TaskId) {
+        //     console.log("User ID or Task ID is missing");
+        //     return;
+        // }
+    
         try {
             const response = await axios.post(`${localhost}/user/acceptTask`, {
                 userId: user.UserId,
                 taskId: taskDetails.TaskId,
             });
-
-            if (response.data.success) {
+    
+            if (response.data.message === "Mission Accepted!") {
                 setIsAccepted(true);
-                setShowModal(true);
+                setErrorMessage("Mission Accepted!");
+                setShowModal(true); 
+            } else if (response.data.message === "Task accepted successfully.") {
+                setIsAccepted(true);
+                setShowModal(true); 
             } else {
-                setErrorMessage("Task is already accepted.");
+                setErrorMessage(response.data.message);
                 setShowErrorModal(true);
             }
         } catch (error) {
@@ -67,6 +70,7 @@ const TaskDetails = ({ route }) => {
             setShowErrorModal(true);
         }
     };
+    
 
     const onPressOngoingTask = () => {
         navigation.navigate("MyPoints", { user: user });
@@ -94,6 +98,24 @@ const TaskDetails = ({ route }) => {
             Alert.alert("Error", "An error occurred while cancelling the task");
         }
     };
+
+    useEffect(() => {
+        const backAction = () => {
+            Alert.alert('Hold on!', 'Are you sure you want to go back?', [
+                {
+                    text: 'Cancel',
+                    onPress: () => null,
+                    style: 'cancel',
+                },
+                { text: 'YES', onPress: () => navigation.goBack() },
+            ]);
+            return true;
+        };
+
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+
+        return () => backHandler.remove();
+    }, [navigation]);
 
     if (isLoading) {
         return <Text>Loading...</Text>;
@@ -131,32 +153,18 @@ const TaskDetails = ({ route }) => {
                 </View>
             )}
         </View>
-        <Modal
-            transparent={true}
-            visible={showModal}
-            onRequestClose={() => setShowModal(false)}
-        >
-            <TouchableOpacity
-            style={styles.modalStyle}
-            onPress={() => setShowModal(false)}
-            >
-            <View style={styles.modalInnerStyle}>
-                <Text style={styles.textStyle}>Mission Accepted!</Text>
-            </View>
+        <Modal transparent={true} visible={showModal} onRequestClose={() => setShowModal(false)}>
+            <TouchableOpacity style={styles.modalStyle} onPress={() => setShowModal(false)}>
+                <View style={styles.modalInnerStyle}>
+                    <Text style={styles.textStyle}>Mission Accepted!</Text>
+                </View>
             </TouchableOpacity>
         </Modal>
-        <Modal
-            transparent={true}
-            visible={showErrorModal}
-            onRequestClose={() => setShowErrorModal(false)}
-        >
-            <TouchableOpacity
-            style={styles.modalStyle}
-            onPress={() => setShowErrorModal(false)}
-            >
-            <View style={styles.modalInnerStyle}>
-                <Text style={styles.textStyle}>{errorMessage}</Text>
-            </View>
+        <Modal transparent={true} visible={showErrorModal} onRequestClose={() => setShowErrorModal(false)}>
+            <TouchableOpacity style={styles.modalStyle} onPress={() => setShowErrorModal(false)}>
+                <View style={styles.modalInnerStyle}>
+                    <Text style={styles.textStyle}>{errorMessage}</Text>
+                </View>
             </TouchableOpacity>
         </Modal>
         </View>

@@ -68,34 +68,6 @@ const AuthStack = () => {
             headerShown: false,
           }}
         />
-         <Stack.Screen
-          name="ProductDetail"
-          component={ProductDetails}
-          options={{
-            headerShown: false,
-          }}
-        />
-          <Stack.Screen
-          name="ProductConfirm"
-          component={ProductConfirm}
-          options={{
-            headerShown: false,
-          }}
-        />
-         <Stack.Screen
-          name="ProductRedeem"
-          component={ProductRedeem}
-          options={{
-            headerShown: false,
-          }}
-        />
-         <Stack.Screen
-          name="ProductReceipt"
-          component={ProductReceipt}
-          options={{
-            headerShown: false,
-          }}
-        />
       </Stack.Navigator>
     </NavigationContainer>
   );

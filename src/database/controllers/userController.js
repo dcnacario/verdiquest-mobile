@@ -254,6 +254,8 @@ async function acceptTask(request, response) {
 
       if (result.alreadyAccepted) {
           response.status(400).json({ message: "Task already accepted." });
+      } else if (result.reaccepted) {
+          response.status(200).json({ message: "Mission Accepted!" });
       } else {
           response.status(200).json({ message: "Task accepted successfully." });
       }
@@ -299,20 +301,21 @@ async function fetchVerdiPoints(request, response) {
 
 async function cancelTask(request, response) {
   try {
-    const { userId, taskId } = request.body; 
-      const removeFromUserDailyTaskResult = await user.removeFromUserDailyTask(userId, taskId);
+    const { userId, taskId } = request.body;
+    const cancelResult = await user.cancelUserDailyTask(userId, taskId);
 
-      if(!removeFromUserDailyTaskResult.taskRemoved){
-          return response.status(400).json({ 
-            success: false, 
-            message: removeFromUserDailyTaskResult.error 
-        });
-      }
-      response.json({ success: true, message: 'Task cancelled successfully' });
+    if (!cancelResult.taskRemoved) {
+      return response.status(400).json({
+        success: false,
+        message: cancelResult.error
+      });
+    }
+    response.json({ success: true, message: 'Task cancelled successfully' });
   } catch (error) {
-      response.status(500).send(error);
+    response.status(500).send(error);
   }
 }
+
 
 async function fetchOrganizations(request, response){
   try{

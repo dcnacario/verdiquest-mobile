@@ -4,7 +4,7 @@ const pool = mysql.createPool({
   host: "localhost",
   user: "root",
   password: "",
-  database: "verdiquest",
+  database: "verdiquest_v1",
 });
 
 module.exports = pool;
