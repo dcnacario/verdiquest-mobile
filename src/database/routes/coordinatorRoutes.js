@@ -39,5 +39,6 @@ router.post("/deleteOrg", coordinatorController.deleteOrganization);
 router.post("/fetchProducts", coordinatorController.fetchProducts);
 router.post("/updateProduct", coordinatorController.updateProduct);
 router.post("/deleteProduct", coordinatorController.deleteProduct);
+router.post("/fetchCoordinators", coordinatorController.fetchCoordinators);
 
 module.exports = router;

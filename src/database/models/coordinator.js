@@ -515,6 +515,19 @@ class Coordinator extends BaseModel {
       throw error;
     }
   }
+
+  async fetchCoordinators(organizationId) {
+    try {
+      const [result] = await this.db.query(
+        "SELECT * FROM coordinator WHERE OrganizationId = ?",
+        [organizationId]
+      );
+      return result;
+    } catch (error) {
+      console.error(`Error fetching coordinator: ${error}`);
+      throw error;
+    }
+  }
 }
 
 module.exports = Coordinator;

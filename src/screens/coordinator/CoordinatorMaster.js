@@ -1,10 +1,19 @@
-import React from "react";
-import { StyleSheet, View, Text, SafeAreaView, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  SafeAreaView,
+  Image,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 import { theme } from "../../../assets/style";
 import CoordinatorCard from "../../components/CoordinatorCard";
 import { useNavigation } from "@react-navigation/native";
 import defaultImage from "../../../assets/img/default-image.png";
 import ipAddress from "../../database/ipAddress";
+import axios from "axios";
 
 const CoordinatorMaster = ({ route }) => {
   const navigation = useNavigation();
@@ -13,10 +22,31 @@ const CoordinatorMaster = ({ route }) => {
   const imageSource = {
     uri: `${localhost}/img/organization/${coordinator.OrganizationImage}`,
   };
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [fetchCoordinatorData, setFetchCoordinators] = useState([]);
 
   const handleImageError = (error) => {
     console.log("Image load error:", error.nativeEvent.error);
   };
+
+  const fetchCoordinators = async () => {
+    try {
+      const response = await axios.post(
+        `${localhost}/coordinator/fetchCoordinators`,
+        {
+          organizationId: coordinator.OrganizationId,
+        }
+      );
+      setFetchCoordinators(response.data.fetchTable);
+    } catch (error) {
+      console.log("Error fetching coordinator data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCoordinators();
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -46,7 +76,24 @@ const CoordinatorMaster = ({ route }) => {
         </View>
         <View style={styles.divider}></View>
         <View>
-          <CoordinatorCard name="Danmar Nacario" />
+          {isLoading ? (
+            <ActivityIndicator size="large" color={theme.colors.primary} /> // Loading indicator)
+          ) : fetchCoordinatorData != null &&
+            fetchCoordinatorData.length > 0 ? (
+            <FlatList
+              data={fetchCoordinatorData}
+              renderItem={({ item }) => (
+                <View style={styles.listItem}>
+                  <CoordinatorCard name={item.Username} item={item} />
+                </View>
+              )}
+              keyExtractor={(item) => item.CoordinatorId}
+              numColumns={2}
+              contentContainerStyle={styles.listContent}
+            />
+          ) : (
+            <Text>No members yet for this organization.</Text>
+          )}
         </View>
       </View>
     </SafeAreaView>
@@ -89,6 +136,12 @@ const styles = StyleSheet.create({
     marginTop: -20,
     marginBottom: 10,
     backgroundColor: "#161616",
+  },
+  listItem: {
+    margin: 10,
+  },
+  listContent: {
+    paddingHorizontal: 20,
   },
 });
 

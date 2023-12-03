@@ -709,6 +709,24 @@ async function deleteProduct(request, response) {
   }
 }
 
+async function fetchCoordinators(request, response) {
+  try {
+    const organizationId = request.body.organizationId;
+    const result = await coordinator.fetchCoordinators(organizationId);
+    return response.json({
+      success: true,
+      fetchTable: result,
+      message: "Coordinators fetched successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({
+      success: false,
+      message: "An error occurred while fetching coordinators",
+    });
+  }
+}
+
 module.exports = {
   registerOrganization,
   registerCoordinator,
@@ -737,4 +755,5 @@ module.exports = {
   fetchProducts,
   updateProduct,
   deleteProduct,
+  fetchCoordinators,
 };

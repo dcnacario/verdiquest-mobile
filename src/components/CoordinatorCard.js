@@ -3,7 +3,8 @@ import { Image, StyleSheet, Text, View } from "react-native";
 import { theme } from "../../assets/style";
 import defaultImage from "../../assets/img/default-profile.png";
 
-const CoordinatorCard = ({ name, img }) => {
+const CoordinatorCard = ({ name, img, item }) => {
+  const role = item.Rank === 1 ? "Head Coordinator" : "Coordinator";
   return (
     <View style={styles.container}>
       {img ? (
@@ -14,7 +15,7 @@ const CoordinatorCard = ({ name, img }) => {
       <Text style={[{ fontWeight: "bold", fontSize: 16 }, styles.textStyle]}>
         {name}
       </Text>
-      <Text style={[styles.textStyle, { fontSize: 14 }]}>Coordinator</Text>
+      <Text style={[styles.textStyle, { fontSize: 14 }]}>{role}</Text>
     </View>
   );
 };
