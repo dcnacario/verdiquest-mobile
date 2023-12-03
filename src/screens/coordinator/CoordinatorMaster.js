@@ -30,6 +30,10 @@ const CoordinatorMaster = ({ route }) => {
     console.log("Image load error:", error.nativeEvent.error);
   };
 
+  const goToCoordinatorDashboard = (item) => {
+    navigation.navigate("CoordinatorDashboard", { item: item });
+  };
+
   const fetchCoordinators = async () => {
     try {
       const response = await axios.post(
@@ -84,7 +88,11 @@ const CoordinatorMaster = ({ route }) => {
               data={fetchCoordinatorData}
               renderItem={({ item }) => (
                 <View style={styles.listItem}>
-                  <CoordinatorCard name={item.Username} item={item} />
+                  <CoordinatorCard
+                    name={item.Username}
+                    item={item}
+                    onPress={() => goToCoordinatorDashboard(item)}
+                  />
                 </View>
               )}
               keyExtractor={(item) => item.CoordinatorId}
