@@ -266,11 +266,16 @@ async function acceptTask(request, response) {
 }
 
 
+
 async function checkTaskAccepted(request, response) {
   const { userId, taskId } = request.params;
   try {
-      const isAccepted = await user.checkTaskAccepted(userId, taskId);
-      response.json({ success: true, isAccepted });
+      const result = await user.checkTaskAccepted(userId, taskId);
+      response.json({ 
+          success: true, 
+          isAccepted: result.isAccepted, 
+          taskExpired: result.isExpired 
+      });
   } catch (error) {
       console.error(`Error checking task acceptance: ${error}`);
       response.status(500).send({ success: false, message: 'Server error' });

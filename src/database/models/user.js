@@ -170,75 +170,98 @@ class User extends BaseModel {
     }
 
 
-    async acceptTask(userId, taskId, dateTaken) {
-        // Check if the task is already accepted or previously accepted and then canceled
-        const checkQuery = `
-            SELECT *, IF(HasBeenCanceled, true, false) as PreviouslyCanceled 
-            FROM userdailytask 
-            WHERE UserId = ? AND TaskId = ?
-        `;
-        const [existingTasks] = await this.db.query(checkQuery, [userId, taskId]);
-    
-        if (existingTasks.length > 0) {
-            if (existingTasks[0].PreviouslyCanceled) {
-                // If previously canceled, update the record instead of inserting a new one
-                const updateQuery = `
-                    UPDATE userdailytask 
-                    SET HasBeenCanceled = false, DateTaken = ?, TaskStatus = 'Ongoing' 
-                    WHERE UserId = ? AND TaskId = ?
-                `;
-                await this.db.query(updateQuery, [dateTaken, userId, taskId]);
-                return { reaccepted: true, alreadyAccepted: false };
-            } else {
-                // Task is already accepted
-                return { alreadyAccepted: true };
-            }
-        }
-        
+    async acceptTask(userId, taskId) {
         try {
             // Start a transaction
             await this.db.query('START TRANSACTION');
     
-            // If not accepted or previously canceled, insert the task
+            // Check if the task is already accepted or previously accepted and then canceled
+            const checkQuery = `
+                SELECT *, IF(HasBeenCanceled, true, false) as PreviouslyCanceled 
+                FROM userdailytask 
+                WHERE UserId = ? AND TaskId = ?
+            `;
+            const [existingTasks] = await this.db.query(checkQuery, [userId, taskId]);
+    
+            if (existingTasks.length > 0) {
+                if (existingTasks[0].PreviouslyCanceled) {
+                    const updateQuery = `
+                        UPDATE userdailytask 
+                        SET HasBeenCanceled = false, DateTaken = NOW(), TaskStatus = 'Ongoing' 
+                        WHERE UserId = ? AND TaskId = ?
+                    `;
+                    await this.db.query(updateQuery, [userId, taskId]);
+                    await this.db.query('COMMIT');
+                    return { reaccepted: true, alreadyAccepted: false };
+                } else {
+                    // Task is already accepted and not canceled
+                    await this.db.query('COMMIT');
+                    return { alreadyAccepted: true };
+                }
+            }
+    
             const insertQuery = `
                 INSERT INTO userdailytask (UserId, TaskId, DateTaken, TaskStatus) 
-                VALUES (?, ?, ?, 'Ongoing')
+                VALUES (?, ?, NOW(), 'Ongoing')
             `;
-            await this.db.query(insertQuery, [userId, taskId, dateTaken]);
+            await this.db.query(insertQuery, [userId, taskId]);
     
-            // Update TaskCount in user table
             const updateTaskCountQuery = `
                 UPDATE user 
                 SET TaskCount = TaskCount + 1 
                 WHERE UserId = ?
             `;
             await this.db.query(updateTaskCountQuery, [userId]);
-    
-            // Commit the transaction
             await this.db.query('COMMIT');
     
             return { accepted: true, alreadyAccepted: false };
         } catch (error) {
-            // If an error occurs, rollback the transaction
             await this.db.query('ROLLBACK');
             throw error;
         }
     }
     
-    
-    
 
     async checkTaskAccepted(userId, taskId) {
-        const query = `
-            SELECT * FROM userdailytask 
-            WHERE UserId = ? AND TaskId = ? 
-            AND TaskStatus = 'Ongoing' AND HasBeenCanceled = 0
-        `;
-        const [results] = await this.db.query(query, [userId, taskId]);
-        return results.length > 0; 
+        try {
+            await this.db.query('START TRANSACTION');
+            const query = `
+                SELECT udt.*, dt.TaskDuration FROM userdailytask udt
+                JOIN dailytask dt ON udt.TaskId = dt.TaskId
+                WHERE udt.UserId = ? AND udt.TaskId = ?
+            `;
+            const [results] = await this.db.query(query, [userId, taskId]);
+    
+            if (results.length > 0) {
+                const task = results[0];
+                const taskEndTime = new Date(task.DateTaken);
+                taskEndTime.setHours(taskEndTime.getHours() + task.TaskDuration);
+    
+                if (new Date() > taskEndTime && task.TaskStatus === 'Ongoing') {
+                    const updateQuery = `
+                        UPDATE userdailytask 
+                        SET TaskStatus = 'Expired', DateFinished = NOW()
+                        WHERE UserId = ? AND TaskId = ?
+                    `;
+                    await this.db.query(updateQuery, [userId, taskId]);
+                    await this.db.query('COMMIT'); 
+                    return { isAccepted: false, isExpired: true };
+                }
+    
+                await this.db.query('COMMIT'); 
+                return { isAccepted: true, dateTaken: task.DateTaken, taskDuration: task.TaskDuration, isExpired: false };
+            } else {
+                await this.db.query('COMMIT'); 
+                return { isAccepted: false, isExpired: false };
+            }
+        } catch (error) {
+            await this.db.query('ROLLBACK');
+            console.error("Error in checkTaskAccepted:", error);
+            throw error; 
+        }
     }
     
-
+    
     async fetchAcceptedTasks(userId) {
         const query = `
             SELECT udt.*, dt.TaskImage, dt.TaskName, dt.DifficultyId, dt.TaskDescription, dt.TaskPoints

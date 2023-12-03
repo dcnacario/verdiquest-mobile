@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Image, Text, Modal, TouchableOpacity, Alert, BackHandler} from "react-native";
+import { View, StyleSheet, Image, Text, Modal, TouchableOpacity, Alert, BackHandler } from "react-native";
 import Details from "../components/Details";
 import Button from "../components/Button";
 import defaultImage from "../../assets/img/default-image.png";
@@ -10,31 +10,29 @@ import ipAddress from "../database/ipAddress";
 const TaskDetails = ({ route }) => {
     const navigation = useNavigation();
     const [isAccepted, setIsAccepted] = useState(false);
-    const [showModal, setShowModal] = useState(false);
+    const [taskExpired, setTaskExpired] = useState(false);
     const [taskDetails, setTaskDetails] = useState({});
     const [isLoading, setIsLoading] = useState(true);
-    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [showModal, setShowModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const { user } = route.params;
+    const [showErrorModal, setShowErrorModal] = useState(false);
     const localhost = ipAddress;
+    const { user } = route.params;
 
     useEffect(() => {
         async function fetchDetailsAndCheckAcceptance() {
             const taskId = route.params.taskId;
             const userId = user.UserId;
+
             try {
                 const detailsResponse = await axios.get(`${localhost}/user/fetchTaskDetails/${taskId}`);
-
-                if (detailsResponse.data.success) {
-                    setTaskDetails(detailsResponse.data.taskDetails);
-                } else {
-                    console.log("Task not found");
-                }
+                setTaskDetails(detailsResponse.data.taskDetails || {});
 
                 const acceptanceResponse = await axios.get(`${localhost}/user/checkTaskAccepted/${userId}/${taskId}`);
                 setIsAccepted(acceptanceResponse.data.isAccepted);
+                setTaskExpired(acceptanceResponse.data.taskExpired);
             } catch (error) {
-                console.error("Error fetching task details or checking acceptance:",error);
+                console.error("Error fetching task details or checking acceptance:", error);
             } finally {
                 setIsLoading(false);
             }
@@ -43,23 +41,18 @@ const TaskDetails = ({ route }) => {
     }, [route.params.taskId, user.UserId]);
 
     const onPressAccept = async () => {
-        // if (!user?.UserId || !taskDetails?.TaskId) {
-        //     console.log("User ID or Task ID is missing");
-        //     return;
-        // }
-    
+        if (taskExpired) {
+            Alert.alert("Task Expired", "This task has already expired and cannot be accepted.");
+            return;
+        }
         try {
             const response = await axios.post(`${localhost}/user/acceptTask`, {
                 userId: user.UserId,
                 taskId: taskDetails.TaskId,
             });
-    
             if (response.data.message === "Mission Accepted!") {
                 setIsAccepted(true);
                 setErrorMessage("Mission Accepted!");
-                setShowModal(true); 
-            } else if (response.data.message === "Task accepted successfully.") {
-                setIsAccepted(true);
                 setShowModal(true); 
             } else {
                 setErrorMessage(response.data.message);
@@ -70,7 +63,6 @@ const TaskDetails = ({ route }) => {
             setShowErrorModal(true);
         }
     };
-    
 
     const onPressOngoingTask = () => {
         navigation.navigate("MyPoints", { user: user });
@@ -121,6 +113,14 @@ const TaskDetails = ({ route }) => {
         return <Text>Loading...</Text>;
     }
 
+    if (taskExpired) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.expiredText}>This task has expired.</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
         <View style={styles.imageContainer}>
@@ -138,7 +138,7 @@ const TaskDetails = ({ route }) => {
             rewardPoints={taskDetails.TaskPoints || 0}
         />
         <View style={styles.buttonContainer}>
-            {isAccepted ? (
+            {isAccepted && !taskExpired ? (
                 <>
                     <View style={styles.buttonWrapper}>
                         <Button title="Ongoing" onPress={onPressOngoingTask} />
@@ -147,11 +147,11 @@ const TaskDetails = ({ route }) => {
                         <Button title="Cancel" onPress={onPressCancelTask} />
                     </View>
                 </>
-            ) : (
+            ) : !taskExpired ? (
                 <View style={styles.buttonWrapper}>
                     <Button title="ACCEPT" onPress={onPressAccept} />
                 </View>
-            )}
+            ) : null}
         </View>
         <Modal transparent={true} visible={showModal} onRequestClose={() => setShowModal(false)}>
             <TouchableOpacity style={styles.modalStyle} onPress={() => setShowModal(false)}>
@@ -207,9 +207,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
     },
-    
     buttonWrapper: {
         marginHorizontal: 10, 
+    },
+    expiredText: {
+        fontWeight: "bold",
+        textAlign: "center",
+        fontSize: 20,
+        color: "red",
     },
 });
 
