@@ -32,7 +32,8 @@ const ViewOrganization = ({ route }) => {
     uri: `${localhost}/img/organization/${coordinator.OrganizationImage}`,
   };
   const [logo, setLogo] = useState(imageSource);
-  console.log(coordinator);
+
+  const canEdit = coordinator.Rank === 1 ? true : false;
 
   const [editData, setEditData] = useState({
     orgImage: coordinator.OrganizationImage,
@@ -174,7 +175,8 @@ const ViewOrganization = ({ route }) => {
       <Text style={styles.headerText}>Organization Profile</Text>
 
       <View style={styles.logoContainer}>
-        {logo != null ? (
+        {coordinator.OrganizationImage != null ||
+        coordinator.OrganizationImage ? (
           <Image source={logo} style={styles.logo} />
         ) : (
           <Image source={defaultImage} style={styles.logo} />
@@ -215,16 +217,17 @@ const ViewOrganization = ({ route }) => {
           editable={isEditing}
         />
       </View>
-
-      <TouchableOpacity
-        onPress={handleEditOrganization}
-        style={styles.editButton}
-        disabled={isSubmitting}
-      >
-        <Text style={styles.buttonText}>
-          {isEditing ? "Save changes" : "Edit info"}
-        </Text>
-      </TouchableOpacity>
+      {canEdit && (
+        <TouchableOpacity
+          onPress={handleEditOrganization}
+          style={styles.editButton}
+          disabled={isSubmitting}
+        >
+          <Text style={styles.buttonText}>
+            {isEditing ? "Save changes" : "Edit info"}
+          </Text>
+        </TouchableOpacity>
+      )}
       <View style={{ marginVertical: 50 }}>
         {/* <Button
           title={"Delete"}
@@ -254,11 +257,13 @@ const ViewOrganization = ({ route }) => {
             </View>
           </View>
         ) : (
-          <TouchableOpacity onPress={handleDeletePress}>
-            <Text style={{ color: "#BA1A1A", fontWeight: "bold" }}>
-              Delete Organization
-            </Text>
-          </TouchableOpacity>
+          canEdit && (
+            <TouchableOpacity onPress={handleDeletePress}>
+              <Text style={{ color: "#BA1A1A", fontWeight: "bold" }}>
+                Delete Organization
+              </Text>
+            </TouchableOpacity>
+          )
         )}
       </View>
     </View>

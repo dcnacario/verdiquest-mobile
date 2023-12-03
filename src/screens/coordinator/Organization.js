@@ -54,28 +54,6 @@ const Organization = ({ route }) => {
     });
   };
 
-  // DELETE PROMPT -------------------------------------------
-  const confirmDeletion = (orgId) => {
-    Alert.alert(
-      "Confirm Deletion",
-      "Are you sure you want to delete this organization?",
-      [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Deletion cancelled"),
-          style: "cancel",
-        },
-        {
-          text: "OK",
-          onPress: () => deleteOrg(orgId),
-        },
-      ],
-      { cancelable: false }
-    );
-  };
-
-  //----------------------------------------------------------
-
   useEffect(() => {
     if (isFocused) {
       fetchUsers();

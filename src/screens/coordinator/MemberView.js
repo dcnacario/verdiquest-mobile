@@ -31,6 +31,8 @@ const MemberView = ({ route }) => {
 
   //
 
+  const isDisable = coordinator.Rank === 1 ? false : true;
+
   return (
     <View style={styles.background}>
       <View style={styles.eventDetailsContainer}>
@@ -63,6 +65,7 @@ const MemberView = ({ route }) => {
               title={"Delete"}
               color={"#BA1A1A"}
               onPress={() => removeMember(member.UserId)}
+              disabled={isDisable}
             />
           </View>
         </View>

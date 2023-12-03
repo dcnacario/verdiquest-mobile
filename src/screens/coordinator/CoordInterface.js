@@ -53,7 +53,7 @@ const CoordInterface = ({ route }) => {
   };
 
   const gotoCoordinators = () => {
-    navigation.navigate("CoordinatorMaster", {});
+    navigation.navigate("CoordinatorMaster", { coordinator: coordinator });
   };
   const editCoordinator = () => {
     navigation.navigate("EditProfileCoordinator", { coordinator: coordinator });
@@ -67,6 +67,8 @@ const CoordInterface = ({ route }) => {
   const goToReward = () => {
     navigation.navigate("CoordinatorProduct", { coordinator: coordinator });
   };
+
+  const isDisable = coordinator.Rank === 0 ? true : false;
 
   return (
     <ScrollView
@@ -141,7 +143,7 @@ const CoordInterface = ({ route }) => {
             <Button title="Organization" onPress={goToOrganization} />
           </View>
           <View style={styles.rightButton}>
-            <Button title="Rewards" onPress={goToReward} />
+            <Button title="Rewards" onPress={goToReward} disabled={isDisable} />
           </View>
         </View>
       </View>
