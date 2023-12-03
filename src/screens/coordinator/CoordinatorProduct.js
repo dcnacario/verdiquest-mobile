@@ -9,11 +9,10 @@ import {
 } from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import ProductCard from "../../components/ProductCard";
 import axios from "axios";
 import ipAddress from "../../database/ipAddress";
-import { useIsFocused } from "@react-navigation/native";
 
 const CoordinatorProduct = ({ route }) => {
   const navigation = useNavigation();
@@ -27,6 +26,9 @@ const CoordinatorProduct = ({ route }) => {
 
   const goCreateProduct = () => {
     navigation.navigate("CoordinatorAddProduct", { coordinator: coordinator });
+  };
+  const goToView = (item) => {
+    navigation.navigate("CoordinatorViewProduct", { dataProduct: item });
   };
 
   //FETCHING PRODUCT FROM DB
@@ -75,7 +77,7 @@ const CoordinatorProduct = ({ route }) => {
                   title={item.ProductName}
                   imageUrl={item.ProductImage}
                   quantity={item.ProductQuantity}
-                  onPress={() => goToMember(item)}
+                  onPress={() => goToView(item)}
                 />
               )}
               keyExtractor={(item) => item.ProductId}

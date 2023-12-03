@@ -19,13 +19,13 @@ import { useNavigation } from "@react-navigation/native";
 
 const CoordinatorAddProduct = ({ route }) => {
   const localhost = ipAddress;
-  const navigation = useNavigation();
-  const [productUri, setProductUri] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { coordinator } = route.params;
+  const navigation = useNavigation();
   const imageSource = {
     uri: `${localhost}/img/product/${coordinator.ProductImage}`,
   };
+  const [productUri, setProductUri] = useState(imageSource);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [productData, setProductData] = useState({
     organizationId: coordinator.OrganizationId,
@@ -198,8 +198,8 @@ const styles = StyleSheet.create({
   },
   cameraButton: {
     position: "absolute",
-    left: 60,
-    bottom: 5,
+    left: 70,
+    bottom: 2.5,
     backgroundColor: "lightgrey",
     borderRadius: 15,
     padding: 8,

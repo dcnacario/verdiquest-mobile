@@ -28,8 +28,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    margin: 10,
-    width: 135, // Adjust the width as needed
+    margin: 10, // Adjust the width as needed
   },
   image: {
     width: 100,

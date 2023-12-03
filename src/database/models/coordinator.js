@@ -481,6 +481,27 @@ class Coordinator extends BaseModel {
       throw error;
     }
   }
+
+  async updateProduct(productData) {
+    try {
+      const [products] = await this.db.query(
+        "UPDATE products  SET ProductName = ?, ProductDescription = ?, ProductSize = ?, ProductQuantity = ?, PointsRequired = ? WHERE ProductId = ?",
+        [
+          productData.productName,
+          productData.productDescription,
+          productData.productSize,
+          productData.productQuantity,
+          productData.pointsRequired,
+          productData.productId,
+        ]
+      );
+      const productUpdate = products.affectedRows;
+      return productUpdate;
+    } catch (error) {
+      console.error(`Error updating organization: ${error}`);
+      throw error;
+    }
+  }
 }
 
 module.exports = Coordinator;

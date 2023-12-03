@@ -639,6 +639,40 @@ async function fetchProducts(request, response) {
   }
 }
 
+async function updateProduct(request, response) {
+  try {
+    const {
+      productName,
+      productDescription,
+      productSize,
+      productQuantity,
+      pointsRequired,
+      productId,
+    } = request.body;
+
+    const productData = {
+      productName,
+      productDescription,
+      productSize,
+      productQuantity,
+      pointsRequired,
+      productId,
+    };
+
+    const result = await coordinator.updateProduct(productData);
+    return response.json({
+      message: "Product updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
 module.exports = {
   registerOrganization,
   registerCoordinator,
@@ -665,4 +699,5 @@ module.exports = {
   removeUserFromOrg,
   deleteOrganization,
   fetchProducts,
+  updateProduct,
 };
