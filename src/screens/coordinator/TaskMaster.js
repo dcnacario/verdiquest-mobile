@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   Modal,
+  TouchableOpacity,
 } from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
@@ -15,32 +16,25 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import ipAddress from "../../database/ipAddress";
 import { useIsFocused } from "@react-navigation/native";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 const TaskMaster = ({ route }) => {
   const [fetchedTasks, setFetchedTasks] = useState([]);
   const localhost = ipAddress;
-  const isFocused = useIsFocused;
+  const isFocused = useIsFocused();
   const [isLoading, setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [currentTaskId, setCurrentTaskId] = useState(null);
 
   const navigation = useNavigation();
   const { coordinator } = route.params;
-  //navigate to creation of task
-  const goToCreateTask = () => {
-    navigation.navigate("CreateTaskDashboard", {
-      coordinator: coordinator,
-      // onTaskCreated: fetchTasks,
-    });
-  };
 
   //CREATING A CONFIRMATION MODAL FOR DELETING
   const ConfirmModal = ({ isVisible, onConfirm, onCancel, title }) => {
     return (
       <Modal
         transparent={true}
-        animationType="slide"
+        animationType="fade"
         visible={isVisible}
         onRequestClose={onCancel}
       >
@@ -64,6 +58,22 @@ const TaskMaster = ({ route }) => {
         </View>
       </Modal>
     );
+  };
+
+  //navigate to creation of task
+  const goToCreateTask = () => {
+    navigation.navigate("CreateTaskDashboard", {
+      coordinator: coordinator,
+      // onTaskCreated: fetchTasks,
+    });
+  };
+
+  //navigation for View
+  const gotoCard = (taskData, onTaskFetch) => {
+    navigation.navigate("TaskView", {
+      taskData: taskData,
+      onTaskFetch: onTaskFetch,
+    });
   };
 
   const onRefresh = useCallback(() => {
@@ -124,16 +134,28 @@ const TaskMaster = ({ route }) => {
     }
   };
 
-  const deleteTask = async (taskId) => {
-    try {
-      const response = await axios.post(`${localhost}/coordinator/deleteTask`, {
-        taskId: taskId,
-      });
-      fetchTasks();
-    } catch (error) {
-      console.error("Error deleting task!", error);
-      return [];
+  const deleteTask = async () => {
+    if (currentTaskId) {
+      try {
+        const response = await axios.post(
+          `${localhost}/coordinator/deleteTask`,
+          {
+            taskId: currentTaskId,
+          }
+        );
+        // Reset the current task ID after deletion
+        setCurrentTaskId(null);
+        setModalVisible(false);
+        fetchTasks();
+      } catch (error) {
+        console.error("Error deleting task!", error);
+      }
     }
+  };
+
+  const promptDeleteTask = (taskId) => {
+    setCurrentTaskId(taskId); // Set the current task ID
+    setModalVisible(true); // Show the modal
   };
 
   useEffect(() => {
@@ -142,13 +164,6 @@ const TaskMaster = ({ route }) => {
     }
   }, [isFocused]);
 
-  //navigation for View
-  const gotoCard = (taskData, onTaskFetch) => {
-    navigation.navigate("TaskView", {
-      taskData: taskData,
-      onTaskFetch: onTaskFetch,
-    });
-  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -183,7 +198,7 @@ const TaskMaster = ({ route }) => {
               title={item.TaskName}
               description={item.TaskDescription}
               onPress={() => gotoCard(item, fetchTasks)}
-              deleteTask={() => setModalVisible(true)}
+              deleteTask={() => promptDeleteTask(item.TaskId)}
             />
           ))
         ) : (

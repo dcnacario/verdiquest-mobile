@@ -187,22 +187,22 @@ async function deleteTask(request, response) {
   try {
     const { taskId } = request.body;
 
-    // const fileName = await coordinator.getFileNameForTask(taskId);
-    // if (!fileName) {
-    //   return response.status(404).send({ message: "Task or file not found" });
-    // }
-    // const filePath = path.join(__dirname, "../images/task/", fileName);
+    const fileName = await coordinator.getFileNameForTask(taskId);
+    if (!fileName) {
+      return response.status(404).send({ message: "Task or file not found" });
+    }
+    const filePath = path.join(__dirname, "../images/task/", fileName);
 
-    // // Delete the file
-    // fs.unlink(filePath, (err) => {
-    //   if (err) {
-    //     console.error("Error deleting the file:", err);
-    //     return response
-    //       .status(500)
-    //       .send({ message: "Error deleting file", error: err.message });
-    //   }
-    //   console.log(`File at ${filePath} successfully deleted`);
-    // });
+    // Delete the file
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        console.error("Error deleting the file:", err);
+        return response
+          .status(500)
+          .send({ message: "Error deleting file", error: err.message });
+      }
+      console.log(`File at ${filePath} successfully deleted`);
+    });
 
     const coordinatorData = { taskId };
     const result = await coordinator.deleteTasks(coordinatorData);
@@ -673,6 +673,42 @@ async function updateProduct(request, response) {
   }
 }
 
+async function deleteProduct(request, response) {
+  try {
+    const { productId } = request.body;
+
+    // const fileName = await coordinator.getFileNameForTask(taskId);
+    // if (!fileName) {
+    //   return response.status(404).send({ message: "Task or file not found" });
+    // }
+    // const filePath = path.join(__dirname, "../images/task/", fileName);
+
+    // // Delete the file
+    // fs.unlink(filePath, (err) => {
+    //   if (err) {
+    //     console.error("Error deleting the file:", err);
+    //     return response
+    //       .status(500)
+    //       .send({ message: "Error deleting file", error: err.message });
+    //   }
+    //   console.log(`File at ${filePath} successfully deleted`);
+    // });
+
+    const productData = { productId };
+    const result = await coordinator.deleteProduct(productData);
+    return response.json({
+      success: true,
+      productId: result,
+      message: "Product deleted successfully!",
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
 module.exports = {
   registerOrganization,
   registerCoordinator,
@@ -700,4 +736,5 @@ module.exports = {
   deleteOrganization,
   fetchProducts,
   updateProduct,
+  deleteProduct,
 };
