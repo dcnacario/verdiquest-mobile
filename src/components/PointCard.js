@@ -45,12 +45,12 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     verdiPointsLabel: {
-        fontSize: 36,
+        fontSize: 26,
         fontWeight: 'bold',
         color: theme.colors.primary,
     },
     availablePointsLabel: {
-        fontSize: 16,
+        fontSize: 18,
     },
     dateLabel: {
         fontWeight: 'bold',
