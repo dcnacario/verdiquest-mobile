@@ -519,7 +519,7 @@ class Coordinator extends BaseModel {
   async fetchCoordinators(organizationId) {
     try {
       const [result] = await this.db.query(
-        "SELECT * FROM coordinator WHERE OrganizationId = ?",
+        "SELECT * FROM coordinator c JOIN person p ON c.PersonId = p.PersonId WHERE OrganizationId = ?",
         [organizationId]
       );
       return result;
