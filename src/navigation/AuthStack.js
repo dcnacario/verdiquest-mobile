@@ -7,10 +7,6 @@ import AppTabNav from "./AppTabNav";
 import LoginIntro from "../screens/LoginIntro";
 import CoordinatorStack from "./CoordinatorStack";
 import CoordInterface from "../screens/coordinator/CoordInterface";
-import ProductDetails from "../screens/ProductDetails";
-import ProductConfirm from "../screens/ProductConfirm";
-import ProductRedeem from "../screens/ProductRedeem";
-import ProductReceipt from "../screens/ProductReceipt";
 const Stack = createStackNavigator();
 
 const AuthStack = () => {

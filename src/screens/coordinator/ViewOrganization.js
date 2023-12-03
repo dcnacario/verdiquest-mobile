@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -14,9 +14,12 @@ import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import ipAddress from "../../database/ipAddress";
 import defaultImage from "../../../assets/img/default-image.png";
-import Button from "../../components/Button";
+import { AuthContext } from "../../navigation/AuthContext";
+import { useNavigation } from "@react-navigation/native";
 
 const ViewOrganization = ({ route }) => {
+  const { logout } = useContext(AuthContext);
+  const navigation = useNavigation();
   const localhost = ipAddress;
   const { coordinator } = route.params;
   const [isEditing, setIsEditing] = useState(false);
@@ -49,6 +52,7 @@ const ViewOrganization = ({ route }) => {
       const response = await axios.post(`${localhost}/coordinator/deleteOrg`, {
         orgId: orgId,
       });
+      await logout(navigation);
       return response.data;
     } catch (error) {
       console.error("Error deleting the org!", error);

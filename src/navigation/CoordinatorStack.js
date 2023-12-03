@@ -38,7 +38,7 @@ const CoordinatorStack = ({ route }) => {
         name="CoordinatorLogin"
         component={CoordinatorLogin}
         options={{
-          headerShown: true,
+          headerShown: false,
           headerLeft: false,
           headerTitle: "",
           headerStyle: {

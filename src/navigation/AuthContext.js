@@ -3,6 +3,7 @@ import axios from "axios";
 import React, { createContext, useState, useEffect } from "react";
 import { Alert } from "react-native";
 import ipAddress from "../database/ipAddress";
+import { CommonActions } from "@react-navigation/native";
 
 export const AuthContext = createContext();
 
@@ -72,12 +73,22 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {
-    setIsLoading(true);
-    // Note: You may also want to invalidate the token on the server side
-    await AsyncStorage.removeItem("userToken");
-    setUserToken(null);
-    setIsLoading(false);
+  const logout = async (navigation) => {
+    try {
+      setIsLoading(true);
+      await AsyncStorage.removeItem("userToken");
+      setUserToken(null);
+      setIsLoading(false);
+
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: "LoginIntro" }],
+        })
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const isLoggedIn = async () => {

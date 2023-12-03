@@ -108,7 +108,9 @@ const CoordInterface = ({ route }) => {
                 <Icon name="pencil" size={20} color="#000" />
               </TouchableOpacity>
             </View>
-            <Text style={styles.role}>Coordinator</Text>
+            <Text style={styles.role}>
+              {coordinator.Rank === 1 ? "Head Coordinator" : "Coordinator"}
+            </Text>
           </View>
         </View>
 
