@@ -46,23 +46,30 @@ const CoordReportCard = ({
           <View style={styles.listItem}>
             <Button title="View" onPress={onPress} style={styles.button} />
 
-            {status === "ONGOING" && (
+            {status === "Ongoing" && (
               <MaterialIcon
                 name="hourglass-bottom"
                 size={24}
                 color={theme.colors.primary}
               />
             )}
-            {status === "DONE" && (
+            {status === "Concluded" && (
               <MaterialIcon
                 name="done"
                 size={24}
                 color={theme.colors.primary}
               />
             )}
-            {status === "INCOMING" && (
+            {status === "Incoming" && (
               <MaterialIcon
                 name="lock-clock"
+                size={24}
+                color={theme.colors.primary}
+              />
+            )}
+            {status === "Active" && (
+              <MaterialIcon
+                name="visibility"
                 size={24}
                 color={theme.colors.primary}
               />
