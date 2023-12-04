@@ -28,7 +28,10 @@ const CoordinatorProduct = ({ route }) => {
     navigation.navigate("CoordinatorAddProduct", { coordinator: coordinator });
   };
   const goToView = (item) => {
-    navigation.navigate("CoordinatorViewProduct", { dataProduct: item });
+    navigation.navigate("CoordinatorViewProduct", {
+      dataProduct: item,
+      coordinator: coordinator,
+    });
   };
 
   //FETCHING PRODUCT FROM DB
@@ -84,7 +87,7 @@ const CoordinatorProduct = ({ route }) => {
               numColumns={2}
             />
           ) : (
-            <Text>No members yet for this organization.</Text>
+            <Text>No products yet for this organization.</Text>
           )}
         </View>
       </View>

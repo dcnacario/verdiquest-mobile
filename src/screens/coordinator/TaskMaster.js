@@ -276,11 +276,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#2196F3",
     marginTop: 10,
   },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
 });
 
 export default TaskMaster;
