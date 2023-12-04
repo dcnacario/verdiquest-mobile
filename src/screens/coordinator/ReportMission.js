@@ -91,6 +91,7 @@ const ReportMission = ({ route }) => {
         ) : fetchedTasks != null && fetchedTasks.length > 0 ? (
           fetchedTasks.map((item) => (
             <CoordEventCard
+              img={`${localhost}/img/task/${item.TaskImage}`}
               key={item.TaskId}
               participants={item.takersCount || 0}
               feedback={0}

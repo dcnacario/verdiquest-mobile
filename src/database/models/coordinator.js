@@ -371,7 +371,7 @@ class Coordinator extends BaseModel {
   async updateCoordinator(coordinatorData) {
     try {
       const [coordinator] = await this.db.query(
-        "UPDATE coordinator SET Username = ?, Password = ? WHERE CoordinatorId = ?",
+        "UPDATE coordinator SET Username = ?, Password = ?  WHERE CoordinatorId = ?",
         [
           coordinatorData.userName,
           coordinatorData.newPassword,
@@ -380,11 +380,18 @@ class Coordinator extends BaseModel {
       );
 
       const [person] = await this.db.query(
-        "UPDATE person SET FirstName = ?, Initial = ?, LastName = ? WHERE PersonId = ?",
+        "UPDATE person SET FirstName = ?, Initial = ?, LastName = ?, Birthdate = ?, PhoneNumber = ?, Gender = ?, Street = ?, Barangay = ?, City = ?, Province = ? WHERE PersonId = ?",
         [
           coordinatorData.firstName,
           coordinatorData.middleInitial,
           coordinatorData.lastName,
+          coordinatorData.birthDate,
+          coordinatorData.phoneNumber,
+          coordinatorData.gender,
+          coordinatorData.street,
+          coordinatorData.barangay,
+          coordinatorData.city,
+          coordinatorData.province,
           coordinatorData.personId,
         ]
       );

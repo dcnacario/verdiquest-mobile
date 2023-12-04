@@ -176,7 +176,7 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
               style={styles.modifiedInputStyle}
               value={taskData.taskDuration.toString()}
               onChangeText={(text) => updateTaskData("taskDuration", text)}
-              placeholder="in Hours"
+              placeholder="in Minutes"
               keyboardType="numeric"
             />
           </View>

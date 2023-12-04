@@ -492,8 +492,15 @@ async function updateCoordinator(request, response) {
       firstName,
       middleInitial,
       lastName,
-      coordinatorId,
       personId,
+      coordinatorId,
+      phoneNumber,
+      birthDate,
+      gender,
+      street,
+      barangay,
+      city,
+      province,
     } = request.body;
     const hashedPassword = bcrypt.hashSync(newPassword, 10);
     const coordinatorData = {
@@ -504,6 +511,13 @@ async function updateCoordinator(request, response) {
       lastName,
       coordinatorId,
       personId,
+      phoneNumber,
+      birthDate,
+      gender,
+      street,
+      barangay,
+      city,
+      province,
     };
 
     const result = await coordinator.updateCoordinator(coordinatorData);

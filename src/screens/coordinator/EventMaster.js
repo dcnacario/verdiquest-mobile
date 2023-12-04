@@ -117,7 +117,7 @@ const EventMaster = ({ route }) => {
           fetchedEvents.map((item) => (
             <CoordEventCard
               img={
-                item.EventImage != ""
+                item.EventImage != "" && item.EventImage
                   ? `${localhost}/img/event/${item.EventImage}`
                   : null
               }
