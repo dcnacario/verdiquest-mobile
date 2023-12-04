@@ -34,6 +34,37 @@ const EditProfileCoordinator = ({ route }) => {
     city: coordinator.City,
     province: coordinator.Province,
   });
+
+  const validatePasswords = () => {
+    let isValid = true;
+    let newErrors = { newPasswordError: "", confirmNewPasswordError: "" };
+
+    // Check if newPassword is empty
+    if (!coordinatorData.newPassword) {
+      newErrors.newPasswordError = "New password cannot be empty";
+      isValid = false;
+    } else if (coordinatorData.newPassword.length < 8) {
+      newErrors.newPasswordError =
+        "Password must be at least 8 characters long";
+      isValid = false;
+    }
+
+    // Check if confirmNewPassword is empty
+    if (!coordinatorData.confirmNewPassword) {
+      newErrors.confirmNewPasswordError =
+        "Confirm new password cannot be empty";
+      isValid = false;
+    } else if (
+      coordinatorData.newPassword !== coordinatorData.confirmNewPassword
+    ) {
+      newErrors.confirmNewPasswordError = "Passwords do not match";
+      isValid = false;
+    }
+
+    setPasswordErrors(newErrors);
+    return isValid;
+  };
+
   const [passwordErrors, setPasswordErrors] = useState({
     newPasswordError: "",
     confirmNewPasswordError: "",
@@ -48,28 +79,6 @@ const EditProfileCoordinator = ({ route }) => {
       ...prev,
       birthDate: date.toISOString().slice(0, 10),
     }));
-  };
-
-  const validatePasswords = () => {
-    let isValid = true;
-    let newErrors = { newPasswordError: "", confirmNewPasswordError: "" };
-
-    // Only validate if newPassword and confirmNewPassword are not empty
-    if (coordinatorData.newPassword || coordinatorData.confirmNewPassword) {
-      if (coordinatorData.newPassword.length < 8) {
-        newErrors.newPasswordError =
-          "Password must be at least 8 characters long";
-        isValid = false;
-      }
-
-      if (coordinatorData.newPassword !== coordinatorData.confirmNewPassword) {
-        newErrors.confirmNewPasswordError = "Passwords do not match";
-        isValid = false;
-      }
-    }
-
-    setPasswordErrors(newErrors);
-    return isValid;
   };
 
   const handleEditProfile = async () => {

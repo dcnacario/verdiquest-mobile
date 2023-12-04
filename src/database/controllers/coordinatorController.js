@@ -113,6 +113,7 @@ async function loginCoordinator(request, response) {
 
     const coordinatorData = { username };
     const fetchedUser = await coordinator.fetchUser(coordinatorData);
+    console.log(fetchedUser);
 
     if (fetchedUser) {
       const isMatch = await bcrypt.compare(password, fetchedUser.Password);

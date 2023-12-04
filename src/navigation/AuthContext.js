@@ -62,6 +62,9 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       setIsLoading(false);
+      console.log(error.response.data);
+      console.log(error.response.headers);
+      console.log(error.response.status);
       if (error.response && error.response.status === 401) {
         Alert.alert("Login Failed", "Incorrect username or password.");
       } else {

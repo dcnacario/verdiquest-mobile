@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  BackHandler,
 } from "react-native";
 import { theme } from "../../../assets/style";
 import CoordEventCard from "../../components/CoordReportCard";
@@ -68,6 +69,22 @@ const ReportMission = ({ route }) => {
   useEffect(() => {
     fetchTasks();
   }, [coordinator.OrganizationId]);
+
+  useEffect(() => {
+    // Custom back action
+    const backAction = () => {
+      navigation.navigate("CoordInterface");
+      return true; // Prevent default behavior
+    };
+
+    // Add event listener for hardware back press
+    BackHandler.addEventListener("hardwareBackPress", backAction);
+
+    // Cleanup function
+    return () => {
+      BackHandler.removeEventListener("hardwareBackPress", backAction);
+    };
+  }, [navigation, coordinator.OrganizationId]);
 
   return (
     <View style={styles.container}>
