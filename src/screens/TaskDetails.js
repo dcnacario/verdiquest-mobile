@@ -4,7 +4,7 @@ import Details from "../components/Details";
 import Button from "../components/Button";
 import defaultImage from "../../assets/img/default-image.png";
 import axios from "axios";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import ipAddress from "../database/ipAddress";
 
 const TaskDetails = ({ route }) => {
@@ -19,32 +19,40 @@ const TaskDetails = ({ route }) => {
     const localhost = ipAddress;
     const { user } = route.params;
 
-    useEffect(() => {
-        async function fetchDetailsAndCheckAcceptance() {
-            const taskId = route.params.taskId;
-            const userId = user.UserId;
+    const isFocused = useIsFocused();
 
-            try {
-                const detailsResponse = await axios.get(`${localhost}/user/fetchTaskDetails/${taskId}`);
-                setTaskDetails(detailsResponse.data.taskDetails || {});
+    const fetchDetailsAndCheckAcceptance = async () => {
+        const taskId = route.params.taskId;
+        const userId = user.UserId;
 
-                const acceptanceResponse = await axios.get(`${localhost}/user/checkTaskAccepted/${userId}/${taskId}`);
-                setIsAccepted(acceptanceResponse.data.isAccepted);
-                setTaskExpired(acceptanceResponse.data.taskExpired);
-            } catch (error) {
-                console.error("Error fetching task details or checking acceptance:", error);
-            } finally {
-                setIsLoading(false);
-            }
+        try {
+            const detailsResponse = await axios.get(`${localhost}/user/fetchTaskDetails/${taskId}`);
+            setTaskDetails(detailsResponse.data.taskDetails || {});
+
+            const acceptanceResponse = await axios.get(`${localhost}/user/checkTaskAccepted/${userId}/${taskId}`);
+            setIsAccepted(acceptanceResponse.data.isAccepted);
+            console.log("setIsAccepted " + acceptanceResponse.data.isAccepted)
+            setTaskExpired(acceptanceResponse.data.taskExpired);
+            console.log("setTaskExpired " + acceptanceResponse.data.taskExpired)
+        } catch (error) {
+            console.error("Error fetching task details or checking acceptance:", error);
+        } finally {
+            setIsLoading(false);
         }
-        fetchDetailsAndCheckAcceptance();
-    }, [route.params.taskId, user.UserId]);
+    };
 
+    useEffect(() => {
+        if (isFocused) {
+            fetchDetailsAndCheckAcceptance();
+        }
+    }, [isFocused, route.params.taskId, user.UserId]);
+    
     const onPressAccept = async () => {
         if (taskExpired) {
             Alert.alert("Task Expired", "This task has already expired and cannot be accepted.");
             return;
         }
+        
         try {
             const response = await axios.post(`${localhost}/user/acceptTask`, {
                 userId: user.UserId,
@@ -78,9 +86,9 @@ const TaskDetails = ({ route }) => {
                 userId: user.UserId,
                 taskId: taskDetails.TaskId,
             });
-
             if (response.data.success) {
                 setIsAccepted(false);
+                setTaskExpired(false);
                 Alert.alert('Success', 'Task cancelled successfully');
             } else {
                 Alert.alert("Error", "Failed to cancel the task");
@@ -130,26 +138,28 @@ const TaskDetails = ({ route }) => {
             rewardPoints={taskDetails.TaskPoints || 0}
         />
         <View style={styles.buttonContainer}>
+            {console.log("Accepted"+isAccepted)}
+            {console.log("Task Expired"+ taskExpired)}
             {isAccepted ? (
                 taskExpired ? (
                     <View style={styles.buttonWrapper}>
                         <Button title="EXPIRED" disabled={true} />
                     </View>
+                    ) : (
+                        <>
+                            <View style={styles.buttonWrapper}>
+                                <Button title="Ongoing" onPress={onPressOngoingTask} />
+                            </View>
+                            <View style={styles.buttonWrapper}>
+                                <Button title="Cancel" onPress={onPressCancelTask} />
+                            </View>
+                        </>
+                    )
                 ) : (
-                    <>
-                        <View style={styles.buttonWrapper}>
-                            <Button title="Ongoing" onPress={onPressOngoingTask} />
-                        </View>
-                        <View style={styles.buttonWrapper}>
-                            <Button title="Cancel" onPress={onPressCancelTask} />
-                        </View>
-                    </>
-                )
-            ) : (
-                <View style={styles.buttonWrapper}>
-                    <Button title={taskExpired ? "EXPIRED" : "ACCEPT"} onPress={onPressAccept} disabled={taskExpired} />
-                </View>
-            )}
+                    <View style={styles.buttonWrapper}>
+                        <Button title={taskExpired ? "EXPIRED" : "ACCEPT"} onPress={onPressAccept} disabled={taskExpired} />
+                    </View>
+                )}
         </View>
         <Modal transparent={true} visible={showModal} onRequestClose={() => setShowModal(false)}>
             <TouchableOpacity style={styles.modalStyle} onPress={() => setShowModal(false)}>
