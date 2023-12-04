@@ -506,12 +506,38 @@ class Coordinator extends BaseModel {
   async deleteProduct(productId) {
     try {
       const [result] = await this.db.query(
-        "DELETE FROM products ProductId = ?",
+        "DELETE FROM products WHERE ProductId = ?",
         [productId]
       );
       return result;
     } catch (error) {
       console.error(`Error deleting product: ${error}`);
+      throw error;
+    }
+  }
+
+  async getFileNameForProduct(productId) {
+    try {
+      const [rows] = await this.db.query(
+        "SELECT ProductImage FROM products WHERE ProductId= ?",
+        [productId]
+      );
+      return rows.length > 0 ? rows[0].ProductImage : null;
+    } catch (error) {
+      console.error(`Error retrieving product image:`, error);
+      throw error;
+    }
+  }
+
+  async fetchCoordinators(organizationId) {
+    try {
+      const [result] = await this.db.query(
+        "SELECT * FROM coordinator c JOIN person p ON c.PersonId = p.PersonId WHERE OrganizationId = ? AND CoordinatorId  ",
+        [organizationId]
+      );
+      return result;
+    } catch (error) {
+      console.error(`Error fetching coordinator: ${error}`);
       throw error;
     }
   }

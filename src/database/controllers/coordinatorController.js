@@ -677,25 +677,26 @@ async function deleteProduct(request, response) {
   try {
     const { productId } = request.body;
 
-    // const fileName = await coordinator.getFileNameForTask(taskId);
-    // if (!fileName) {
-    //   return response.status(404).send({ message: "Task or file not found" });
-    // }
-    // const filePath = path.join(__dirname, "../images/task/", fileName);
+    const fileName = await coordinator.getFileNameForProduct(productId);
+    if (!fileName) {
+      return response
+        .status(404)
+        .send({ message: "Product or file not found" });
+    }
+    const filePath = path.join(__dirname, "../images/product/", fileName);
 
-    // // Delete the file
-    // fs.unlink(filePath, (err) => {
-    //   if (err) {
-    //     console.error("Error deleting the file:", err);
-    //     return response
-    //       .status(500)
-    //       .send({ message: "Error deleting file", error: err.message });
-    //   }
-    //   console.log(`File at ${filePath} successfully deleted`);
-    // });
+    // Delete the file
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        console.error("Error deleting the file:", err);
+        return response
+          .status(500)
+          .send({ message: "Error deleting file", error: err.message });
+      }
+      console.log(`File at ${filePath} successfully deleted`);
+    });
 
-    const productData = { productId };
-    const result = await coordinator.deleteProduct(productData);
+    const result = await coordinator.deleteProduct(productId);
     return response.json({
       success: true,
       productId: result,
@@ -706,6 +707,24 @@ async function deleteProduct(request, response) {
     response
       .status(500)
       .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function fetchCoordinators(request, response) {
+  try {
+    const organizationId = request.body.organizationId;
+    const result = await coordinator.fetchCoordinators(organizationId);
+    return response.json({
+      success: true,
+      fetchTable: result,
+      message: "Coordinators fetched successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({
+      success: false,
+      message: "An error occurred while fetching coordinators",
+    });
   }
 }
 
@@ -737,4 +756,5 @@ module.exports = {
   fetchProducts,
   updateProduct,
   deleteProduct,
+  fetchCoordinators,
 };

@@ -11,14 +11,9 @@ import { theme } from "../../../assets/style";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 
-const CoordinatorDashboard = () => {
-  const [username, setUsername] = useState("");
-  const [firstName, setFirstname] = useState("");
-  const [middleInitial, setMiddleInitial] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [address, setAddress] = useState("");
+const CoordinatorDashboard = ({ route }) => {
+  const { item } = route.params;
 
-  //Navigate to Register Screen
   const navigation = useNavigation();
 
   const goToRegister = () => {
@@ -33,7 +28,7 @@ const CoordinatorDashboard = () => {
       <View style={styles.background}>
         {/* Profile Picture */}
         <Image
-          source={require("../../../assets/img/default-image.png")}
+          source={require("../../../assets/img/default-profile.png")}
           style={styles.profileImg}
         />
         <Text style={styles.coordinatorLabel}>Coordinator</Text>
@@ -42,9 +37,8 @@ const CoordinatorDashboard = () => {
           <Text style={styles.textInput}>Username</Text>
           <TextInput
             style={styles.inputStyle}
-            value={username}
-            onChangeText={setUsername}
-            placeholder="Enter Username"
+            value={item.Username}
+            editable={false}
           />
         </View>
         {/* Coordinator's First Name*/}
@@ -52,44 +46,43 @@ const CoordinatorDashboard = () => {
           <Text style={styles.textInput}>First Name</Text>
           <TextInput
             style={styles.inputStyle}
-            value={firstName}
-            onChangeText={setFirstname}
-            secureTextEntry={true}
-            placeholder="Enter First Name"
+            value={item.FirstName}
+            editable={false}
           />
         </View>
         <View style={{ justifyContent: "flex-start" }}>
           <Text style={styles.textInput}>Middle Initial</Text>
           <TextInput
             style={styles.inputStyle}
-            value={middleInitial}
-            onChangeText={setMiddleInitial}
-            secureTextEntry={true}
-            placeholder="Enter Middle Initial"
+            value={item.Initial}
+            editable={false}
           />
         </View>
         <View style={{ justifyContent: "flex-start" }}>
           <Text style={styles.textInput}>Last Name</Text>
           <TextInput
             style={styles.inputStyle}
-            value={lastName}
-            onChangeText={setLastName}
-            secureTextEntry={true}
-            placeholder="Enter Last Name"
+            value={item.LastName}
+            editable={false}
           />
         </View>
         <View style={{ justifyContent: "flex-start" }}>
           <Text style={styles.textInput}>Address</Text>
           <TextInput
             style={styles.inputStyle}
-            value={address}
-            onChangeText={setAddress}
-            secureTextEntry={true}
-            placeholder="Enter Address"
+            value={item.City + "," + item.Province}
+            editable={false}
           />
         </View>
         <TouchableOpacity onPress={goToRegister}>
-          <Text style={{ fontWeight: "bold", fontSize: 15, marginTop: 30 }}>
+          <Text
+            style={{
+              fontWeight: "bold",
+              fontSize: 15,
+              marginTop: 30,
+              color: "#BA1A1A",
+            }}
+          >
             Remove
           </Text>
         </TouchableOpacity>

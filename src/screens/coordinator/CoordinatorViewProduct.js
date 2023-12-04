@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  Modal,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import * as ImagePicker from "expo-image-picker";
@@ -16,10 +17,11 @@ import Button from "../../components/Button";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
 import DeleteButton from "../../components/DeleteButton";
+import { theme } from "../../../assets/style";
 
 const CoordinatorViewProduct = ({ route }) => {
   const navigation = useNavigation();
-  const { dataProduct } = route.params;
+  const { dataProduct, coordinator } = route.params;
   const localhost = ipAddress;
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,6 +31,8 @@ const CoordinatorViewProduct = ({ route }) => {
     uri: `${localhost}/img/product/${dataProduct.ProductImage}`,
   };
   const [imageUri, setImageUri] = useState(imageSource);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [currentProductId, setCurrentProductId] = useState(null);
 
   const [updateData, setUpdateData] = useState({
     organizationId: dataProduct.OrganizationId,
@@ -42,6 +46,37 @@ const CoordinatorViewProduct = ({ route }) => {
 
   const updateField = (field, value) => {
     setUpdateData({ ...updateData, [field]: value });
+  };
+
+  //CREATING A CONFIRMATION MODAL FOR DELETING
+  const ConfirmModal = ({ isVisible, onConfirm, onCancel, title }) => {
+    return (
+      <Modal
+        transparent={true}
+        animationType="fade"
+        visible={isVisible}
+        onRequestClose={onCancel}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>
+              Are you sure to delete this Product?
+            </Text>
+            <Text style={styles.modalText}>{title}</Text>
+            <View
+              style={{ flexDirection: "row", alignSelf: "flex-end", gap: 10 }}
+            >
+              <TouchableOpacity style={styles.button} onPress={onCancel}>
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={onConfirm}>
+                <Text style={styles.buttonText}>Confirm</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
   };
 
   const pickImage = async () => {
@@ -134,6 +169,31 @@ const CoordinatorViewProduct = ({ route }) => {
     setIsEditing(!isEditing);
     setInitial(!initial);
   };
+
+  const deleteProduct = async () => {
+    if (currentProductId) {
+      try {
+        const response = await axios.post(
+          `${localhost}/coordinator/deleteProduct`,
+          {
+            productId: currentProductId,
+          }
+        );
+        // Reset the current task ID after deletion
+        setCurrentProductId(null);
+        setModalVisible(false);
+        navigation.navigate("CoordinatorProduct", { coordinator: coordinator });
+      } catch (error) {
+        console.error("Error deleting task!", error);
+      }
+    }
+  };
+
+  const promptdeleteProduct = (productId) => {
+    setCurrentProductId(productId); // Set the current task ID
+    setModalVisible(true); // Show the modal
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={styles.container}>
@@ -148,6 +208,12 @@ const CoordinatorViewProduct = ({ route }) => {
           {/* If there's an imageUri, show the image */}
           {imageUri && <Image source={imageUri} style={styles.image} />}
         </View>
+        <ConfirmModal
+          isVisible={modalVisible}
+          message="Are you sure you want to delete this item?"
+          onConfirm={deleteProduct}
+          onCancel={() => setModalVisible(false)}
+        />
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Product Name</Text>
@@ -208,7 +274,12 @@ const CoordinatorViewProduct = ({ route }) => {
         </View>
 
         <View style={styles.buttonRow}>
-          <DeleteButton title={"Delete"} color="#BA1A1A" textColor="#FFFFFF" />
+          <DeleteButton
+            title={"Delete"}
+            color="#BA1A1A"
+            textColor="#FFFFFF"
+            onPress={() => promptdeleteProduct(dataProduct.ProductId)}
+          />
 
           <Button
             title={isEditing ? "Save" : "Edit"}
@@ -292,7 +363,38 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     textAlign: "center",
-    // Additional text styles if needed
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Dim the background
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    backgroundColor: theme.colors.primary,
+    marginTop: 10,
   },
 });
 
