@@ -177,7 +177,7 @@ class User extends BaseModel {
     
             // Check if the task is already accepted or previously accepted and then canceled
             const checkQuery = `
-                SELECT *, IF(HasBeenCanceled, true, false) as PreviouslyCanceled 
+                SELECT *, IF(HasBeenCancelled, true, false) as PreviouslyCanceled 
                 FROM userdailytask 
                 WHERE UserId = ? AND TaskId = ?
             `;
@@ -187,7 +187,7 @@ class User extends BaseModel {
                 if (existingTasks[0].PreviouslyCanceled) {
                     const updateQuery = `
                         UPDATE userdailytask 
-                        SET HasBeenCanceled = false, DateTaken = NOW(), TaskStatus = 'Ongoing' 
+                        SET HasBeenCancelled = false, DateTaken = NOW(), TaskStatus = 'Ongoing' 
                         WHERE UserId = ? AND TaskId = ?
                     `;
                     await this.db.query(updateQuery, [userId, taskId]);
@@ -267,7 +267,7 @@ class User extends BaseModel {
             SELECT udt.*, dt.TaskImage, dt.TaskName, dt.DifficultyId, dt.TaskDescription, dt.TaskPoints
             FROM userdailytask udt
             JOIN dailytask dt ON udt.TaskId = dt.TaskId
-            WHERE udt.UserId = ? AND udt.TaskStatus = 'Ongoing' AND udt.HasBeenCanceled = 0
+            WHERE udt.UserId = ? AND udt.TaskStatus = 'Ongoing' AND udt.HasBeenCancelled = 0
             ORDER BY dt.DifficultyId ASC
         `;
         const [tasks] = await this.db.query(query, [userId]);
@@ -277,7 +277,7 @@ class User extends BaseModel {
     
 
     async cancelUserDailyTask(userId, taskId) {
-        const updateQuery = `UPDATE userdailytask SET HasBeenCanceled = true WHERE UserId = ? AND TaskId = ?`;
+        const updateQuery = `UPDATE userdailytask SET HasBeenCancelled = true WHERE UserId = ? AND TaskId = ?`;
         const [result] = await this.db.query(updateQuery, [userId, taskId]);
         if (result.affectedRows === 0) {
             return { error: "Task not found or already canceled", taskRemoved: false };
