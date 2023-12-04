@@ -9,6 +9,7 @@ import {
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import ipAddress from "../../database/ipAddress";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ReportTaskTakers = ({ route }) => {
   const { item } = route.params;
@@ -48,41 +49,44 @@ const ReportTaskTakers = ({ route }) => {
   }, [item.UserDailyTaskId]);
 
   return (
-    <View style={styles.background}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.taskName}>{item.taskName || item.TaskName}</Text>
-      </View>
-      {/* Content ScrollView */}
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollViewContent}
-      >
-        {fetchedTasks != null && fetchedTasks.length > 0 ? (
-          fetchedTasks.map((item) => (
-            <View key={item.TaskId} style={styles.cardContainer}>
-              <View style={styles.imagePlaceholder} />
-              <View style={styles.textContainer}>
-                <Text style={styles.name}>
-                  {item.FirstName} {item.LastName}
-                </Text>
-                <Text style={styles.status}>Status: {item.Status}</Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.background}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.taskName}>{item.taskName || item.TaskName}</Text>
+        </View>
+        <View style={{ borderWidth: 0.5, width: "80%", marginTop: -20 }}></View>
+        {/* Content ScrollView */}
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollViewContent}
+        >
+          {fetchedTasks != null && fetchedTasks.length > 0 ? (
+            fetchedTasks.map((item) => (
+              <View key={item.TaskId} style={styles.cardContainer}>
+                <View style={styles.imagePlaceholder} />
+                <View style={styles.textContainer}>
+                  <Text style={styles.name}>
+                    {item.FirstName} {item.LastName}
+                  </Text>
+                  <Text style={styles.status}>Status: {item.Status}</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => goToViewSubmissionUser(item, fetchTasks)}
+                >
+                  <Text style={styles.buttonText}>View Submission</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => goToViewSubmissionUser(item, fetchTasks)}
-              >
-                <Text style={styles.buttonText}>View Submission</Text>
-              </TouchableOpacity>
-            </View>
-          ))
-        ) : (
-          <Text style={{ textAlign: "center", marginTop: 20 }}>
-            No task takers yet!
-          </Text>
-        )}
-      </ScrollView>
-    </View>
+            ))
+          ) : (
+            <Text style={{ textAlign: "center", marginTop: 20 }}>
+              No task takers yet!
+            </Text>
+          )}
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -90,6 +94,7 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     backgroundColor: "#f5f5f5",
+    alignItems: "center",
   },
   taskName: {
     fontSize: 24, // Adjust the size to match your design
@@ -99,7 +104,7 @@ const styles = StyleSheet.create({
 
   header: {
     backgroundColor: "#f5f5f5", // Header background color
-    paddingVertical: 20, // Padding for the header
+    paddingVertical: 25, // Padding for the header
     paddingHorizontal: 16, // Padding for the header
     justifyContent: "center", // Center content horizontally
     alignItems: "center", // Center content vertically
