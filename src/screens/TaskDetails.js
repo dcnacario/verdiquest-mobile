@@ -72,9 +72,6 @@ const TaskDetails = ({ route }) => {
         }
     };
 
-    const onPressOngoingTask = () => {
-        navigation.navigate("MyPoints", { user: user });
-    };
 
     const onPressCancelTask = async () => {
         if (!user?.UserId || !taskDetails?.TaskId) {
@@ -148,7 +145,7 @@ const TaskDetails = ({ route }) => {
                     ) : (
                         <>
                             <View style={styles.buttonWrapper}>
-                                <Button title="Ongoing" onPress={onPressOngoingTask} />
+                                <Text>{taskDetails.Status}</Text>
                             </View>
                             <View style={styles.buttonWrapper}>
                                 <Button title="Cancel" onPress={onPressCancelTask} />

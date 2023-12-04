@@ -234,8 +234,9 @@ class User extends BaseModel {
             if (results.length > 0) {
                 const task = results[0];
                 const taskEndTime = new Date(task.DateTaken);
-                taskEndTime.setHours(taskEndTime.getHours() + task.TaskDuration);
+                taskEndTime.setMinutes(taskEndTime.getMinutes() + task.TaskDuration);
     
+                // Check if the task has expired
                 if (new Date() > taskEndTime && task.TaskStatus === 'Ongoing') {
                     const updateQuery = `
                         UPDATE userdailytask 
@@ -245,10 +246,13 @@ class User extends BaseModel {
                     await this.db.query(updateQuery, [userId, taskId]);
                     await this.db.query('COMMIT'); 
                     return { isAccepted: false, isExpired: true };
-                } else if (new Date() < taskEndTime && task.TaskStatus === 'Cancelled'){
+                }
+                // Check if the task has been cancelled
+                else if (task.TaskStatus === 'Cancelled') {
+                    await this.db.query('COMMIT');
                     return { isAccepted: false, isExpired: false };
                 }
-
+    
                 await this.db.query('COMMIT');
                 return { isAccepted: true, dateTaken: task.DateTaken, taskDuration: task.TaskDuration, isExpired: false };
             } else {
@@ -261,6 +265,8 @@ class User extends BaseModel {
             throw error; 
         }
     }
+    
+    
     
     
     async fetchAcceptedTasks(userId) {
