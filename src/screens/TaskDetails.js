@@ -112,15 +112,7 @@ const TaskDetails = ({ route }) => {
     if (isLoading) {
         return <Text>Loading...</Text>;
     }
-
-    if (taskExpired) {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.expiredText}>This task has expired.</Text>
-            </View>
-        );
-    }
-
+    
     return (
         <View style={styles.container}>
         <View style={styles.imageContainer}>
@@ -138,20 +130,26 @@ const TaskDetails = ({ route }) => {
             rewardPoints={taskDetails.TaskPoints || 0}
         />
         <View style={styles.buttonContainer}>
-            {isAccepted && !taskExpired ? (
-                <>
+            {isAccepted ? (
+                taskExpired ? (
                     <View style={styles.buttonWrapper}>
-                        <Button title="Ongoing" onPress={onPressOngoingTask} />
+                        <Button title="EXPIRED" disabled={true} />
                     </View>
-                    <View style={styles.buttonWrapper}>
-                        <Button title="Cancel" onPress={onPressCancelTask} />
-                    </View>
-                </>
-            ) : !taskExpired ? (
+                ) : (
+                    <>
+                        <View style={styles.buttonWrapper}>
+                            <Button title="Ongoing" onPress={onPressOngoingTask} />
+                        </View>
+                        <View style={styles.buttonWrapper}>
+                            <Button title="Cancel" onPress={onPressCancelTask} />
+                        </View>
+                    </>
+                )
+            ) : (
                 <View style={styles.buttonWrapper}>
-                    <Button title="ACCEPT" onPress={onPressAccept} />
+                    <Button title={taskExpired ? "EXPIRED" : "ACCEPT"} onPress={onPressAccept} disabled={taskExpired} />
                 </View>
-            ) : null}
+            )}
         </View>
         <Modal transparent={true} visible={showModal} onRequestClose={() => setShowModal(false)}>
             <TouchableOpacity style={styles.modalStyle} onPress={() => setShowModal(false)}>
