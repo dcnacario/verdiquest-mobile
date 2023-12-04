@@ -11,11 +11,11 @@ import { useNavigation } from "@react-navigation/native";
 import ipAddress from "../../database/ipAddress";
 
 const ReportTaskTakers = ({ route }) => {
-  const { taskData } = route.params;
+  const { item } = route.params;
+  console.log(item);
   const localhost = ipAddress;
 
   const [fetchedTasks, setFetchedTasks] = useState([]);
-  console.log(taskData);
   //FOR NAVIGATION
   const navigation = useNavigation();
   const goToViewSubmissionUser = (item, onTaskFetch) => {
@@ -28,7 +28,7 @@ const ReportTaskTakers = ({ route }) => {
 
   const fetchTasks = async () => {
     try {
-      let taskId = taskData.taskId || taskData.TaskId; // Use taskId if it exists, otherwise use TaskId
+      let taskId = item.taskId || item.TaskId; // Use taskId if it exists, otherwise use TaskId
       if (!taskId) {
         console.error("No task ID available");
         return; // Exit the function if no task ID is provided
@@ -45,38 +45,42 @@ const ReportTaskTakers = ({ route }) => {
 
   useEffect(() => {
     fetchTasks();
-  }, [taskData.UserDailyTaskId]);
+  }, [item.UserDailyTaskId]);
 
   return (
     <View style={styles.background}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.taskName}>
-          {taskData.taskName || taskData.TaskName}
-        </Text>
+        <Text style={styles.taskName}>{item.taskName || item.TaskName}</Text>
       </View>
       {/* Content ScrollView */}
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContent}
       >
-        {fetchedTasks.map((item) => (
-          <View key={item.TaskId} style={styles.cardContainer}>
-            <View style={styles.imagePlaceholder} />
-            <View style={styles.textContainer}>
-              <Text style={styles.name}>
-                {item.FirstName} {item.LastName}
-              </Text>
-              <Text style={styles.status}>Status: {item.Status}</Text>
+        {fetchedTasks != null && fetchedTasks.length > 0 ? (
+          fetchedTasks.map((item) => (
+            <View key={item.TaskId} style={styles.cardContainer}>
+              <View style={styles.imagePlaceholder} />
+              <View style={styles.textContainer}>
+                <Text style={styles.name}>
+                  {item.FirstName} {item.LastName}
+                </Text>
+                <Text style={styles.status}>Status: {item.Status}</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => goToViewSubmissionUser(item, fetchTasks)}
+              >
+                <Text style={styles.buttonText}>View Submission</Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => goToViewSubmissionUser(item, fetchTasks)}
-            >
-              <Text style={styles.buttonText}>View Submission</Text>
-            </TouchableOpacity>
-          </View>
-        ))}
+          ))
+        ) : (
+          <Text style={{ textAlign: "center", marginTop: 20 }}>
+            No task takers yet!
+          </Text>
+        )}
       </ScrollView>
     </View>
   );

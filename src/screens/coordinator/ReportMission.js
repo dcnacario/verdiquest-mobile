@@ -29,6 +29,10 @@ const ReportMission = ({ route }) => {
     });
   };
 
+  const goToView = (item) => {
+    navigation.navigate("ReportTaskTakers", { item: item });
+  };
+
   const countTakers = async (taskId) => {
     try {
       const response = await axios.post(
@@ -73,7 +77,7 @@ const ReportMission = ({ route }) => {
   useEffect(() => {
     // Custom back action
     const backAction = () => {
-      navigation.navigate("CoordInterface");
+      navigation.navigate("CoordInterface", { coordinator: coordinator });
       return true; // Prevent default behavior
     };
 
@@ -111,7 +115,6 @@ const ReportMission = ({ route }) => {
               img={`${localhost}/img/task/${item.TaskImage}`}
               key={item.TaskId}
               participants={item.takersCount || 0}
-              feedback={0}
               title={item.TaskName}
               description={item.TaskDescription}
               status={item.EventStatus}

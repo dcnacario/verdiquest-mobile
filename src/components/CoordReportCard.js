@@ -36,21 +36,23 @@ const CoordReportCard = ({
               <MaterialIcon name="people" size={20} color={"#56624B"} />
               {participants}
             </Text>
-            <Text style={styles.participantsText}>
-              <MaterialIcon name="chat" size={20} color={"#56624B"} />
-              {feedback}
-            </Text>
+            {feedback != null && (
+              <Text style={styles.participantsText}>
+                <MaterialIcon name="chat" size={20} color={"#56624B"} />
+                {feedback}
+              </Text>
+            )}
           </View>
           <View style={styles.listItem}>
             <Button title="View" onPress={onPress} style={styles.button} />
 
-            {/* {status === "ONGOING" && (
+            {status === "ONGOING" && (
               <MaterialIcon
                 name="hourglass-bottom"
                 size={24}
                 color={theme.colors.primary}
               />
-            )} */}
+            )}
             {status === "DONE" && (
               <MaterialIcon
                 name="done"
@@ -58,13 +60,13 @@ const CoordReportCard = ({
                 color={theme.colors.primary}
               />
             )}
-            {/* {status === "INCOMING" && (
+            {status === "INCOMING" && (
               <MaterialIcon
                 name="lock-clock"
                 size={24}
                 color={theme.colors.primary}
               />
-            )} */}
+            )}
           </View>
         </View>
       </View>

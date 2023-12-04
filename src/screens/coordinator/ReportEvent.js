@@ -100,6 +100,7 @@ const ReportEvent = ({ route }) => {
         ) : fetchedEvents != null && fetchedEvents.length > 0 ? (
           fetchedEvents.map((item) => (
             <CoordEventCard
+              img={`${localhost}/img/event/${item.EventImage}`}
               key={item.EventId}
               participants={item.participantCount || 0}
               feedback={0}
