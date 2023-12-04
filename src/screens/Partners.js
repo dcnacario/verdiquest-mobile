@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, RefreshControl } from 'react-native';
 import { theme } from '../../assets/style';
 import TaskCategoriesCard from '../components/TaskCategoriesCard';
 import { useNavigation } from '@react-navigation/native';
@@ -9,22 +9,24 @@ import ipAddress from "../database/ipAddress";
 const Partners = ({ route }) => {
     const { user } = route.params;
     const [organizations, setOrganizations] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
     const navigation = useNavigation();
     const localhost = ipAddress;
 
-    useEffect(() => {
-        const fetchOrganizations = async () => {
-            try {
-                const response = await axios.get(`${localhost}/user/organizations`);
-                if (response.data && response.data.success) {
-                    setOrganizations(response.data.organizations);
-                } else {
-                    throw new Error('Failed to fetch organizations');
-                }
-            } catch (error) {
-                console.error('Error fetching organizations:', error);
+    const fetchOrganizations = async () => {
+        try {
+            const response = await axios.get(`${localhost}/user/organizations`);
+            if (response.data && response.data.success) {
+                setOrganizations(response.data.organizations);
+            } else {
+                throw new Error('Failed to fetch organizations');
             }
-        };
+        } catch (error) {
+            console.error('Error fetching organizations:', error);
+        }
+    };
+
+    useEffect(() => {
         fetchOrganizations();
     }, []);
 
@@ -46,10 +48,21 @@ const Partners = ({ route }) => {
             console.error('Error checking membership:', error);
         }
     };
+
+    const onRefresh = React.useCallback(async () => {
+        setRefreshing(true);
+        try {
+            await fetchOrganizations();
+        } catch (error) {
+            console.error('Error fetching organizations on refresh:', error);
+        } finally {
+            setRefreshing(false);
+        }
+    }, []);
     
 
     return (
-        <ScrollView>
+        <ScrollView refreshControl={ <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> }>
             <View style={styles.container}>
                 <Text style={styles.titleStyle}>Organization Partners</Text>
                 <View style={styles.cardContainer}>
@@ -86,7 +99,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-between',
+        justifyContent: 'space-around',
     },
 });
 

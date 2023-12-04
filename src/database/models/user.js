@@ -172,10 +172,7 @@ class User extends BaseModel {
 
     async acceptTask(userId, taskId) {
         try {
-            // Start a transaction
             await this.db.query('START TRANSACTION');
-    
-            // Check if the task is already accepted or previously accepted and then canceled
             const checkQuery = `
                 SELECT *, IF(HasBeenCancelled, true, false) as PreviouslyCanceled 
                 FROM userdailytask 
@@ -185,6 +182,7 @@ class User extends BaseModel {
     
             if (existingTasks.length > 0) {
                 if (existingTasks[0].PreviouslyCanceled) {
+                    // Re-accepting a previously cancelled task
                     const updateQuery = `
                         UPDATE userdailytask 
                         SET HasBeenCancelled = false, DateTaken = NOW(), TaskStatus = 'Ongoing' 
@@ -198,29 +196,30 @@ class User extends BaseModel {
                     await this.db.query('COMMIT');
                     return { alreadyAccepted: true };
                 }
+            } else {
+                // Accepting the task for the first time
+                const insertQuery = `
+                    INSERT INTO userdailytask (UserId, TaskId, DateTaken, TaskStatus) 
+                    VALUES (?, ?, NOW(), 'Ongoing')
+                `;
+                await this.db.query(insertQuery, [userId, taskId]);
+    
+                // Optionally update task count
+                const updateTaskCountQuery = `
+                    UPDATE user 
+                    SET TaskCount = TaskCount + 1 
+                    WHERE UserId = ?
+                `;
+                await this.db.query(updateTaskCountQuery, [userId]);
+                await this.db.query('COMMIT');
+    
+                return { accepted: true, alreadyAccepted: false };
             }
-    
-            const insertQuery = `
-                INSERT INTO userdailytask (UserId, TaskId, DateTaken, TaskStatus) 
-                VALUES (?, ?, NOW(), 'Ongoing')
-            `;
-            await this.db.query(insertQuery, [userId, taskId]);
-    
-            const updateTaskCountQuery = `
-                UPDATE user 
-                SET TaskCount = TaskCount + 1 
-                WHERE UserId = ?
-            `;
-            await this.db.query(updateTaskCountQuery, [userId]);
-            await this.db.query('COMMIT');
-    
-            return { accepted: true, alreadyAccepted: false };
         } catch (error) {
             await this.db.query('ROLLBACK');
             throw error;
         }
     }
-    
 
     async checkTaskAccepted(userId, taskId) {
         try {
@@ -235,8 +234,9 @@ class User extends BaseModel {
             if (results.length > 0) {
                 const task = results[0];
                 const taskEndTime = new Date(task.DateTaken);
-                taskEndTime.setHours(taskEndTime.getHours() + task.TaskDuration);
+                taskEndTime.setMinutes(taskEndTime.getMinutes() + task.TaskDuration);
     
+                // Check if the task has expired
                 if (new Date() > taskEndTime && task.TaskStatus === 'Ongoing') {
                     const updateQuery = `
                         UPDATE userdailytask 
@@ -247,8 +247,13 @@ class User extends BaseModel {
                     await this.db.query('COMMIT'); 
                     return { isAccepted: false, isExpired: true };
                 }
+                // Check if the task has been cancelled
+                else if (task.TaskStatus === 'Cancelled') {
+                    await this.db.query('COMMIT');
+                    return { isAccepted: false, isExpired: false };
+                }
     
-                await this.db.query('COMMIT'); 
+                await this.db.query('COMMIT');
                 return { isAccepted: true, dateTaken: task.DateTaken, taskDuration: task.TaskDuration, isExpired: false };
             } else {
                 await this.db.query('COMMIT'); 
@@ -262,6 +267,8 @@ class User extends BaseModel {
     }
     
     
+    
+    
     async fetchAcceptedTasks(userId) {
         const query = `
             SELECT udt.*, dt.TaskImage, dt.TaskName, dt.DifficultyId, dt.TaskDescription, dt.TaskPoints
@@ -273,15 +280,16 @@ class User extends BaseModel {
         const [tasks] = await this.db.query(query, [userId]);
         return tasks;
     }
-    
-    
 
     async cancelUserDailyTask(userId, taskId) {
-        const updateQuery = `UPDATE userdailytask SET HasBeenCancelled = true WHERE UserId = ? AND TaskId = ?`;
+        const updateQuery = `UPDATE userdailytask SET HasBeenCancelled = true, TaskStatus = 'Cancelled' WHERE UserId = ? AND TaskId = ?`;
+    
         const [result] = await this.db.query(updateQuery, [userId, taskId]);
+    
         if (result.affectedRows === 0) {
             return { error: "Task not found or already canceled", taskRemoved: false };
         }
+    
         // Return a successful response
         return { message: "Task marked as canceled", taskRemoved: true };
     }
@@ -377,7 +385,6 @@ class User extends BaseModel {
     }
 
     async applyEvent(userId, eventId) {
-        // Firstly, retrieve the OrganizationId from the event
         const eventQuery = `SELECT OrganizationId FROM event WHERE EventId = ?`;
         const [eventData] = await this.db.query(eventQuery, [eventId]);
 
@@ -387,20 +394,16 @@ class User extends BaseModel {
         
         const organizationId = eventData[0].OrganizationId;
         
-        // Check if the user has already applied for the event
         const checkQuery = `SELECT * FROM participants WHERE UserId = ? AND EventId = ?`;
         const [existingApplications] = await this.db.query(checkQuery, [userId, eventId]);
     
         if (existingApplications.length > 0) {
-            // User has already applied for the event
             return { alreadyApplied: true };
         }
     
         try {
-            // Start a transaction
             await this.db.query('START TRANSACTION');
     
-            // If not applied, insert the application
             const insertQuery = `
                 INSERT INTO participants (UserId, EventId, OrganizationId, Status, Feedback) 
                 VALUES (?, ?, ?, 'UNVERIFIED', NULL)
@@ -412,7 +415,6 @@ class User extends BaseModel {
     
             return { result: "Event Application Successful", alreadyApplied: false };
         } catch (error) {
-            // If an error occurs, rollback the transaction
             await this.db.query('ROLLBACK');
             throw error;
         }
