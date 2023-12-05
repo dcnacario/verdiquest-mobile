@@ -3,6 +3,7 @@ import TaskList from "../screens/TaskList";
 import Task from "../screens/Task";
 import TaskDetails from "../screens/TaskDetails";
 import MyPoints from "../screens/MyPoints";
+import TaskSubmit from "../screens/TaskSubmit";
 
 const AppTaskStack = createStackNavigator();
 
@@ -37,6 +38,14 @@ const TaskStack = ({ route, navigation }) => {
       <AppTaskStack.Screen
         name="MyPoints"
         component={MyPoints}
+        initialParams={{ user: user }}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <AppTaskStack.Screen
+        name="TaskSubmit"
+        component={TaskSubmit}
         initialParams={{ user: user }}
         options={{
           headerShown: false,
