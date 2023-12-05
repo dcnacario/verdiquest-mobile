@@ -117,7 +117,7 @@ const ReportMission = ({ route }) => {
               participants={item.takersCount || 0}
               title={item.TaskName}
               description={item.TaskDescription}
-              status={item.EventStatus}
+              status={item.Status}
               onPress={() => goToView(item)}
             />
           ))
