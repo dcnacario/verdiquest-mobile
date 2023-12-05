@@ -491,6 +491,61 @@ async function eventApplicationStatus(request, response) {
   }
 }
 
+async function updatePerson(request, response) {
+  try {
+    const {
+      username,
+      password,
+      firstName,
+      initial,
+      lastName,
+      phoneNumber,
+      personId,
+    } = request.body;
+
+    const personData = {
+      userName,
+      password,
+      firstName,
+      initial,
+      lastName,
+      phoneNumber,
+      personId,
+    };
+    const result = await user.updatePerson(personData);
+
+    return response.json({
+      message: "User updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Error updating for profile", error: error.message });
+  }
+}
+async function updateInfo(request, response) {
+  try {
+    const userDescription = request.body.userDescription;
+    const userId = request.body.userId;
+
+    const result = await user.updateInfo(userDescription, userId);
+
+    return response.json({
+      message: "User updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Error updating for profile", error: error.message });
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
@@ -517,4 +572,6 @@ module.exports = {
   applyForEvent,
   eventApplicationStatus,
   fetchPersonDetails,
+  updatePerson,
+  updateInfo,
 };

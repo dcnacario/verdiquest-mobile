@@ -471,6 +471,31 @@ class User extends BaseModel {
     const [results] = await this.db.query(query, [userId, eventId]);
     return results.length > 0;
   }
+
+  async updatePerson(personData) {
+    const query =
+      "UPDATE person SET FirstName = ?, Initial = ?, LastName = ?, PhoneNumber = ?, WHERE PersonId = ?";
+    const [results] = await this.db.query(query, [
+      personData.userName,
+      personData.password,
+      personData.firstName,
+      personData.initial,
+      personData.lastName,
+      personData.phoneNumber,
+      personData.personId,
+    ]);
+    return results.affectedRows;
+  }
+
+  async updateInfo(userDescription, userId) {
+    try {
+      const query = "UPDATE user SET UserDescription = ? WHERE UserId = ?";
+      const [results] = await this.db.query(query, [userDescription, userId]);
+      return results.affectedRows;
+    } catch (error) {
+      throw new Error("Error updating info: " + error.message);
+    }
+  }
 }
 
 module.exports = User;
