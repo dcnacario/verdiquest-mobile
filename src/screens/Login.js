@@ -88,12 +88,6 @@ const Login = () => {
           source={require("../../assets/img/verdiquestlogo-ver2.png")}
           style={styles.img}
         />
-        <Button title="Login with Google" img={logoGoogle} />
-        <View style={styles.dividerContainer}>
-          <View style={styles.divider} />
-          <Text style={{ top: 8 }}>or</Text>
-          <View style={styles.divider} />
-        </View>
         <Text
           style={{
             fontSize: 24,

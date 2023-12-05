@@ -8,6 +8,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunity from "react-native-vector-icons/MaterialCommunityIcons";
 import { theme } from "../../assets/style";
 import PartnerStack from "./PartnerStack";
+import HomeDrawNav from "./HomeDrawNav";
 
 const Tab = createBottomTabNavigator();
 
@@ -48,7 +49,7 @@ const AppTabNav = ({ route }) => {
     >
       <Tab.Screen
         name="Home"
-        component={Home}
+        component={HomeDrawNav}
         initialParams={{ user: user }}
         options={{
           tabBarIcon: ({ focused, color, size }) => {

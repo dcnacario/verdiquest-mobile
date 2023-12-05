@@ -34,7 +34,27 @@ export const AuthProvider = ({ children }) => {
         "Error during login:",
         error.response ? error.response.data : error.message
       );
-      Alert.alert("Error", "Failed to Login. Please try again.");
+
+      // Handle specific errors based on status code
+      if (error.response) {
+        const { status, data } = error.response;
+        if (status === 401) {
+          Alert.alert("Login Failed", data.message);
+        } else if (status === 500) {
+          Alert.alert("Server Error", data.message);
+        } else {
+          Alert.alert(
+            "Error",
+            data.message || "Failed to Login. Please try again."
+          );
+        }
+      } else {
+        // Handle network or other unforeseen errors
+        Alert.alert(
+          "Error",
+          "Unable to connect to the server. Please check your internet connection."
+        );
+      }
     } finally {
       setIsLoading(false);
     }
@@ -62,9 +82,9 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       setIsLoading(false);
-      console.log(error.response.data);
-      console.log(error.response.headers);
-      console.log(error.response.status);
+      // console.log(error.response.data);
+      // console.log(error.response.headers);
+      // console.log(error.response.status);
       if (error.response && error.response.status === 401) {
         Alert.alert("Login Failed", "Incorrect username or password.");
       } else {

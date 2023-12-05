@@ -64,5 +64,6 @@ router.post("/subscribe", async (req, res) => {
     res.status(500).send("Error creating payment link");
   }
 });
+router.post("/fetchPerson", userController.fetchPersonDetails);
 
 module.exports = router;

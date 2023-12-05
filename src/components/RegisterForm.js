@@ -42,13 +42,37 @@ const RegisterForm = ({ onRegister }) => {
   };
 
   const handleSubmit = () => {
-    userData.gender = String(userData.gender);
+    // Check for empty fields
+    const requiredFields = [
+      "firstName",
+      "lastName",
+      "phoneNumber",
+      "gender",
+      "street",
+      "barangay",
+      "city",
+      "province",
+      "email",
+      "password",
+      "confirmPassword",
+    ];
+    for (let field of requiredFields) {
+      if (!userData[field] || userData[field].trim() === "") {
+        Alert.alert(
+          "Error",
+          `Please enter your ${field.replace(/([A-Z])/g, " $1").toLowerCase()}.`
+        );
+        return;
+      }
+    }
 
+    // Check if passwords match
     if (userData.password !== userData.confirmPassword) {
       Alert.alert("Error", "Passwords do not match!");
       return;
     }
 
+    // Proceed with API call
     axios
       .post(`${localhost}/user/register`, userData)
       .then((response) => {
@@ -56,8 +80,21 @@ const RegisterForm = ({ onRegister }) => {
         navigation.navigate("Login");
       })
       .catch((error) => {
-        console.error(error);
-        Alert.alert("Error", "Failed to register. Please try again.");
+        // Handle the specific 'email already registered' error
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.error === "Email already registered"
+        ) {
+          Alert.alert(
+            "Registration Error",
+            "This email is already registered. Please use a different email."
+          );
+        } else {
+          // Handle other types of errors
+          console.error(error);
+          Alert.alert("Error", "Failed to register. Please try again.");
+        }
       });
   };
 
