@@ -142,8 +142,6 @@ const TaskDetails = ({ route }) => {
                 rewardPoints={taskDetails.TaskPoints || 0}
             />
         <View style={styles.buttonContainer}>
-            {console.log("Accepted"+isAccepted)}
-            {console.log("Task Expired"+ taskExpired)}
             {isAccepted ? (
                 taskExpired ? (
                     <View style={styles.buttonWrapper}>

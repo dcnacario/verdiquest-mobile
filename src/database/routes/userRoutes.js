@@ -16,17 +16,11 @@ router.get("/fetchTaskDetails/:taskId", userController.fetchTaskDetails);
 router.get("/fetchAllDifficulty", userController.userAllDifficultyTasks);
 router.post("/acceptTask", userController.acceptTask);
 router.get("/fetchAcceptedTasks/:userId", userController.fetchAcceptedTasks);
-router.get(
-  "/checkTaskAccepted/:userId/:taskId",
-  userController.checkTaskAccepted
-);
+router.get("/checkTaskAccepted/:userId/:taskId",userController.checkTaskAccepted);
 router.get("/fetchVerdiPoints/:userId", userController.fetchVerdiPoints);
 router.post("/cancelTask", userController.cancelTask);
 router.get("/organizations", userController.fetchOrganizations);
-router.get(
-  "/organizationDetails/:organizationId",
-  userController.fetchOrganizationDetails
-);
+router.get("/organizationDetails/:organizationId",userController.fetchOrganizationDetails);
 router.post("/joinOrg", userController.joinOrganization);
 router.get("/isMember", userController.checkMembership);
 router.get("/tasks/:organizationId", userController.fetchTasksByOrganization);

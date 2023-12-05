@@ -3,8 +3,6 @@ import {View, StyleSheet, } from 'react-native';
 import TaskListHeader from "../components/TaskListHeader";
 import { theme } from "../../assets/style";
 import { ScrollView } from "react-native-gesture-handler";
-import Card from '../components/Card';
-
 
 const TaskList = ({route}) => {
     const {user, title} = route.params;
