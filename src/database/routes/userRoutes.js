@@ -67,5 +67,6 @@ router.post("/subscribe", async (req, res) => {
 router.post("/fetchPerson", userController.fetchPersonDetails);
 router.post("/updatePerson", userController.updatePerson);
 router.post("/updateInfo", userController.updateInfo);
+router.post("/getUserDailyTask", userController.getUserDailyTask);
 
 module.exports = router;

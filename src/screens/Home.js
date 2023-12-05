@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   Text,
   View,
@@ -103,6 +103,11 @@ const Home = ({ route }) => {
     }
     return description;
   };
+
+  useEffect(() => {
+    fetchTasks();
+    fetchVerdiPoints();
+  }, [user.UserId]);
 
   return (
     <View

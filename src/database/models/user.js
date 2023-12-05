@@ -499,6 +499,19 @@ class User extends BaseModel {
       throw new Error("Error updating info: " + error.message);
     }
   }
+
+  async getUserDailyTask(taskId, userId) {
+    try {
+      const [rows] = await this.db.query(
+        "SELECT * FROM userdailytask WHERE UserId = ? AND TaskId = ?",
+        [userId, taskId]
+      );
+      return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+      console.error("Error getting user daily tasks:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = User;

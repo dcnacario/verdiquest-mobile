@@ -548,6 +548,19 @@ async function updateInfo(request, response) {
   }
 }
 
+async function getUserDailyTask(request, response) {
+  try {
+    const userId = request.body.userId;
+    const taskId = request.body.taskId;
+
+    const result = await user.getUserDailyTask(taskId, userId);
+    return response.json({
+      result: result,
+      success: true,
+    });
+  } catch (error) {}
+}
+
 module.exports = {
   registerUser,
   loginUser,
@@ -576,4 +589,5 @@ module.exports = {
   fetchPersonDetails,
   updatePerson,
   updateInfo,
+  getUserDailyTask,
 };

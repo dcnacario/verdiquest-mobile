@@ -219,7 +219,6 @@ async function updateProfilePicture(request, response) {
     const filename = request.file.filename;
     const userId = request.body.userId;
     const currentImage = await img.getProfilePicture(userId);
-    console.log(currentImage);
     if (currentImage) {
       deleteFile("images/profilepicture/" + currentImage);
     }
@@ -235,6 +234,36 @@ async function updateProfilePicture(request, response) {
   }
 }
 
+async function submitProofImages(request, response) {
+  try {
+    const userDailyTaskId = request.body.userDailyTaskId;
+    const images = request.files; // Assuming this is an array of file objects
+
+    // Delete old images
+    const currentImageFiles = await img.getUserDailyTaskProof(userDailyTaskId);
+    if (currentImageFiles) {
+      Object.keys(currentImageFiles).forEach((key) => {
+        const imageFilename = currentImageFiles[key];
+        if (imageFilename) {
+          deleteFile("images/proof/" + imageFilename);
+        }
+      });
+    }
+
+    // Process and save new images
+    const newImageFilenames = images.map((image) => image.filename); // Or whatever property has the filename
+    await img.submitProofImages(newImageFilenames, userDailyTaskId);
+
+    // Respond with success and the first new image URI as an example
+    response.send({
+      success: true,
+      newImageUri: `images/proof/${newImageFilenames[0]}`, // Adjust as needed
+    });
+  } catch (error) {
+    response.status(500).json({ error: error.message });
+  }
+}
+
 module.exports = {
   updateOrgProfile,
   uploadTaskImage,
@@ -244,4 +273,5 @@ module.exports = {
   uploadProductImage,
   updateProductImage,
   updateProfilePicture,
+  submitProofImages,
 };

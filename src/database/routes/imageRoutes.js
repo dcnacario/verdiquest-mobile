@@ -46,4 +46,10 @@ router.post(
   imageController.updateProfilePicture
 );
 
+router.post(
+  "/postTaskProofs",
+  upload.array("images"),
+  imageController.submitProofImages
+);
+
 module.exports = router;
