@@ -1,14 +1,34 @@
-import React from "react";
+import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
-import defaultImage from '../../assets/img/default-image.png';
+import defaultImage from '../../assets/img/default-image.png'; 
 import * as Progress from 'react-native-progress';
 import { theme } from "../../assets/style";
 
-const RewardCard = ({ img, productName, productDescription, requiredPoints, progress = 0.80 }) => {
+const RewardCard = ({ 
+    imageUrl, 
+    productName, 
+    productDescription, 
+    requiredPoints,
+    userPoints, // Assuming userPoints is passed as a prop
+    onPress
+}) => {
+    const getImageSource = () => {
+        if (imageUrl && imageUrl.trim() !== '') {
+            return { uri: imageUrl }; 
+        }
+        return defaultImage; 
+    };
+
+    // Correctly calculate progress
+    const safeNumber = (value) => !isNaN(parseFloat(value)) && isFinite(value) ? parseFloat(value) : 0;
+    const safeUserPoints = safeNumber(userPoints);
+    const safeRequiredPoints = safeNumber(requiredPoints);
+    const progress = safeUserPoints >= safeRequiredPoints ? 1 : (safeUserPoints / safeRequiredPoints);
+
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', }}>
-                {img ? <Image defaultSource={defaultImage} source={img} style={styles.imageStyle} /> : <Image source={defaultImage} style={styles.imageStyle} />}
+            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', }} onPress={onPress}>
+                <Image source={getImageSource()} style={styles.imageStyle} />
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 5, backgroundColor: '#D9D9D9' }}>
                     <Text style={styles.productNameLabel}>{productName}</Text>
                     <Text style={styles.productDescription} numberOfLines={2} ellipsizeMode='tail'>
@@ -21,7 +41,6 @@ const RewardCard = ({ img, productName, productDescription, requiredPoints, prog
         </View>
     );
 };
-
 
 const styles = StyleSheet.create({
     container: {
