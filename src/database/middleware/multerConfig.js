@@ -9,7 +9,6 @@ const storage = multer.diskStorage({
 
     // Ensure directory exists or create it
     const dir = path.join(__dirname, "../", dest);
-    console.log(dir);
     fs.mkdirSync(dir, { recursive: true });
 
     cb(null, dir);

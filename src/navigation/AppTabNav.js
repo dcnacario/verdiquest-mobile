@@ -1,9 +1,9 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "../screens/Home";
-import Redeem from "../screens/Redeem";
 import MyPoints from "../screens/MyPoints";
 import TaskStack from "./TaskStack";
+import ProductStack from "./ProductStack";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunity from "react-native-vector-icons/MaterialCommunityIcons";
 import { theme } from "../../assets/style";
@@ -83,7 +83,7 @@ const AppTabNav = ({ route }) => {
       />
       <Tab.Screen
         name="Redeem"
-        component={Redeem}
+        component={ProductStack}
         initialParams={{ user: user }}
         options={{
           tabBarIcon: ({ focused, color, size }) => {

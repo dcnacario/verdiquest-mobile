@@ -96,6 +96,13 @@ const TaskDetails = ({ route }) => {
         }
     };
 
+    const onPressSubmit = () => {
+        navigation.navigate('TaskSubmit', { 
+            taskId: taskDetails.TaskId, 
+            userId: user.UserId 
+        });
+    };
+
     useEffect(() => {
         const backAction = () => {
             Alert.alert('Hold on!', 'Are you sure you want to go back?', [
@@ -120,23 +127,21 @@ const TaskDetails = ({ route }) => {
     
     return (
         <View style={styles.container}>
-        <View style={styles.imageContainer}>
-            <Image
-            source={taskDetails.TaskImage ? { uri:`${localhost}/img/task/${taskDetails.TaskImage}` } : defaultImage
-            }
-            style={styles.imageStyle}
+            <View style={styles.imageContainer}>
+                <Image
+                source={taskDetails.TaskImage ? { uri:`${localhost}/img/task/${taskDetails.TaskImage}` } : defaultImage
+                }
+                style={styles.imageStyle}
+                />
+            </View>
+            <Text style={styles.textStyle}>{taskDetails.TaskName}</Text>
+            <Details
+                timeCompleted={taskDetails.TaskDuration || "N/A"}
+                taskDescription={taskDetails.TaskDescription || "No description available."
+                }
+                rewardPoints={taskDetails.TaskPoints || 0}
             />
-        </View>
-        <Text style={styles.textStyle}>{taskDetails.TaskName}</Text>
-        <Details
-            timeCompleted={taskDetails.TaskDuration || "N/A"}
-            taskDescription={taskDetails.TaskDescription || "No description available."
-            }
-            rewardPoints={taskDetails.TaskPoints || 0}
-        />
         <View style={styles.buttonContainer}>
-            {console.log("Accepted"+isAccepted)}
-            {console.log("Task Expired"+ taskExpired)}
             {isAccepted ? (
                 taskExpired ? (
                     <View style={styles.buttonWrapper}>
@@ -146,6 +151,9 @@ const TaskDetails = ({ route }) => {
                         <>
                             <View style={styles.buttonWrapper}>
                                 <Text>{taskDetails.Status}</Text>
+                            </View>
+                            <View style={styles.buttonWrapper}>
+                                <Button title="Submit" onPress={onPressSubmit} />
                             </View>
                             <View style={styles.buttonWrapper}>
                                 <Button title="Cancel" onPress={onPressCancelTask} />
@@ -183,7 +191,7 @@ const styles = StyleSheet.create({
     imageStyle: {
         width: "100%",
         height: 250,
-        resizeMode: "center",
+        resizeMode: "cover",
         borderRadius: 15,
         borderColor: "black",
         borderWidth: 1,

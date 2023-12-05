@@ -57,9 +57,11 @@ const RedeemButtonsCard = ({ onCardPress, userPoint }) => {
             renderItem={({ item }) => (
                 <View style={styles.rewardCardContainer}>
                     <RewardCard
+                        imageUrl={`${localhost}/img/product/${item.ProductImage}`}
                         productName={item.ProductName}
                         productDescription={item.ProductDescription}
                         requiredPoints={item.PointsRequired}
+                        userPoints={Number(userPoint.replace(/,/g, ''))}
                         onPress={() => onCardPress(item)}
                     />
                 </View>

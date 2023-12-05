@@ -182,7 +182,6 @@ class User extends BaseModel {
     
             if (existingTasks.length > 0) {
                 if (existingTasks[0].PreviouslyCanceled) {
-                    // Re-accepting a previously cancelled task
                     const updateQuery = `
                         UPDATE userdailytask 
                         SET HasBeenCancelled = false, DateTaken = NOW(), TaskStatus = 'Ongoing' 
@@ -192,19 +191,16 @@ class User extends BaseModel {
                     await this.db.query('COMMIT');
                     return { reaccepted: true, alreadyAccepted: false };
                 } else {
-                    // Task is already accepted and not canceled
                     await this.db.query('COMMIT');
                     return { alreadyAccepted: true };
                 }
             } else {
-                // Accepting the task for the first time
                 const insertQuery = `
                     INSERT INTO userdailytask (UserId, TaskId, DateTaken, TaskStatus) 
                     VALUES (?, ?, NOW(), 'Ongoing')
                 `;
                 await this.db.query(insertQuery, [userId, taskId]);
     
-                // Optionally update task count
                 const updateTaskCountQuery = `
                     UPDATE user 
                     SET TaskCount = TaskCount + 1 
@@ -265,9 +261,6 @@ class User extends BaseModel {
             throw error; 
         }
     }
-    
-    
-    
     
     async fetchAcceptedTasks(userId) {
         const query = `
@@ -376,7 +369,7 @@ class User extends BaseModel {
 
     async fetchProducts() {
         try {
-            const query = 'SELECT ProductName, ProductDescription, PointsRequired FROM products';
+            const query = 'SELECT ProductName, ProductImage, ProductDescription, PointsRequired FROM products';
             const [products] = await this.db.query(query);
             return products;
         } catch (error) {
@@ -410,7 +403,6 @@ class User extends BaseModel {
             `;
             await this.db.query(insertQuery, [userId, eventId, organizationId]);
     
-            // Commit the transaction
             await this.db.query('COMMIT');
     
             return { result: "Event Application Successful", alreadyApplied: false };

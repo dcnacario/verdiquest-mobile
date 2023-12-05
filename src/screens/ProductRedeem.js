@@ -22,35 +22,33 @@ const ProductRedeem = () => {
       <Image source={localImage} style={styles.cardImage} />
       <Text style={styles.tokenText}>VerdiQuest Token</Text>
       <View style={styles.eventDetailsContainer}>
-      <Text style={styles.headerText}>Delivery Details</Text>
-        <Text style={styles.label}>Product Size</Text>
-        <TextInput
-          style={styles.inputStyle}
-          value={productSize}
-          onChangeText={setProductSize}
-          placeholder="Enter size"
-        />
+            <Text style={styles.headerText}>Delivery Details</Text>
+            <Text style={styles.label}>Product Size</Text>
+            <TextInput
+              style={styles.inputStyle}
+              value={productSize}
+              onChangeText={setProductSize}
+              placeholder="Enter size"
+            />
 
-        <Text style={styles.label}>Contact Number</Text>
-        <TextInput
-          style={styles.inputStyle}
-          value={contactNumber}
-          onChangeText={setContactNumber}
-          placeholder="Enter contact number"
-          keyboardType="phone-pad"
-        />
+            <Text style={styles.label}>Contact Number</Text>
+            <TextInput
+              style={styles.inputStyle}
+              value={contactNumber}
+              onChangeText={setContactNumber}
+              placeholder="Enter contact number"
+              keyboardType="phone-pad"
+            />
 
-        <Text style={styles.label}>Delivery Address</Text>
-        <TextInput
-          style={styles.inputStyle}
-          value={deliveryAddress}
-          onChangeText={setDeliveryAddress}
-          placeholder="Enter delivery address"
-        />
-        <Button title="Confirm" />
- </View>
-          
-        
+            <Text style={styles.label}>Delivery Address</Text>
+            <TextInput
+              style={styles.inputStyle}
+              value={deliveryAddress}
+              onChangeText={setDeliveryAddress}
+              placeholder="Enter delivery address"
+            />
+            <Button title="Confirm" />
+        </View>
       </View>
   );
 };

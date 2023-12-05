@@ -4,7 +4,6 @@ import TaskListHeader from "../components/TaskListHeader";
 import { theme } from "../../assets/style";
 import { ScrollView } from "react-native-gesture-handler";
 import Card from '../components/Card';
-import { Path, Svg } from 'react-native-svg'; 
 
 
 const TaskList = ({route}) => {
