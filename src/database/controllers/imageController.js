@@ -214,6 +214,27 @@ async function updateProductImage(request, response) {
   }
 }
 
+async function updateProfilePicture(request, response) {
+  try {
+    const filename = request.file.filename;
+    const userId = request.body.userId;
+    const currentImage = await img.getProfilePicture(userId);
+    console.log(currentImage);
+    if (currentImage) {
+      deleteFile("images/profilepicture/" + currentImage);
+    }
+
+    await img.updateProfilePicture(filename, userId);
+
+    response.send({
+      success: true,
+      newImageUri: `/${filename}`,
+    });
+  } catch (error) {
+    response.status(500).json({ error: error.message });
+  }
+}
+
 module.exports = {
   updateOrgProfile,
   uploadTaskImage,
@@ -222,4 +243,5 @@ module.exports = {
   updateEventImage,
   uploadProductImage,
   updateProductImage,
+  updateProfilePicture,
 };

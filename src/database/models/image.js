@@ -176,5 +176,33 @@ class Image {
       throw error;
     }
   }
+
+  async updateProfilePicture(fileName, userId) {
+    try {
+      const [row] = await this.db.query(
+        "UPDATE user SET ProfilePicture = ? WHERE UserId = ?",
+        [fileName, userId]
+      );
+      const updateProfilePicture = row.affectedrows;
+      return updateProfilePicture;
+    } catch (error) {
+      console.error(`Error inserting Image`, error);
+      throw error;
+    }
+  }
+
+  async getProfilePicture(userId) {
+    try {
+      const [rows] = await this.db.query(
+        "SELECT * FROM user WHERE UserId = ?",
+        [userId]
+      );
+      return rows.length > 0 ? rows[0].ProfilePicture : null;
+    } catch (error) {
+      console.error(`Error retrieving profile picture image:`, error);
+      throw error;
+    }
+  }
 }
+
 module.exports = Image;

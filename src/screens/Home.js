@@ -141,7 +141,10 @@ const Home = ({ route }) => {
                   style={{ marginTop: -60, marginLeft: -10 }}
                 />
               </TouchableOpacity>
-              <ProfileCard email={user.Email} />
+              <ProfileCard
+                email={user.Email}
+                img={`${localhost}/img/profilepicture/${user.ProfilePicture}`}
+              />
               <PointCard points={formatPoints(userPoint)} />
             </View>
             <View>

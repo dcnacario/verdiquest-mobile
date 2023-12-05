@@ -40,4 +40,10 @@ router.post(
   imageController.updateProductImage
 );
 
+router.post(
+  "/updateProfilePicture",
+  upload.single("image"),
+  imageController.updateProfilePicture
+);
+
 module.exports = router;

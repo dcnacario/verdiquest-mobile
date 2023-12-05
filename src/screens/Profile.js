@@ -6,6 +6,7 @@ import {
   ScrollView,
   Dimensions,
   StatusBar,
+  Image,
 } from "react-native";
 import { theme } from "../../assets/style";
 import IntroCard from "../components/IntroCard";
@@ -14,8 +15,11 @@ import AchievementCard from "../components/AchievementCard";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import axios from "axios";
 import ipAddress from "../database/ipAddress";
+import { useNavigation } from "@react-navigation/native";
+import defaultProfile from "../../assets/img/verdiquestlogo-ver2.png";
 
 const Profile = ({ route }) => {
+  const navigation = useNavigation();
   const screenHeight = Dimensions.get("window").height;
   const paddingBottom = screenHeight * 0.15;
   const { user } = route.params;
@@ -29,12 +33,19 @@ const Profile = ({ route }) => {
     OrganizationName: "",
   });
 
-  const [userDescription, setTextInputValue] = useState("");
+  const [userDescription, setTextInputValue] = useState(user.UserDescription);
 
   const handleTextInputChange = (text) => {
     setTextInputValue(text);
   };
 
+  //NAVIGATION TO EDIT PROFILE USER
+  const goToEditProfile = (personDetails) => {
+    navigation.navigate("EditProfileUser", {
+      user: user,
+      personDetails: personDetails,
+    });
+  };
   //
 
   const [isEditing, setIsEditing] = useState(false);
@@ -100,7 +111,7 @@ const Profile = ({ route }) => {
             name="settings-outline"
             size={20}
             color="black"
-            onPress={() => console.log("Settings Pressed")}
+            onPress={() => goToEditProfile(personDetails)}
           />
         </View>
         <View style={{ flex: 1, marginTop: 10 }}>
@@ -113,7 +124,18 @@ const Profile = ({ route }) => {
               marginHorizontal: 20,
             }}
           >
-            <View style={styles.profileContainer}></View>
+            <View style={styles.profileContainer}>
+              <Image
+                source={
+                  user.ProfilePicture
+                    ? {
+                        uri: `${localhost}/img/profilepicture/${user.ProfilePicture}`,
+                      }
+                    : defaultProfile
+                }
+                style={styles.imageStyle}
+              />
+            </View>
             <Text style={styles.nameLabel}>
               {personDetails.FirstName} {personDetails.Initial}{" "}
               {personDetails.LastName}
@@ -189,6 +211,11 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontWeight: "bold",
     color: theme.colors.primary,
+  },
+  imageStyle: {
+    height: 100,
+    width: 100,
+    borderRadius: 100 / 2,
   },
 });
 

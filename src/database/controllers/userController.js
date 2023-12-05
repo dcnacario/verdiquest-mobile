@@ -494,20 +494,22 @@ async function eventApplicationStatus(request, response) {
 async function updatePerson(request, response) {
   try {
     const {
-      username,
+      email,
       password,
       firstName,
-      initial,
+      middleInitial,
       lastName,
       phoneNumber,
       personId,
     } = request.body;
 
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
     const personData = {
-      userName,
-      password,
+      email,
+      hashedPassword,
       firstName,
-      initial,
+      middleInitial,
       lastName,
       phoneNumber,
       personId,

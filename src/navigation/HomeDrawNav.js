@@ -4,6 +4,7 @@ import Profile from "../screens/Profile";
 import Subscription from "../screens/Subscription";
 import Home from "../screens/Home";
 import { Text, View } from "react-native";
+import ProfileStack from "./ProfileStack";
 
 const Drawer = createDrawerNavigator();
 
@@ -33,7 +34,7 @@ const HomeDrawNav = ({ route }) => {
       />
       <Drawer.Screen
         name="Profile"
-        component={Profile}
+        component={ProfileStack}
         initialParams={{ user: user }}
         options={{ headerShown: false }}
       />

@@ -474,17 +474,20 @@ class User extends BaseModel {
 
   async updatePerson(personData) {
     const query =
-      "UPDATE person SET FirstName = ?, Initial = ?, LastName = ?, PhoneNumber = ?, WHERE PersonId = ?";
+      "UPDATE person SET FirstName = ?, Initial = ?, LastName = ?, PhoneNumber = ? WHERE PersonId = ?";
     const [results] = await this.db.query(query, [
-      personData.userName,
-      personData.password,
       personData.firstName,
-      personData.initial,
+      personData.middleInitial,
       personData.lastName,
       personData.phoneNumber,
       personData.personId,
     ]);
-    return results.affectedRows;
+
+    const [result_user] = await this.db.query(
+      "UPDATE user SET Email = ?, Password = ?  WHERE UserId = ?",
+      [personData.email, personData.password, personData.UserId]
+    );
+    return result_user.affectedRows;
   }
 
   async updateInfo(userDescription, userId) {
