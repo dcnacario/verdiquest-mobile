@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, TextInput, Image, Text, Alert, TouchableOpacity } from "react-native";
 import ipAddress from "../database/ipAddress";
 import defaultImage from '../../assets/img/default-image.png';
-import axios from "axios"; // Ensure axios is installed
+import axios from "axios";
+
 
 const ProductRedeem = ({ route }) => {
     const localhost = ipAddress;
@@ -10,29 +12,50 @@ const ProductRedeem = ({ route }) => {
     const [productSize, setProductSize] = useState('');
     const [contactNumber, setContactNumber] = useState('');
     const [deliveryAddress, setDeliveryAddress] = useState('');
-    console.log(product.ProductId)
+
+    const [isAlreadyRedeemed, setIsAlreadyRedeemed] = useState(false);
+
+    useEffect(() => {
+        checkIfAlreadyRedeemed();
+    }, []);
 
     const handleRedeem = async () => {
-        try {
-            console.log("Redeeming product with ID:", product.ProductId);
-            const response = await axios.post(`${localhost}/user/redeemProduct`, {
-                userId: user.UserId,
-                productId: product.ProductId,
-                productSize,
-                contactNumber,
-                deliveryAddress
-            });
+      if (isAlreadyRedeemed) {
+          Alert.alert("Notice", "This product has already been redeemed.");
+          return;
+      }
+      if (!productSize.trim()) {
+          Alert.alert("Validation Error", "Product size is required");
+          return;
+      }
+      if (!contactNumber.trim()) {
+          Alert.alert("Validation Error", "Contact number is required");
+          return;
+      }
+      if (!deliveryAddress.trim()) {
+          Alert.alert("Validation Error", "Delivery address is required");
+          return;
+      }
 
-            if (response.data.success) {
-                Alert.alert("Success", "Product redeemed successfully");
-            } else {
-                Alert.alert("Error", response.data.message);
-            }
-        } catch (error) {
-            console.error("Axios error:", error.response.data); 
-            Alert.alert("Error", "An error occurred while redeeming the product");
-        }
-    };
+      try {
+          const response = await axios.post(`${localhost}/user/redeemProduct`, {
+              userId: user.UserId,
+              productId: product.ProductId,
+              productSize,
+              contactNumber,
+              deliveryAddress
+          });
+
+          if (response.data.success) {
+              Alert.alert("Success", "Product redeemed successfully");
+          } else {
+              Alert.alert("Error", response.data.message);
+          }
+      } catch (error) {
+          console.error("Axios error:", error.response.data);
+          Alert.alert("Error", "An error occurred while redeeming the product");
+      }
+  };
 
     return (
         <View style={styles.background}>

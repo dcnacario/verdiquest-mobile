@@ -208,7 +208,6 @@ const styles = StyleSheet.create({
         bottom: -30,
         zIndex: 0,
       },
-      
 });
 
 export default TaskSubmit;

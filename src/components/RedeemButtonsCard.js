@@ -9,7 +9,7 @@ import ipAddress from "../database/ipAddress";
 import { useIsFocused } from '@react-navigation/native'; 
 
 const RedeemButtonsCard = ({ onCardPress, userPoint }) => {
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState({});
     const localhost = ipAddress;
     const isFocused = useIsFocused(); // Use the hook
 
@@ -17,6 +17,7 @@ const RedeemButtonsCard = ({ onCardPress, userPoint }) => {
         axios.get(`${localhost}/user/products`)
             .then(response => {
                 setProducts(response.data);
+                console.log(response.data);
             })
             .catch(error => {
                 console.error('Error fetching products:', error);
@@ -101,6 +102,7 @@ const styles = StyleSheet.create({
         width: '85%',
         justifyContent: 'center',
         marginLeft: 30,
+        marginBottom: -20,
     },
 });
 

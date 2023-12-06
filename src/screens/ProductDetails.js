@@ -6,6 +6,7 @@ import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-nati
 import ipAddress from "../database/ipAddress";
 import { useIsFocused } from '@react-navigation/native';
 import { Path, Svg } from "react-native-svg";
+
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 
 import axios from "axios";
@@ -17,10 +18,7 @@ const ProductDetails = ({ route }) => {
     const [userPoint, setUserPoints] = useState('0');
     const isFocused = useIsFocused();
     const navigation = useNavigation();
-    console.log("User:", user);
-    console.log("Product:", product);
 
-    // Fetch user points
     const fetchVerdiPoints = async () => {
         try {
         const response = await axios.get(`${localhost}/user/fetchVerdiPoints/${user.UserId}`);
@@ -49,6 +47,7 @@ const ProductDetails = ({ route }) => {
 
     };
 
+    console.log(product.ProductImage)
     const userPointsNumber = userPoint ? Number(userPoint.replace(/,/g, '')) : 0;
     const hasEnoughPoints = userPointsNumber >= product.PointsRequired;
 

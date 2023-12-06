@@ -10,6 +10,7 @@ import ipAddress from "../database/ipAddress";
 import { useNavigation } from "@react-navigation/native";
 import defaultProfile from "../../assets/img/verdiquestlogo-ver2.png";
 import { Path, Svg } from "react-native-svg"
+
 const Profile = ({ route }) => {
   const navigation = useNavigation();
   const screenHeight = Dimensions.get("window").height;
@@ -31,7 +32,6 @@ const Profile = ({ route }) => {
     setTextInputValue(text);
   };
 
-  //NAVIGATION TO EDIT PROFILE USER
   const goToEditProfile = (personDetails) => {
     navigation.navigate("EditProfileUser", {
       user: user,
