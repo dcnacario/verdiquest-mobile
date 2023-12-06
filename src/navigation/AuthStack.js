@@ -31,16 +31,7 @@ const AuthStack = () => {
           name="AppTabNav"
           component={AppTabNav}
           options={{
-            headerStyle: {
-              backgroundColor: theme.colors.lightSecondary,
-            },
-            headerTintColor: theme.colors.secondary,
-            headerTitleStyle: {
-              fontWeight: "bold",
-            },
-            headerLeft: false,
-            headerTitleAlign: "center",
-            headerTitle: "",
+           headerShown: false,
           }}
         />
         <Stack.Screen

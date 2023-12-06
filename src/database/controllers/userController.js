@@ -7,302 +7,319 @@ const bcrypt = require("bcrypt");
 const user = new User(db);
 
 async function registerUser(request, response) {
-    try {
-      const {
-        firstName,
-        middleInitial,
-        lastName,
-        gender,
-        birthDate,
-        phoneNumber,
-        street,
-        barangay,
-        city,
-        province,
-        email,
-        password,
-      } = request.body;
-
-      // Hash the password before storing it in the database
-      const hashedPassword = bcrypt.hashSync(password, 10);
-
-      const userData = {
-        firstName,
-        middleInitial,
-        lastName,
-        gender,
-        birthDate,
-        phoneNumber,
-        street,
-        barangay,
-        city,
-        province,
-        email,
-        password: hashedPassword,
-      };
-
-      const insertedUserId = await user.insertUser(userData);
-
-      // Generate a JWT for the registered user
-      const tokenPayload = { id: insertedUserId, email };
-      const token = jwt.sign(tokenPayload, SECRET_KEY, {
-        expiresIn: "1h", // Set the token to expire in 1 hour
-      });
-
-      response.status(200).send({
-        message: "User registered successfully!",
-        userId: insertedUserId,
-        token,
-      });
-    } catch (error) {
-      console.error(error);
-      response
-        .status(500)
-        .send({ message: "Server error", error: error.message });
-    }
-}
-
-async function loginUser(request, response) {
-    try {
-      const { email, password } = request.body;
-      console.log(password);
-      // Validate request data
-      if (!email || !password) {
-        return response
-          .status(400)
-          .json({ message: "Email and password are required" });
-      }
-
-      const userData = { email };
-      const fetchedUser = await user.fetchUser(userData);
-
-      if (fetchedUser) {
-        const isMatch = await bcrypt.compare(password, fetchedUser.Password);
-
-        if (isMatch) {
-          // Generate a JWT with an expiration
-          const tokenPayload = {
-            id: fetchedUser.id,
-            email: fetchedUser.email,
-          };
-
-          const token = jwt.sign(tokenPayload, SECRET_KEY, {
-            expiresIn: "1h", // Set the token to expire in 1 hour
-          });
-
-          response.json({
-            success: true,
-            user: fetchedUser,
-            token: token,
-          });
-        } else {
-          // Incorrect password
-          response
-            .status(401)
-            .json({ success: false, message: "Incorrect password" });
-        }
-      } else {
-        // User not found
-        response
-          .status(401)
-          .json({ success: false, message: "Invalid credentials!" });
-      }
-    } catch (error) {
-      console.error(error);
-      response.status(500).json({ success: false, message: "Server error." });
-    }
-}
-
-async function userAllTasks(request, response) {
-    try {
-      const fetchedTable = await user.fetchTasks();
-      return response.json({
-        success: true,
-        fetchTable: fetchedTable,
-      });
-    } catch (error) {
-      console.error(error);
-      response
-        .status(500)
-        .send({ message: "Server error", error: error.message });
-    }
-}
-
-
-
-async function userEasyTasks(request, response) {
-    try {
-      const fetchedTable = await user.fetchEasyTask();
-      return response.json({
-        success: true,
-        fetchedTable: fetchedTable,
-      });
-    }catch (error) {
-      console.error(error);
-      response
-        .status(500)
-        .send({ message: "Server error", error: error.message });
-    };
-}
-
-async function userNormalTasks(request, response) {
-    try {
-      const fetchedTable = await user.fetchNormalTask();
-      return response.json({
-        success: true,
-        fetchedTable: fetchedTable,
-      });
-    }catch (error) {
-      console.error(error);
-      response
-        .status(500)
-        .send({ message: "Server error", error: error.message });
-    };
-}
-
-async function userHardTasks(request, response) {
-    try {
-      const fetchedTable = await user.fetchHardTask();
-      return response.json({
-        success: true,
-        fetchedTable: fetchedTable,
-      });
-    }catch (error) {
-      console.error(error);
-      response
-        .status(500)
-        .send({ message: "Server error", error: error.message });
-    };
-}
-
-async function updateUser(request, response) {
-    try {
-      const { verdiPoints, password, userId } = request.body;
-
-      const userData = {
-        verdiPoints,
-        password,
-        userId,
-      };
-
-      const result = await user.updateUser(userData);
-      return response.json({
-        message: "User updated successfully!",
-        success: true,
-        result: result,
-      });
-    } catch (error) {
-      console.error(error);
-      response.status(500).json({ success: false, message: "Server error" });
-    }
-}
-
-async function updateUser(request, response) {
-    try {
-      const { verdiPoints, password, userId } = request.body;
-
-      const userData = {
-        verdiPoints,
-        password,
-        userId,
-      };
-
-      const result = await user.updateUser(userData);
-      return response.json({
-        message: "User updated successfully!",
-        success: true,
-        result: result,
-      });
-    } catch (error) {
-      console.error(error);
-      response.status(500).json({ success: false, message: "Server error" });
-    }
-}
-
-async function fetchTaskDetails(request, response) {
-    try {
-        const taskId = request.params.taskId;
-        const taskDetails = await user.fetchTaskDetails(taskId);
-        response.json({ success: true, taskDetails });
-    } catch (error) {
-        console.error(error);
-        response.status(500).send({ message: "Server error", error: error.message });
-    }
-}
-
-async function userAllDifficultyTasks(request, response) {
-    try {
-        const fetchedTable = await user.fetchAllDifficultyTasks(); 
-        response.json({
-            success: true,
-            fetchedTable: fetchedTable,
-        });
-    } catch (error) {
-        console.error(error);
-        response.status(500).send({ message: "Server error", error: error.message });
-    }
-}
-
-
-async function acceptTask(request, response) {
   try {
-      const userId = request.body.userId;
-      const taskId = request.body.taskId;
-      const dateTaken = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    const {
+      firstName,
+      middleInitial,
+      lastName,
+      gender,
+      birthDate,
+      phoneNumber,
+      street,
+      barangay,
+      city,
+      province,
+      email,
+      password,
+    } = request.body;
 
-      const result = await user.acceptTask(userId, taskId, dateTaken);
+    // Hash the password before storing it in the database
+    const hashedPassword = bcrypt.hashSync(password, 10);
 
-      if (result.alreadyAccepted) {
-          response.status(400).json({ message: "Task already accepted." });
-      } else if (result.reaccepted) {
-          response.status(200).json({ message: "Mission Accepted!" });
-      } else {
-          response.status(200).json({ message: "Task accepted successfully." });
-      }
+    const userData = {
+      firstName,
+      middleInitial,
+      lastName,
+      gender,
+      birthDate,
+      phoneNumber,
+      street,
+      barangay,
+      city,
+      province,
+      email,
+      password: hashedPassword,
+    };
+
+    const insertedUserId = await user.insertUser(userData);
+
+    // Generate a JWT for the registered user
+    const tokenPayload = { id: insertedUserId, email };
+    const token = jwt.sign(tokenPayload, SECRET_KEY, {
+      expiresIn: "1h", // Set the token to expire in 1 hour
+    });
+
+    response.status(200).send({
+      message: "User registered successfully!",
+      userId: insertedUserId,
+      token,
+    });
   } catch (error) {
-      console.error("Error accepting task:", error);
-      response.status(500).json({ message: "Internal server error." });
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
   }
 }
 
+async function loginUser(request, response) {
+  try {
+    const { email, password } = request.body;
+    console.log(password);
+    // Validate request data
+    if (!email || !password) {
+      return response
+        .status(400)
+        .json({ message: "Email and password are required" });
+    }
 
+    const userData = { email };
+    const fetchedUser = await user.fetchUser(userData);
+
+    if (fetchedUser) {
+      const isMatch = await bcrypt.compare(password, fetchedUser.Password);
+
+      if (isMatch) {
+        // Generate a JWT with an expiration
+        const tokenPayload = {
+          id: fetchedUser.id,
+          email: fetchedUser.email,
+        };
+
+        const token = jwt.sign(tokenPayload, SECRET_KEY, {
+          expiresIn: "1h", // Set the token to expire in 1 hour
+        });
+
+        response.json({
+          success: true,
+          user: fetchedUser,
+          token: token,
+        });
+      } else {
+        // Incorrect password
+        response
+          .status(401)
+          .json({ success: false, message: "Incorrect password" });
+      }
+    } else {
+      // User not found
+      response
+        .status(401)
+        .json({ success: false, message: "Invalid credentials!" });
+    }
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ success: false, message: "Server error." });
+  }
+}
+
+async function fetchPersonDetails(request, response) {
+  try {
+    const userId = request.body.userId;
+    const person = await user.fetchPersonDetails(userId);
+    return response.json({ success: true, fetchPerson: person });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function userAllTasks(request, response) {
+  try {
+    const fetchedTable = await user.fetchTasks();
+    return response.json({
+      success: true,
+      fetchTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function userEasyTasks(request, response) {
+  try {
+    const fetchedTable = await user.fetchEasyTask();
+    return response.json({
+      success: true,
+      fetchedTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function userNormalTasks(request, response) {
+  try {
+    const fetchedTable = await user.fetchNormalTask();
+    return response.json({
+      success: true,
+      fetchedTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function userHardTasks(request, response) {
+  try {
+    const fetchedTable = await user.fetchHardTask();
+    return response.json({
+      success: true,
+      fetchedTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function updateUser(request, response) {
+  try {
+    const { verdiPoints, password, userId } = request.body;
+
+    const userData = {
+      verdiPoints,
+      password,
+      userId,
+    };
+
+    const result = await user.updateUser(userData);
+    return response.json({
+      message: "User updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
+async function updateUser(request, response) {
+  try {
+    const { verdiPoints, password, userId } = request.body;
+
+    const userData = {
+      verdiPoints,
+      password,
+      userId,
+    };
+
+    const result = await user.updateUser(userData);
+    return response.json({
+      message: "User updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
+async function fetchTaskDetails(request, response) {
+  try {
+    const taskId = request.params.taskId;
+    const taskDetails = await user.fetchTaskDetails(taskId);
+    response.json({ success: true, taskDetails });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function userAllDifficultyTasks(request, response) {
+  try {
+    const fetchedTable = await user.fetchAllDifficultyTasks();
+    response.json({
+      success: true,
+      fetchedTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function acceptTask(request, response) {
+  try {
+    const userId = request.body.userId;
+    const taskId = request.body.taskId;
+    const dateTaken = new Date().toISOString().slice(0, 19).replace("T", " ");
+
+    const result = await user.acceptTask(userId, taskId, dateTaken);
+
+    if (result.alreadyAccepted) {
+      response.status(400).json({ message: "Task already accepted." });
+    } else if (result.reaccepted) {
+      response.status(200).json({ message: "Mission Accepted!" });
+    } else {
+      response.status(200).json({ message: "Task accepted successfully." });
+    }
+  } catch (error) {
+    console.error("Error accepting task:", error);
+    response.status(500).json({ message: "Internal server error." });
+  }
+}
 
 async function checkTaskAccepted(request, response) {
   const { userId, taskId } = request.params;
   try {
-      const result = await user.checkTaskAccepted(userId, taskId);
-      response.json({ 
-          success: true, 
-          isAccepted: result.isAccepted, 
-          taskExpired: result.isExpired 
-      });
+    const result = await user.checkTaskAccepted(userId, taskId);
+    response.json({
+      success: true,
+      isAccepted: result.isAccepted,
+      taskExpired: result.isExpired,
+    });
   } catch (error) {
-      console.error(`Error checking task acceptance: ${error}`);
-      response.status(500).send({ success: false, message: 'Server error' });
+    console.error(`Error checking task acceptance: ${error}`);
+    response.status(500).send({ success: false, message: "Server error" });
   }
 }
 
 async function fetchAcceptedTasks(request, response) {
   const userId = request.params.userId;
   try {
-      const acceptedTasks = await user.fetchAcceptedTasks(userId);
-      response.json({ success: true, acceptedTasks });
+    const acceptedTasks = await user.fetchAcceptedTasks(userId);
+    response.json({ success: true, acceptedTasks });
   } catch (error) {
-      console.error(`Error fetching accepted tasks: ${error}`);
-      response.status(500).send({ message: "Server error", error: error.message });
+    console.error(`Error fetching accepted tasks: ${error}`);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
   }
 }
 
 async function fetchVerdiPoints(request, response) {
   try {
-      const userId = request.params.userId;
-      const points = await user.getVerdiPoints(userId);
-      response.json({ success: true, verdiPoints: points });
+    const userId = request.params.userId;
+    const points = await user.getVerdiPoints(userId);
+    response.json({ success: true, verdiPoints: points });
   } catch (error) {
-      response.status(500).json({ success: false, message: "Error fetching VerdiPoints", error: error.message });
+    response.status(500).json({
+      success: false,
+      message: "Error fetching VerdiPoints",
+      error: error.message,
+    });
   }
-};
-
+}
 
 async function cancelTask(request, response) {
   try {
@@ -312,18 +329,17 @@ async function cancelTask(request, response) {
     if (!cancelResult.taskRemoved) {
       return response.status(400).json({
         success: false,
-        message: cancelResult.error
+        message: cancelResult.error,
       });
     }
-    response.json({ success: true, message: 'Task cancelled successfully' });
+    response.json({ success: true, message: "Task cancelled successfully" });
   } catch (error) {
     response.status(500).send(error);
   }
 }
 
-
-async function fetchOrganizations(request, response){
-  try{
+async function fetchOrganizations(request, response) {
+  try {
     const organizations = await user.fetchAllOrganizations();
     response.json({
       success: true,
@@ -331,22 +347,27 @@ async function fetchOrganizations(request, response){
     });
   } catch (error) {
     console.error(error);
-    response.status(500).send({ message: "Error fetching organizations", error: error.message });
+    response
+      .status(500)
+      .send({ message: "Error fetching organizations", error: error.message });
   }
-
 }
 
 async function fetchOrganizationDetails(request, response) {
   const organizationId = request.params.organizationId;
   try {
-    const organizationDetails = await user.getOrganizationDetails(organizationId);
+    const organizationDetails = await user.getOrganizationDetails(
+      organizationId
+    );
     if (organizationDetails) {
-        response.json({ success: true, organization: organizationDetails });
+      response.json({ success: true, organization: organizationDetails });
     } else {
-        response.status(404).send('Organization not found');
+      response.status(404).send("Organization not found");
     }
   } catch (error) {
-      response.status(500).send('Error fetching organization details: ' + error.message);
+    response
+      .status(500)
+      .send("Error fetching organization details: " + error.message);
   }
 }
 
@@ -355,10 +376,14 @@ async function joinOrganization(request, response) {
   const organizationId = request.body.organizationId;
 
   try {
-      await user.updateUserOrganization(userId, organizationId);
-      response.json({ success: true, message: 'Successfully joined organization' });
+    const result = await user.updateUserOrganization(userId, organizationId);
+    response.json({
+      success: true,
+      message: "Successfully joined organization",
+      user: result,
+    });
   } catch (error) {
-      response.status(500).send('Error joining organization: ' + error.message);
+    response.status(500).send("Error joining organization: " + error.message);
   }
 }
 
@@ -367,10 +392,10 @@ async function checkMembership(request, response) {
   const organizationId = request.query.organizationId;
 
   try {
-      const isMember = await user.isMember(userId, organizationId);
-      response.json({ success: true, isMember });
+    const isMember = await user.isMember(userId, organizationId);
+    response.json({ success: true, isMember });
   } catch (error) {
-      response.status(500).send('Error checking membership: ' + error.message);
+    response.status(500).send("Error checking membership: " + error.message);
   }
 }
 
@@ -378,100 +403,163 @@ async function fetchTasksByOrganization(request, response) {
   const organizationId = request.params.organizationId;
 
   try {
-      const tasks = await user.getTasksByOrganization(organizationId);
-      response.json({ success: true, tasks });
+    const tasks = await user.getTasksByOrganization(organizationId);
+    response.json({ success: true, tasks });
   } catch (error) {
-      response.status(500).send('Error fetching tasks: ' + error.message);
+    response.status(500).send("Error fetching tasks: " + error.message);
   }
 }
 
 async function fetchEvents(req, res) {
   try {
-      const organizationId = req.params.organizationId;
-      const events = await user.fetchEventsByOrganization(organizationId);
-      res.json({ success: true, events: events });
+    const organizationId = req.params.organizationId;
+    const events = await user.fetchEventsByOrganization(organizationId);
+    res.json({ success: true, events: events });
   } catch (error) {
-      console.error('Error fetching events:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
+    console.error("Error fetching events:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
 
 async function fetchEventDetails(req, res) {
   try {
-      const eventId = req.params.eventId;
-      const event = await user.fetchEventById(eventId);
-      res.json({ success: true, event: event });
+    const eventId = req.params.eventId;
+    const event = await user.fetchEventById(eventId);
+    res.json({ success: true, event: event });
   } catch (error) {
-      console.error('Error fetching event details:', error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
+    console.error("Error fetching event details:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 }
 
 async function fetchProducts(request, response) {
   try {
-      const products = await user.fetchProducts();
-      response.json(products);
+    const products = await user.fetchProducts();
+    response.json(products);
   } catch (error) {
-      response.status(500).send(error.message);
+    response.status(500).send(error.message);
   }
 }
 
 async function applyForEvent(request, response) {
   try {
-      const { userId, eventId } = request.body;
+    const { userId, eventId } = request.body;
 
-      // Attempt to apply for the event
-      const applyResult = await user.applyEvent(userId, eventId);
+    // Attempt to apply for the event
+    const applyResult = await user.applyEvent(userId, eventId);
 
-      // Check if the user has already applied
-      if (applyResult.alreadyApplied) {
-          return response.status(400).send({ success: false, message: 'User has already applied for this event' });
-      }
+    // Check if the user has already applied
+    if (applyResult.alreadyApplied) {
+      return response.status(400).send({
+        success: false,
+        message: "User has already applied for this event",
+      });
+    }
 
-      // Respond with success message
-      response.json({ success: true, message: 'Applied successfully', apply: applyResult });
+    // Respond with success message
+    response.json({
+      success: true,
+      message: "Applied successfully",
+      apply: applyResult,
+    });
   } catch (error) {
-      console.error(error);
-      response.status(500).send({ message: 'Error applying for event', error: error.message });
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Error applying for event", error: error.message });
   }
 }
 
 async function eventApplicationStatus(request, response) {
   try {
-      const { userId, eventId } = request.query;
+    const { userId, eventId } = request.query;
 
-      if (!userId || !eventId) {
-          return response.status(400).send({ message: 'UserId and EventId are required' });
-      }
+    if (!userId || !eventId) {
+      return response
+        .status(400)
+        .send({ message: "UserId and EventId are required" });
+    }
 
-      const status = await user.eventApplyStatus(userId, eventId);
-      response.json({ success: true, status: status });
+    const status = await user.eventApplyStatus(userId, eventId);
+    response.json({ success: true, status: status });
   } catch (error) {
-      console.error(error);
-      response.status(500).send({ message: 'Error fetching application status', error: error.message });
+    console.error(error);
+    response.status(500).send({
+      message: "Error fetching application status",
+      error: error.message,
+    });
   }
 }
 
-async function redeemProduct(request, response) {
+async function updatePerson(request, response) {
   try {
-      const { userId, productId, productSize, contactNumber, deliveryAddress } = request.body;
+    const {
+      email,
+      password,
+      firstName,
+      middleInitial,
+      lastName,
+      phoneNumber,
+      personId,
+    } = request.body;
 
-      const redeemResult = await user.redeemProduct(userId, productId, productSize, contactNumber, deliveryAddress);
+    const hashedPassword = bcrypt.hashSync(password, 10);
 
-      if (redeemResult.error) {
-          return response.status(400).send({ success: false, message: redeemResult.error });
-      }
+    const personData = {
+      email,
+      hashedPassword,
+      firstName,
+      middleInitial,
+      lastName,
+      phoneNumber,
+      personId,
+    };
+    const result = await user.updatePerson(personData);
 
-      response.json({ success: true, message: 'Product redeemed successfully', redeem: redeemResult });
+    return response.json({
+      message: "User updated successfully!",
+      success: true,
+      result: result,
+    });
   } catch (error) {
-      console.error(error);
-      response.status(500).send({ message: 'Error redeeming product', error: error.message });
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Error updating for profile", error: error.message });
+  }
+}
+async function updateInfo(request, response) {
+  try {
+    const userDescription = request.body.userDescription;
+    const userId = request.body.userId;
+
+    const result = await user.updateInfo(userDescription, userId);
+
+    return response.json({
+      message: "User updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Error updating for profile", error: error.message });
   }
 }
 
+async function getUserDailyTask(request, response) {
+  try {
+    const userId = request.body.userId;
+    const taskId = request.body.taskId;
 
-
-
+    const result = await user.getUserDailyTask(taskId, userId);
+    return response.json({
+      result: result,
+      success: true,
+    });
+  } catch (error) {}
+}
 
 module.exports = {
   registerUser,
@@ -498,5 +586,9 @@ module.exports = {
   fetchProducts,
   applyForEvent,
   eventApplicationStatus,
+  fetchPersonDetails,
+  updatePerson,
+  updateInfo,
+  getUserDailyTask,
   redeemProduct,
 };

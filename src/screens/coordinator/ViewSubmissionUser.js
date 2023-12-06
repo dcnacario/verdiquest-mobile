@@ -92,6 +92,15 @@ const ViewSubmissionUser = ({ route }) => {
         <View style={styles.submissionContainer}>
           <SubmitCard
             startTime={formatDate(data.DateTaken)}
+            taskProof1={{
+              uri: `${localhost}/img/proof/${data.TaskProof1}`,
+            }}
+            taskProof2={{
+              uri: `${localhost}/img/proof/${data.TaskProof2}`,
+            }}
+            taskProof3={{
+              uri: `${localhost}/img/proof/${data.TaskProof3}`,
+            }}
             name={data.FirstName}
             status={data.TaskStatus}
             endTime={formatDate(data.DateFinished)}
