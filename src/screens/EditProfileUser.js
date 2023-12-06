@@ -52,7 +52,7 @@ const EditProfileUser = ({ route }) => {
         setPasswordError(""); // Clear the error message if the password is valid
       }
     }
-  
+
     setUserData((prev) => ({ ...prev, [name]: text }));
   };
 
