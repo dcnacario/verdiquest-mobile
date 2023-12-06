@@ -31,7 +31,6 @@ const Profile = ({ route }) => {
     setTextInputValue(text);
   };
 
-  //NAVIGATION TO EDIT PROFILE USER
   const goToEditProfile = (personDetails) => {
     navigation.navigate("EditProfileUser", {
       user: user,
