@@ -116,8 +116,8 @@ class User extends BaseModel {
   async updateUser(userData) {
     try {
       const [user] = await this.db.query(
-        "UPDATE user SET VerdiPoints = VerdiPoints + ?, password = ? WHERE UserId = ?",
-        [userData.verdiPoints, userData.password, userData.userId]
+        "UPDATE user SET VerdiPoints = VerdiPoints + ? WHERE UserId = ?",
+        [userData.verdiPoints, userData.userId]
       );
 
       const userUpdate = user.affectedRows;
@@ -142,7 +142,7 @@ class User extends BaseModel {
   async fetchEasyTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT * FROM dailytask WHERE DifficultyId = 1"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.DifficultyId = 1 AND udt.TaskStatus is NULL"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
@@ -154,7 +154,7 @@ class User extends BaseModel {
   async fetchNormalTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT * FROM dailytask WHERE DifficultyId = 2"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.DifficultyId = 2 AND udt.TaskStatus is NULL;"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
@@ -166,7 +166,7 @@ class User extends BaseModel {
   async fetchHardTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT * FROM dailytask WHERE DifficultyId = 3"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.DifficultyId = 3 AND udt.TaskStatus is NULL ;"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
@@ -191,7 +191,7 @@ class User extends BaseModel {
   async fetchAllDifficultyTasks() {
     try {
       const [result] = await this.db.query(
-        "SELECT * FROM dailytask WHERE isDeleted = 0 ORDER BY DifficultyId ASC"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.isDeleted = 0 AND udt.TaskStatus is NULL ORDER BY dt.DifficultyId ASC;"
       );
       return result.length > 0 ? result : [];
     } catch (error) {

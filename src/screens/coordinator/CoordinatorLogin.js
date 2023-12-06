@@ -78,9 +78,6 @@ const CoordinatorLogin = () => {
             secureTextEntry={true}
           />
           <TouchableOpacity style={{ alignSelf: "flex-end" }}>
-            <Text style={{ fontWeight: "bold", fontSize: 12, marginRight: 20 }}>
-              Forgot password?
-            </Text>
           </TouchableOpacity>
         </View>
         <View style={{ paddingBottom: 50 }}>

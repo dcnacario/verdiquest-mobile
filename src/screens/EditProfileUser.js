@@ -39,7 +39,20 @@ const EditProfileUser = ({ route }) => {
 
   const [imageUri, setImageUri] = useState(imageSource);
 
+  const [passwordError, setPasswordError] = useState(""); // State to store password error message
+
   const handleInputChange = (name, text) => {
+    if (name === "password") {
+      // Add password validation logic here
+      if (text.length === 0) {
+        setPasswordError("Password cannot be empty.");
+      } else if (text.length < 6) {
+        setPasswordError("Password must be at least 6 characters long.");
+      } else {
+        setPasswordError(""); // Clear the error message if the password is valid
+      }
+    }
+  
     setUserData((prev) => ({ ...prev, [name]: text }));
   };
 
@@ -105,7 +118,7 @@ const EditProfileUser = ({ route }) => {
         });
       }
     } catch (error) {
-      console.error("Error during image upload: ", error.message);
+      console.log("Error during image upload: ", error.message);
     } finally {
       await delay(3000);
       setIsUploading(false);
@@ -173,6 +186,9 @@ const EditProfileUser = ({ route }) => {
         editable={isEditing}
         secureTextEntry={true}
       />
+      {passwordError ? (
+        <Text style={styles.errorText}>{passwordError}</Text>
+      ) : null}
 
       <Text style={styles.label}>First Name</Text>
       <TextInput

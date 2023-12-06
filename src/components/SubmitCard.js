@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   profileImage: {
-    height: 100,
+    height: 120,
     width: 100,
     borderRadius: 100 / 2,
   },
@@ -133,8 +133,8 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   proofImage: {
-    height: 60,
-    width: 60,
+    height: 100,
+    width: 100,
     borderRadius: 10,
     marginHorizontal: 5,
   },
