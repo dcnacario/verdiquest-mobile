@@ -35,6 +35,7 @@ router.get("/event/details/:eventId", userController.fetchEventDetails);
 router.get("/products", userController.fetchProducts);
 router.post("/applyEvent", userController.applyForEvent);
 router.get("/eventApplyStatus", userController.eventApplicationStatus);
+router.post("/redeemProduct", userController.redeemProduct);
 router.post("/subscribe", async (req, res) => {
   try {
     const response = await axios.post(

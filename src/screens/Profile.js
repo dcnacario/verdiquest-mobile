@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  ScrollView,
-  Dimensions,
-  StatusBar,
-  Image,
-} from "react-native";
+import {Text, View, StyleSheet, ScrollView, Dimensions, StatusBar,Image} from "react-native";
 import { theme } from "../../assets/style";
 import IntroCard from "../components/IntroCard";
 import OrganizationCard from "../components/OrganizationCard";

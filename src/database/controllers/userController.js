@@ -561,6 +561,22 @@ async function getUserDailyTask(request, response) {
   } catch (error) {}
 }
 
+async function redeemProduct(request, response) {
+  try {
+      const { userId, productId, productSize, contactNumber, deliveryAddress } = request.body;
+      const redeemResult = await user.redeemProduct(userId, productId, productSize, contactNumber, deliveryAddress);
+
+      if (redeemResult.error) {
+          return response.status(400).json({ success: false, message: redeemResult.error });
+      }
+
+      response.json({ success: true, message: 'Product redeemed successfully', redeem: redeemResult });
+  } catch (error) {
+      console.error(error);
+      response.status(500).json({ success: false, message: 'Error redeeming product', error: error.message });
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
@@ -590,4 +606,5 @@ module.exports = {
   updatePerson,
   updateInfo,
   getUserDailyTask,
+  redeemProduct,
 };
