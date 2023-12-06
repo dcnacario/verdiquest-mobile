@@ -131,7 +131,6 @@ const CoordInterface = ({ route }) => {
         {/* Ongoing Events Section */}
         <View style={styles.ongoingEventsContainer}>
           <Text style={styles.ongoingEventsTitle}>Ongoing Events</Text>
-          {/* Insert other components representing the event details here */}
         </View>
 
         <View style={styles.row}>

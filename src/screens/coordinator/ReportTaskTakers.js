@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Text,
   ScrollView,
+  Image,
 } from "react-native";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
@@ -16,23 +17,17 @@ const ReportTaskTakers = ({ route }) => {
   console.log(item);
   const localhost = ipAddress;
 
-  const [fetchedTasks, setFetchedTasks] = useState([]);
+  const [fetchedTasks, setFetchedTasks] = useState({});
   //FOR NAVIGATION
   const navigation = useNavigation();
-  const goToViewSubmissionUser = (item, onTaskFetch) => {
-    navigation.navigate("ViewSubmissionUser", {
-      data: item,
-      onTaskFetch: onTaskFetch,
-    });
-  };
   //----------------------------------------
 
   const fetchTasks = async () => {
-    try {
-      let taskId = item.taskId || item.TaskId; // Use taskId if it exists, otherwise use TaskId
+    try { 
+      let taskId = item.taskId || item.TaskId; 
       if (!taskId) {
         console.error("No task ID available");
-        return; // Exit the function if no task ID is provided
+        return; 
       }
 
       const response = await axios.post(`${localhost}/coordinator/getTasks`, {
@@ -75,19 +70,13 @@ const ReportTaskTakers = ({ route }) => {
           {fetchedTasks != null && fetchedTasks.length > 0 ? (
             fetchedTasks.map((item) => (
               <View key={item.TaskId} style={styles.cardContainer}>
-                <View style={styles.imagePlaceholder} />
+                <View style={styles.imagePlaceholder}><Image source={{uri: `${localhost}/img/profilepicture/${item.ProfilePicture}`}} style={styles.imageStyle}/></View>
                 <View style={styles.textContainer}>
                   <Text style={styles.name}>
                     {item.FirstName} {item.LastName}
                   </Text>
                   <Text style={styles.status}>Status: {item.Status}</Text>
                 </View>
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => goToViewSubmissionUser(item, fetchTasks)}
-                >
-                  <Text style={styles.buttonText}>View Submission</Text>
-                </TouchableOpacity>
               </View>
             ))
           ) : (
