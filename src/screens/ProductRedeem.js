@@ -16,18 +16,6 @@ const ProductRedeem = ({ route }) => {
         checkIfAlreadyRedeemed();
     }, []);
 
-    const checkIfAlreadyRedeemed = async () => {
-        try {
-            const response = await axios.get(`${localhost}/checkRedeemStatus/${user.UserId}/${product.ProductId}`);
-            if (response.data.success && response.data.isRedeemed) {
-                setIsAlreadyRedeemed(true);
-                Alert.alert("Notice", "This product has already been redeemed.");
-            }
-        } catch (error) {
-            console.error("Error checking redeem status:", error);
-        }
-    };
-
     const handleRedeem = async () => {
       if (isAlreadyRedeemed) {
           Alert.alert("Notice", "This product has already been redeemed.");
