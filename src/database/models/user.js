@@ -419,6 +419,7 @@ class User extends BaseModel {
     try {
       const query =
         "SELECT ProductId, ProductImage, ProductName, ProductDescription, PointsRequired FROM products";
+]]
       const [products] = await this.db.query(query);
       return products;
     } catch (error) {
