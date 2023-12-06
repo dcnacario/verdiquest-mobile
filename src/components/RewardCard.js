@@ -19,7 +19,6 @@ const RewardCard = ({
         return defaultImage; 
     };
 
-    // Correctly calculate progress
     const safeNumber = (value) => !isNaN(parseFloat(value)) && isFinite(value) ? parseFloat(value) : 0;
     const safeUserPoints = safeNumber(userPoints);
     const safeRequiredPoints = safeNumber(requiredPoints);
@@ -69,7 +68,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
     },
-
     productDescription: {
         fontSize: 12,
         color: 'black',

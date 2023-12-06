@@ -436,8 +436,6 @@ async function applyForEvent(request, response) {
   }
 }
 
-
-
 async function eventApplicationStatus(request, response) {
   try {
       const { userId, eventId } = request.query;
@@ -451,6 +449,23 @@ async function eventApplicationStatus(request, response) {
   } catch (error) {
       console.error(error);
       response.status(500).send({ message: 'Error fetching application status', error: error.message });
+  }
+}
+
+async function redeemProduct(request, response) {
+  try {
+      const { userId, productId, productSize, contactNumber, deliveryAddress } = request.body;
+
+      const redeemResult = await user.redeemProduct(userId, productId, productSize, contactNumber, deliveryAddress);
+
+      if (redeemResult.error) {
+          return response.status(400).send({ success: false, message: redeemResult.error });
+      }
+
+      response.json({ success: true, message: 'Product redeemed successfully', redeem: redeemResult });
+  } catch (error) {
+      console.error(error);
+      response.status(500).send({ message: 'Error redeeming product', error: error.message });
   }
 }
 
@@ -483,4 +498,5 @@ module.exports = {
   fetchProducts,
   applyForEvent,
   eventApplicationStatus,
+  redeemProduct,
 };

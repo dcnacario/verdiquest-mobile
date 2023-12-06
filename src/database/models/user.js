@@ -282,8 +282,7 @@ class User extends BaseModel {
         if (result.affectedRows === 0) {
             return { error: "Task not found or already canceled", taskRemoved: false };
         }
-    
-        // Return a successful response
+        
         return { message: "Task marked as canceled", taskRemoved: true };
     }
     
@@ -369,7 +368,7 @@ class User extends BaseModel {
 
     async fetchProducts() {
         try {
-            const query = 'SELECT ProductName, ProductImage, ProductDescription, PointsRequired FROM products';
+            const query = 'SELECT ProductId, ProductName, ProductImage, ProductDescription, PointsRequired FROM products';
             const [products] = await this.db.query(query);
             return products;
         } catch (error) {
@@ -416,6 +415,42 @@ class User extends BaseModel {
         const query = "SELECT * FROM participants WHERE UserId = ? AND EventId = ? AND Status = 'UNVERIFIED'";
         const [results] = await this.db.query(query, [userId, eventId]);
         return results.length > 0; 
+    }
+    
+    async redeemProduct(userId, productId, productSize, contactNumber, deliveryAddress) {
+        try {
+            await this.db.query('START TRANSACTION');
+ 
+            const productQuery = `SELECT PointsRequired, OrganizationId FROM products WHERE ProductId = ?`;
+            const [productResults] = await this.db.query(productQuery, [productId]);
+    
+            if (!productResults || productResults.length === 0) {
+                await this.db.query('ROLLBACK');
+                return { error: "Product not found or invalid ProductId" };
+            }
+    
+            const pointsRequired = productResults[0].PointsRequired;
+            const organizationId = productResults[0].OrganizationId;
+    
+            const deductPointsQuery = `UPDATE user SET VerdiPoints = VerdiPoints - ? WHERE UserId = ?`;
+            await this.db.query(deductPointsQuery, [pointsRequired, userId]);
+
+            const redeemQuery = `INSERT INTO redeem (ProductId, UserId, Status) VALUES (?, ?, 'PROCESSING')`;
+            await this.db.query(redeemQuery, [productId, userId]);
+
+            const transactionQuery = `INSERT INTO redeemtransaction (RedeemId, TransactionDate, ProductSize, ContactNumber, Destination) VALUES (?, NOW(), ?, ?, ?)`;
+            const [redeemResult] = await this.db.query(redeemQuery, [productId, userId, organizationId]);
+            const redeemId = redeemResult.insertId;
+    
+            await this.db.query(transactionQuery, [redeemId, productSize, contactNumber, deliveryAddress]);
+    
+            await this.db.query('COMMIT');
+    
+            return { success: true, redeemId, message: "Product redeemed successfully" };
+        } catch (error) {
+            await this.db.query('ROLLBACK');
+            throw error;
+        }
     }
 }
 
