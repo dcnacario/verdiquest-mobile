@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   Text,
   View,
@@ -104,6 +104,11 @@ const Home = ({ route }) => {
     return description;
   };
 
+  useEffect(() => {
+    fetchTasks();
+    fetchVerdiPoints();
+  }, [user.UserId]);
+
   return (
     <View
       style={{
@@ -141,7 +146,10 @@ const Home = ({ route }) => {
                   style={{ marginTop: -60, marginLeft: -10 }}
                 />
               </TouchableOpacity>
-              <ProfileCard email={user.Email} />
+              <ProfileCard
+                email={user.Email}
+                img={`${localhost}/img/profilepicture/${user.ProfilePicture}`}
+              />
               <PointCard points={formatPoints(userPoint)} />
             </View>
             <View>

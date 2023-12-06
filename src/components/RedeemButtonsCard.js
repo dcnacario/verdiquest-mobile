@@ -6,12 +6,14 @@ import PointCard from "./PointCard";
 import SearchBar from "./SearchBar";  
 import axios from "axios";
 import ipAddress from "../database/ipAddress";
+import { useIsFocused } from '@react-navigation/native'; 
 
 const RedeemButtonsCard = ({ onCardPress, userPoint }) => {
     const [products, setProducts] = useState([]);
     const localhost = ipAddress;
+    const isFocused = useIsFocused(); // Use the hook
 
-    useEffect(() => {
+    const fetchProducts = () => {
         axios.get(`${localhost}/user/products`)
             .then(response => {
                 setProducts(response.data);
@@ -19,7 +21,13 @@ const RedeemButtonsCard = ({ onCardPress, userPoint }) => {
             .catch(error => {
                 console.error('Error fetching products:', error);
             });
-    }, []);
+    };
+
+    useEffect(() => {
+        if (isFocused) {
+            fetchProducts(); 
+        }
+    }, [isFocused]); 
 
     const filterButtons = [
         { id: '1', title: 'All' },

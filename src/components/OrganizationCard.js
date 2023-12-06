@@ -2,14 +2,14 @@ import React from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { theme } from "../../assets/style";
 
-const OrganizationCard = () => {
+const OrganizationCard = ({ organization }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.introLabel}>Organization</Text>
       </View>
       <View style={styles.divider} />
-      <Text style={styles.organizationLabel}>Bantay Dagat</Text>
+      <Text style={styles.organizationLabel}>{organization}</Text>
     </View>
   );
 };

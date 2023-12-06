@@ -418,7 +418,7 @@ class User extends BaseModel {
   async fetchProducts() {
     try {
       const query =
-        "SELECT ProductName, ProductDescription, PointsRequired FROM products";
+        "SELECT ProductId, ProductName, ProductDescription, PointsRequired FROM products";
       const [products] = await this.db.query(query);
       return products;
     } catch (error) {
@@ -471,6 +471,83 @@ class User extends BaseModel {
     const [results] = await this.db.query(query, [userId, eventId]);
     return results.length > 0;
   }
+
+  async updatePerson(personData) {
+    const query =
+        "UPDATE person SET FirstName = ?, Initial = ?, LastName = ?, PhoneNumber = ? WHERE PersonId = ?";
+        const [results] = await this.db.query(query, [
+        personData.firstName,
+        personData.middleInitial,
+        personData.lastName,
+        personData.phoneNumber,
+        personData.personId,
+    ]);
+
+    const [result_user] = await this.db.query(
+      "UPDATE user SET Email = ?, Password = ?  WHERE UserId = ?",
+      [personData.email, personData.password, personData.UserId]
+    );
+    return result_user.affectedRows;
+  }
+
+  async updateInfo(userDescription, userId) {
+    try {
+      const query = "UPDATE user SET UserDescription = ? WHERE UserId = ?";
+      const [results] = await this.db.query(query, [userDescription, userId]);
+      return results.affectedRows;
+    } catch (error) {
+      throw new Error("Error updating info: " + error.message);
+    }
+  }
+
+  async getUserDailyTask(taskId, userId) {
+    try {
+      const [rows] = await this.db.query(
+        "SELECT * FROM userdailytask WHERE UserId = ? AND TaskId = ?",
+        [userId, taskId]
+      );
+      return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+      console.error("Error getting user daily tasks:", error);
+      throw error;
+    }
+  }
+    
+    async redeemProduct(userId, productId, productSize, contactNumber, deliveryAddress) {
+        try {
+            await this.db.query('START TRANSACTION');
+ 
+            const productQuery = `SELECT PointsRequired, OrganizationId FROM products WHERE ProductId = ?`;
+            const [productResults] = await this.db.query(productQuery, [productId]);
+    
+            if (!productResults || productResults.length === 0) {
+                await this.db.query('ROLLBACK');
+                return { error: "Product not found or invalid ProductId" };
+            }
+    
+            const pointsRequired = productResults[0].PointsRequired;
+            const organizationId = productResults[0].OrganizationId;
+    
+            const deductPointsQuery = `UPDATE user SET VerdiPoints = VerdiPoints - ? WHERE UserId = ?`;
+            await this.db.query(deductPointsQuery, [pointsRequired, userId]);
+
+            const redeemQuery = `INSERT INTO redeem (ProductId, UserId, Status) VALUES (?, ?, 'PROCESSING')`;
+            await this.db.query(redeemQuery, [productId, userId]);
+
+            const transactionQuery = `INSERT INTO redeemtransaction (RedeemId, TransactionDate, ProductSize, ContactNumber, Destination) VALUES (?, NOW(), ?, ?, ?)`;
+            const [redeemResult] = await this.db.query(redeemQuery, [productId, userId, organizationId]);
+            const redeemId = redeemResult.insertId;
+    
+            await this.db.query(transactionQuery, [redeemId, productSize, contactNumber, deliveryAddress]);
+    
+            await this.db.query('COMMIT');
+    
+            return { success: true, redeemId, message: "Product redeemed successfully" };
+        } catch (error) {
+            await this.db.query('ROLLBACK');
+            throw error;
+        }
+    }
 }
 
 module.exports = User;

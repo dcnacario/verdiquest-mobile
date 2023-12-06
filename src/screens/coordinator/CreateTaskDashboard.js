@@ -106,6 +106,16 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
     }
   };
 
+  const calculatePoints = (difficultyId) => {
+    const difficultyPointsMap = {
+      1: 150,
+      2: 250,
+      3: 500,
+    };
+
+    return difficultyPointsMap[difficultyId] || 0; // Default to 0 if difficultyId is not found
+  };
+
   useEffect(() => {
     const loadData = async () => {
       const data = await fetchDifficulty();
@@ -116,6 +126,10 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
 
   useEffect(() => {
     updateTaskData("difficultyId", selectedDifficulty);
+
+    // Calculate and set task points based on selected difficulty
+    const points = calculatePoints(selectedDifficulty);
+    updateTaskData("taskPoints", points.toString());
   }, [selectedDifficulty]);
 
   // Handle submit-----------------------------------------
@@ -190,17 +204,6 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
               onChangeText={(text) => updateTaskData("taskDuration", text)}
               placeholder="in Minutes"
               keyboardType="numeric"
-            />
-          </View>
-
-          {/* Task Points */}
-          <View style={styles.column}>
-            <Text style={styles.modifiedTextInput}>Points Reward</Text>
-            <TextInput
-              style={styles.modifiedInputStyle}
-              value={taskData.taskPoints}
-              onChangeText={(text) => updateTaskData("taskPoints", text)}
-              placeholder="Points Reward"
             />
           </View>
         </View>

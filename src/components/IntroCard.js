@@ -7,27 +7,47 @@ import {
   TextInput,
 } from "react-native";
 import { theme } from "../../assets/style";
+import { ScrollView } from "react-native-gesture-handler";
 
-const IntroCard = ({ editable, onPress, description }) => {
+const IntroCard = ({
+  editable,
+  onPress,
+  description,
+  inputValue,
+  onInputChange,
+}) => {
+  console.log(editable);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.introLabel}>Intro</Text>
         <TouchableOpacity style={styles.editButton} onPress={onPress}>
-          <Text style={styles.editButtonText}>Edit</Text>
+          <Text style={styles.editButtonText}>
+            {editable ? "Save Changes" : "Edit"}
+          </Text>
         </TouchableOpacity>
       </View>
       <View style={styles.divider} />
-      <TextInput placeholder="Create your profile intro" editable={editable}>
-        {description}
-      </TextInput>
+      <ScrollView>
+        <TextInput
+          placeholder="Create your profile intro"
+          editable={editable}
+          value={inputValue}
+          onChangeText={(text) => onInputChange(text)}
+          multiline={true}
+          textAlignVertical="bottom"
+          style={styles.textInput}
+        >
+          {description}
+        </TextInput>
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    height: 100,
+    height: 120,
     width: 350,
     backgroundColor: "#DAE7C9",
     borderRadius: 15,
@@ -69,6 +89,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: theme.colors.primary,
     textAlign: "center",
+  },
+  textInput: {
+    marginTop: 1.5,
   },
 });
 

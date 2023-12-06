@@ -13,7 +13,6 @@ const PartnerOverview = ({ route }) => {
   const { user, organization } = route.params;
   const [organizationDetails, setOrganizationDetails] = useState({});
   const localhost = ipAddress;
-  console.log(organization);
 
   const fetchOrganizationDetails = async (organization) => {
     try {

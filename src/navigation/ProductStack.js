@@ -1,6 +1,7 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import Redeem from "../screens/Redeem";
 import ProductDetails from "../screens/ProductDetails";
+import ProductRedeem from "../screens/ProductRedeem";
 
 const AppProductStack = createStackNavigator();
 
@@ -24,7 +25,16 @@ const ProductStack = ({ route, navigation }) => {
                 headerShown: false,
             }}
         />
+        <AppProductStack.Screen
+            name="ProductRedeem"
+            component={ProductRedeem}
+            initialParams={{ user: user }}
+            options={{
+                headerShown: false,
+            }}
+        />
         </AppProductStack.Navigator>
+        
     );
 };
 
