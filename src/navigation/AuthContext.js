@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
 
       navigation.navigate("AppTabNav", { user: user });
     } catch (error) {
-      console.error(
+      console.log(
         "Error during login:",
         error.response ? error.response.data : error.message
       );

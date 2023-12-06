@@ -8,9 +8,11 @@ const SubmitCard = ({
   startTime,
   endTime,
   profileImage,
-  proofImages,
   onDecline,
   onComplete,
+  taskProof1,
+  taskProof2,
+  taskProof3,
 }) => {
   return (
     <View style={styles.container}>
@@ -32,10 +34,9 @@ const SubmitCard = ({
       <View style={styles.proofSection}>
         <Text style={styles.proofLabel}>Proof Submitted:</Text>
         <View style={styles.proofContainer}>
-          {proofImages &&
-            proofImages.map((image, index) => (
-              <Image key={index} source={image} style={styles.proofImage} />
-            ))}
+          <Image source={taskProof1} style={styles.proofImage} />
+          <Image source={taskProof2} style={styles.proofImage} />
+          <Image source={taskProof3} style={styles.proofImage} />
         </View>
       </View>
       <View style={styles.actionContainer}>
