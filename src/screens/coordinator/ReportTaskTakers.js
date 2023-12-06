@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Text,
   ScrollView,
+  Image,
 } from "react-native";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
@@ -16,23 +17,17 @@ const ReportTaskTakers = ({ route }) => {
   console.log(item);
   const localhost = ipAddress;
 
-  const [fetchedTasks, setFetchedTasks] = useState([]);
+  const [fetchedTasks, setFetchedTasks] = useState({});
   //FOR NAVIGATION
   const navigation = useNavigation();
-  const goToViewSubmissionUser = (item, onTaskFetch) => {
-    navigation.navigate("ViewSubmissionUser", {
-      data: item,
-      onTaskFetch: onTaskFetch,
-    });
-  };
   //----------------------------------------
 
   const fetchTasks = async () => {
-    try {
-      let taskId = item.taskId || item.TaskId; // Use taskId if it exists, otherwise use TaskId
+    try { 
+      let taskId = item.taskId || item.TaskId; 
       if (!taskId) {
         console.error("No task ID available");
-        return; // Exit the function if no task ID is provided
+        return; 
       }
 
       const response = await axios.post(`${localhost}/coordinator/getTasks`, {
@@ -64,19 +59,13 @@ const ReportTaskTakers = ({ route }) => {
           {fetchedTasks != null && fetchedTasks.length > 0 ? (
             fetchedTasks.map((item) => (
               <View key={item.TaskId} style={styles.cardContainer}>
-                <View style={styles.imagePlaceholder} />
+                <View style={styles.imagePlaceholder}><Image source={{uri: `${localhost}/img/profilepicture/${item.ProfilePicture}`}} style={styles.imageStyle}/></View>
                 <View style={styles.textContainer}>
                   <Text style={styles.name}>
                     {item.FirstName} {item.LastName}
                   </Text>
                   <Text style={styles.status}>Status: {item.Status}</Text>
                 </View>
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={() => goToViewSubmissionUser(item, fetchTasks)}
-                >
-                  <Text style={styles.buttonText}>View Submission</Text>
-                </TouchableOpacity>
               </View>
             ))
           ) : (
@@ -97,23 +86,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   taskName: {
-    fontSize: 24, // Adjust the size to match your design
+    fontSize: 24, 
     fontWeight: "bold",
-    color: "black", // Adjust the color to match your design
+    color: "black", 
   },
 
   header: {
-    backgroundColor: "#f5f5f5", // Header background color
-    paddingVertical: 25, // Padding for the header
-    paddingHorizontal: 16, // Padding for the header
-    justifyContent: "center", // Center content horizontally
-    alignItems: "center", // Center content vertically
-    width: "100%", // Header width
+    backgroundColor: "#f5f5f5", 
+    paddingVertical: 25, 
+    paddingHorizontal: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%", 
   },
   logo: {
-    width: 50, // Logo width
-    height: 50, // Logo height
-    resizeMode: "contain", // Keeps the logo's aspect ratio
+    width: 50, 
+    height: 50, 
+    resizeMode: "contain", 
   },
   scrollView: {
     width: "100%",
@@ -168,7 +157,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
   },
-  // ... other styles if needed
+  imageStyle: {
+      width: 50,
+    height: 50,
+    borderRadius: 60,
+  }
 });
 
 export default ReportTaskTakers;

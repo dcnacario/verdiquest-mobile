@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { View, TextInput, Image, StyleSheet, Text } from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
@@ -9,9 +9,12 @@ import axios from "axios";
 import { RadioButton } from "react-native-paper";
 import Birthday from "../../components/Birthday";
 import { ScrollView } from "react-native-gesture-handler";
+import { useNavigation } from "@react-navigation/native";
+import { AuthContext } from "../../navigation/AuthContext";
 
 const EditProfileCoordinator = ({ route }) => {
   const { coordinator } = route.params;
+  const navigation = useNavigation();
   const localhost = ipAddress;
   const [isEditing, setIsEditing] = useState(false);
   const [initial, setInitial] = useState(true);
@@ -34,6 +37,8 @@ const EditProfileCoordinator = ({ route }) => {
     city: coordinator.City,
     province: coordinator.Province,
   });
+
+  const {logout} = useContext(AuthContext);
 
   const validatePasswords = () => {
     let isValid = true;
@@ -301,6 +306,12 @@ const EditProfileCoordinator = ({ route }) => {
             title={isEditing ? "Save Changes" : "Edit"}
             onPress={handleEditProfile}
           />
+          <View style={{marginTop: 40}}>
+          <Button
+            title="Logout"
+            onPress={()=>{logout(navigation)}}
+          />
+          </View>
         </ScrollView>
       </View>
     </SafeAreaView>

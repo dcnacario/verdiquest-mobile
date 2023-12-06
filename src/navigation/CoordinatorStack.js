@@ -29,6 +29,7 @@ import CoordinatorViewProduct from "../screens/coordinator/CoordinatorViewProduc
 import CoordinatorProduct from "../screens/coordinator/CoordinatorProduct";
 import CoordinatorAddProduct from "../screens/coordinator/CoordinatorAddProduct";
 
+
 const AppCoordinatorStack = createStackNavigator();
 
 const CoordinatorStack = ({ route }) => {

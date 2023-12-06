@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Text,
   ScrollView,
+  Image,
 } from "react-native";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
@@ -14,11 +15,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const ViewParticipants = ({ route }) => {
   const { eventData } = route.params;
   const [isLoading, setIsLoading] = useState(false);
+  
+  const [fetchedParticipants, setFetchedParticipants] = useState([]);
   const [error, setError] = useState("");
   const [verified, setVerify] = useState(false);
   const localhost = ipAddress;
-
-  const [fetchedParticipants, setFetchedParticipants] = useState([]);
 
   //BACKEND API CALL
   //FETCHING PARTICIPANTS
@@ -98,7 +99,8 @@ const ViewParticipants = ({ route }) => {
             {fetchedParticipants != null ? (
               fetchedParticipants.map((item) => (
                 <View key={item.ParticipantId} style={styles.cardContainer}>
-                  <View style={styles.imagePlaceholder} />
+                  {console.log(item.ProfilePicture)}
+                  <View style={styles.imagePlaceholder}><Image source={{uri: `${localhost}/img/profilepicture/${item.ProfilePicture}`}} style={styles.imageStyle}/></View>
                   <View style={styles.textContainer}>
                     <Text style={styles.name}>
                       {item.FirstName} {item.LastName}
@@ -212,7 +214,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   errorMessage: {
-    color: "red", // Example error message color
+    color: "red", 
     textAlign: "center",
     marginTop: 20,
   },
@@ -222,7 +224,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#161616",
     marginTop: 10,
   },
-  // ... other styles if needed
+  imageStyle: {
+    width: 50,
+  height: 50,
+  borderRadius: 60,
+}
 });
 
 export default ViewParticipants;
