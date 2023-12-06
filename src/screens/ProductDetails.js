@@ -15,10 +15,7 @@ const ProductDetails = ({ route }) => {
     const [userPoint, setUserPoints] = useState('0');
     const isFocused = useIsFocused();
     const navigation = useNavigation();
-    console.log("User:", user);
-    console.log("Product:", product);
 
-    // Fetch user points
     const fetchVerdiPoints = async () => {
         try {
         const response = await axios.get(`${localhost}/user/fetchVerdiPoints/${user.UserId}`);
@@ -46,7 +43,7 @@ const ProductDetails = ({ route }) => {
         navigation.navigate('ProductRedeem', { product: product, user: user }); 
 
     };
-
+    console.log(product.ProductImage)
     const userPointsNumber = userPoint ? Number(userPoint.replace(/,/g, '')) : 0;
     const hasEnoughPoints = userPointsNumber >= product.PointsRequired;
 
@@ -55,6 +52,7 @@ const ProductDetails = ({ route }) => {
             <View style={styles.pointCardContainer}>
                 <PointCard points={formatPoints(userPoint)} />
             </View>
+    
             <View style={styles.rewardCardContainer}>
                 <RewardCard
                     imageUrl={`${localhost}/img/product/${product.ProductImage}`}

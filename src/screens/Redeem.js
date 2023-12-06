@@ -11,7 +11,7 @@ import { Path, Svg } from "react-native-svg";
 
 const Redeem = ({ route }) => {
     const localhost = ipAddress;
-    const { user } = route.params;
+    const { user, product } = route.params;
     const [userPoint, setUserPoints] = useState(0);
     const isFocused = useIsFocused();
     const navigation = useNavigation();
