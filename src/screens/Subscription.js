@@ -189,13 +189,13 @@
     left: -30,
     position: "absolute",
     bottom: -25,
-    zIndex: 1,
+    zIndex: 0,
   },
   bottomWavy: {
     position: 'absolute',
     bottom: -115,
     left: -300,
-    zIndex: -1,
+    zIndex: 0,
   },
 });
 

@@ -294,6 +294,48 @@ async function checkTaskAccepted(request, response) {
   }
 }
 
+async function checkApplicationVerified(request, response) {
+  try {
+      const { userId, eventId } = request.query;
+
+      if (!userId || !eventId) {
+          return response.status(400).send({ message: "UserId and EventId are required" });
+      }
+
+      const isVerified = await user.isApplicationVerified(userId, eventId);
+      response.json({ success: true, isVerified: isVerified });
+  } catch (error) {
+      console.error(error);
+      response.status(500).send({
+          message: "Error checking verification status",
+          error: error.message,
+      });
+  }
+}
+
+async function submitEventFeedback(request, response) {
+  try {
+      const { userId, eventId, feedback } = request.body;
+
+      if (!userId || !eventId || !feedback) {
+          return response.status(400).send({ message: "All fields are required" });
+      }
+
+      const result = await user.submitFeedback(userId, eventId, feedback);
+
+      response.json({
+          success: result.success,
+          message: "Feedback submitted successfully"
+      });
+  } catch (error) {
+      console.error(error);
+      response.status(500).send({
+          message: "Error submitting feedback",
+          error: error.message
+      });
+  }
+}
+
 async function fetchAcceptedTasks(request, response) {
   const userId = request.params.userId;
   try {
@@ -607,4 +649,6 @@ module.exports = {
   updateInfo,
   getUserDailyTask,
   redeemProduct,
+  checkApplicationVerified,
+  submitEventFeedback
 };

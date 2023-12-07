@@ -6,9 +6,6 @@ import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-nati
 import ipAddress from "../database/ipAddress";
 import { useIsFocused } from '@react-navigation/native';
 import { Path, Svg } from "react-native-svg";
-
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-
 import axios from "axios";
 
 const ProductDetails = ({ route }) => {

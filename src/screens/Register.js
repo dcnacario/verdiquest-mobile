@@ -51,7 +51,7 @@ const Register = () => {
       <View style={styles.background}>
         <View style={styles.dividerContainer}>
           <View style={styles.divider} />
-          <Text style={{ top: 8 }}>or</Text>
+          <Text style={{ top: 8 }}></Text>
           <View style={styles.divider} />
         </View>
         {/* SVG Header */}
@@ -104,13 +104,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -120,
     left: -300,
-    zIndex: -1,
+    zIndex: 0,
   },
   bottomWavy: {
     position: "absolute",
     bottom: -117,
     left: -300,
-    zIndex: -1,
+    zIndex: 0,
   },
 });
 

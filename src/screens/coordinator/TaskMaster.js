@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -2,
     left: -316,
-    zIndex: 0,
+    zIndex: -1,
   },
   row: {
     flexDirection: "row",

@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -80,
     left: -300,
-    zIndex: 1,
+    zIndex: 0,
   },
   row: {
     flexDirection: "row",

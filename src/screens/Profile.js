@@ -10,6 +10,7 @@ import ipAddress from "../database/ipAddress";
 import { useNavigation } from "@react-navigation/native";
 import defaultProfile from "../../assets/img/verdiquestlogo-ver2.png";
 import { Path, Svg } from "react-native-svg"
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const Profile = ({ route }) => {
   const navigation = useNavigation();
@@ -64,7 +65,7 @@ const Profile = ({ route }) => {
         throw new Error("Failed to fetch organization details");
       }
     } catch (error) {
-      console.error("Error fetching organization details:", error);
+      console.log("Error fetching organization details:", error);
     }
   };
 
@@ -111,12 +112,13 @@ const Profile = ({ route }) => {
     >
       <View style={{ flex: 1 }}>
         <View style={{ position: "absolute", top: 60, right: 20, zIndex: 1 }}>
+          <TouchableOpacity onPress={() => goToEditProfile(personDetails)}>
           <Ionicons
             name="settings-outline"
             size={20}
             color="black"
-            onPress={() => goToEditProfile(personDetails)}
           />
+          </TouchableOpacity>
         </View>
         <View style={{ flex: 1, marginTop: 10 }}>
           <View
@@ -243,7 +245,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -2,
     left: -316,
-    zIndex: 1,
+    zIndex: 0,
   },
   row: {
     flexDirection: "row",
@@ -253,7 +255,7 @@ const styles = StyleSheet.create({
     left: -30,
     position: "absolute",
     bottom: -25,
-    zIndex: 1,
+    zIndex: 0,
   },
 });
 

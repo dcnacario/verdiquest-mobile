@@ -5,6 +5,8 @@ const axios = require("axios");
 
 const router = express.Router();
 
+router.get("/checkApplicationVerified", userController.checkApplicationVerified);
+router.post("/submitFeedback", userController.submitEventFeedback);
 router.post("/register", userController.registerUser);
 router.post("/login", userController.loginUser);
 router.post("/updateUser", userController.updateUser);

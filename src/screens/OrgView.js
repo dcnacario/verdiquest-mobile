@@ -1,11 +1,11 @@
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, View, Text, Image, Alert } from 'react-native';
+import { StyleSheet, View, Text, Image, Alert, Modal, TextInput, Button } from 'react-native';
 import { theme } from "../../assets/style";
 import defaultImage from '../../assets/img/default-image.png';
-import Button from "../components/Button";
 import ipAddress from "../database/ipAddress";
 import axios from "axios";
 import { useFocusEffect } from '@react-navigation/native';
+
 
 const OrgView = ({ route }) => {
     const { user, eventId } = route.params;
@@ -13,7 +13,11 @@ const OrgView = ({ route }) => {
     const localhost = ipAddress;
     const [eventDetails, setEventDetails] = useState(null);
     const [isApplied, setIsApplied] = useState(false);
+    const [isVerified, setIsVerified] = useState(false);
     const [isLoading, setLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false);
+    const [feedback, setFeedback] = useState('');
+    const [feedbackGiven, setFeedbackGiven] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
@@ -30,16 +34,19 @@ const OrgView = ({ route }) => {
                     }
 
                     // Check application status
-                    const applicationResponse = await axios.get(`${localhost}/user/eventApplyStatus`, { params: { userId, eventId } });
-                    if (isActive) {
+                    const applicationResponse = await axios.get(`${localhost}/user/eventApplyStatus, { params: { userId, eventId } }`);
+                    if (isActive) {1
                         setIsApplied(applicationResponse.data.status);
+                        setFeedbackGiven(applicationResponse.data.feedbackGiven);
                     }
-                    
-                    
+
+                    const verificationResponse = await axios.get(`${localhost}/user/checkApplicationVerified, { params: { userId, eventId } }`);
+                    if (isActive && verificationResponse.data.isVerified) {
+                        setIsVerified(true);
+                        setShowModal(!applicationResponse.data.feedbackGiven);
+                    }
                 } catch (error) {
-                    if (isActive) {
-                        console.error("Error fetching event details or checking application:", error);
-                    }
+                    console.error("Error:", error);
                 } finally {
                     if (isActive) {
                         setLoading(false);
@@ -90,6 +97,38 @@ const OrgView = ({ route }) => {
         }
     };
     
+    const submitFeedback = async () => {
+        try {
+            await axios.post(`${localhost}/user/submitFeedback, { userId, eventId, feedback }`);
+            setShowModal(false);
+            setFeedback('');
+            setFeedbackGiven(true);
+            Alert.alert("Feedback Submitted", "Thank you for your feedback!");
+        } catch (error) {
+            console.error('Error submitting feedback:', error);
+            Alert.alert("Feedback Submission Failed", "Unable to submit feedback at this time.");
+        }
+    };
+    const renderFeedbackModal = () => {
+        if (!feedbackGiven) {
+            return (
+                <Modal transparent={true} visible={showModal} onRequestClose={() => setShowModal(false)}>
+                    <View style={styles.modalView}>
+                        <Text style={styles.modalText}>Provide your feedback</Text>
+                        <TextInput 
+                            style={styles.input}
+                            onChangeText={setFeedback}
+                            value={feedback}
+                            placeholder="Enter your feedback"
+                        />
+                        <Button title="Submit Feedback" onPress={submitFeedback} />
+                    </View>
+                </Modal>
+            );
+        }
+        return null;
+    };
+
     const truncateDescription = (description, maxLength = 30) => {
         if (description.length > maxLength) {
             return `${description.substring(0, maxLength)}...`; 
@@ -101,38 +140,43 @@ const OrgView = ({ route }) => {
         return <Text>Loading...</Text>; 
     }
 
+    Ter
     return (
-        <View style={styles.container}>
-            <Image 
-                source={eventDetails.EventImage ? { uri: `${localhost}/img/event/${eventDetails.EventImage}` } : defaultImage} 
-                style={styles.imageStyle} 
-            />
-            <Text style={styles.titleStyle}>{eventDetails.EventName}</Text>
-            <View style={styles.detailsContainer}>
-                <Text style={styles.textStyle}>Event Details</Text>
-                <Text>Description: {truncateDescription(eventDetails.EventDescription)}</Text>
-                <Text>Location: {eventDetails.EventVenue}</Text>
-                <Text>Event Date: {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(eventDetails.EventDate))}</Text>
-                <Text>Points Reward: {eventDetails.EventPoints}</Text>
-            </View>
-            <View style={{ alignItems: 'center', gap: 10 }}>
-                <Text>Time Completion: 5 hrs</Text>
-                <Text>19/30</Text>
-                {isApplied ? (
-                    <>
+            <View style={styles.container}>
+                <Image 
+                    source={eventDetails.EventImage ? { uri: `${localhost}/img/event/${eventDetails.EventImage}` } : defaultImage} 
+                    style={styles.imageStyle} 
+                />
+                <Text style={styles.titleStyle}>{eventDetails.EventName}</Text>
+                <View style={styles.detailsContainer}>
+                    <Text style={styles.textStyle}>Event Details</Text>
+                    <Text>Description: {truncateDescription(eventDetails.EventDescription)}</Text>
+                    <Text>Location: {eventDetails.EventVenue}</Text>
+                    <Text>Event Date: {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(eventDetails.EventDate))}</Text>
+                    <Text>Points Reward: {eventDetails.EventPoints}</Text>
+                </View>
+                <View style={{ alignItems: 'center', gap: 10 }}>
+                    <Text>Time Completion: 5 hrs</Text>
+                    <Text>19/30</Text>
+                    {isApplied ? (
+                        isVerified && !feedbackGiven ? (
+                            renderFeedbackModal()
+                        ) : (
+                            <>
+                                <View style={styles.buttonWrapper}>
+                                    <Button title="APPLIED" disabled={true} />
+                                </View>
+                                <Text>Waiting for approval</Text>
+                            </>
+                        )
+                    ) : (
                         <View style={styles.buttonWrapper}>
-                            <Button title="APPLIED" disabled={true} />
+                            <Button title="APPLY" onPress={onPressApply} disabled={isLoading} />
                         </View>
-                        <Text>Waiting for approval</Text>
-                    </>
-                ) : (
-                    <View style={styles.buttonWrapper}>
-                        <Button title="APPLY" onPress={onPressApply} disabled={isLoading} />
-                    </View>
-                )}
+                    )}
+                </View>
             </View>
-        </View>
-    );
+        );
 };
 
 const styles = StyleSheet.create({
@@ -161,8 +205,8 @@ const styles = StyleSheet.create({
         borderRadius: 15,
     },
     buttonWrapper: {
-        marginVertical: 10, // Adjust as needed
-        width: '80%', // Adjust as needed
+        marginVertical: 10, 
+        width: '80%', 
         alignSelf: 'center',
     },
     textStyle: {
@@ -174,6 +218,33 @@ const styles = StyleSheet.create({
     titleStyle: {
         fontSize: 26,
         fontWeight: 'bold',
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: "center"
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: 'gray',
+        padding: 10,
+        marginBottom: 10,
+        borderRadius: 5,
+        width: '80%',
     },
 });
 
