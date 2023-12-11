@@ -67,21 +67,20 @@ const TaskSubmit = ({ route }) => {
     console.log(userDailyTaskDetails);
     console.log(selectedImages);
 
-    setIsUploading(true); // Start the loading state
+    setIsUploading(true); 
 
     try {
       let formData = new FormData();
       formData.append("userDailyTaskId", userDailyTaskDetails.UserDailyTaskId);
       formData.append("filePath", "/images/proof");
 
-      // Append each image to the formData under the expected field name
       selectedImages.forEach((image, index) => {
         const imageFile = {
           uri: image,
-          type: "image/jpeg", // Or dynamically determine the mime type
-          name: `upload${index}.jpg`, // Generating a unique name for each file
+          type: "image/jpeg", 
+          name: `upload${index}.jpg`, 
         };
-        formData.append("images", imageFile); // Assuming 'images' is the field name expected by the server
+        formData.append("images", imageFile); 
       });
 
       const response = await axios.post(
@@ -91,12 +90,11 @@ const TaskSubmit = ({ route }) => {
 
       console.log("Response:", response.data);
       Alert.alert("Submit Task", "Task submitted successfully!");
-      // Handle the response as needed
     } catch (error) {
       console.error("Error during submission: ", error.message);
       Alert.alert("Error", "Failed to submit task proof.");
     } finally {
-      setIsUploading(false); // End the loading state
+      setIsUploading(false); 
     }
   };
 

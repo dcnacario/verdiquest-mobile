@@ -266,7 +266,6 @@ class User extends BaseModel {
         const taskEndTime = new Date(task.DateTaken);
         taskEndTime.setMinutes(taskEndTime.getMinutes() + task.TaskDuration);
 
-        // Check if the task has expired
         if (new Date() > taskEndTime && task.TaskStatus === "Ongoing") {
           const updateQuery = `
                         UPDATE userdailytask 
@@ -276,9 +275,7 @@ class User extends BaseModel {
           await this.db.query(updateQuery, [userId, taskId]);
           await this.db.query("COMMIT");
           return { isAccepted: false, isExpired: true };
-        }
-        // Check if the task has been cancelled
-        else if (task.TaskStatus === "Cancelled") {
+        } else if (task.TaskStatus === "Cancelled") {
           await this.db.query("COMMIT");
           return { isAccepted: false, isExpired: false };
         }
@@ -325,7 +322,6 @@ class User extends BaseModel {
       };
     }
 
-    // Return a successful response
     return { message: "Task marked as canceled", taskRemoved: true };
   }
 
@@ -455,7 +451,6 @@ class User extends BaseModel {
             `;
       await this.db.query(insertQuery, [userId, eventId, organizationId]);
 
-      // Commit the transaction
       await this.db.query("COMMIT");
 
       return { result: "Event Application Successful", alreadyApplied: false };
