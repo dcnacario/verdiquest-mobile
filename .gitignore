@@ -57,3 +57,4 @@ src/screens/Partners.js
 src/screens/PartnerOverview.js
 src/database/models/user.js
 src/database/ipAddress.js
+src/database/ipAddress.js
