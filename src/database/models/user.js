@@ -466,11 +466,29 @@ class User extends BaseModel {
   }
 
   async eventApplyStatus(userId, eventId) {
-    const query =
-      "SELECT * FROM participants WHERE UserId = ? AND EventId = ? AND Status = 'UNVERIFIED'";
+    const query = `
+      SELECT 
+        *,
+        (Feedback IS NOT NULL AND Feedback <> '') AS FeedbackGiven 
+      FROM participants 
+      WHERE UserId = ? AND EventId = ? AND (Status = 'UNVERIFIED' OR Status = 'VERIFIED')
+    `;
+
     const [results] = await this.db.query(query, [userId, eventId]);
-    return results.length > 0;
-  }
+
+    if (results.length > 0) {
+        const application = results[0];
+        return { 
+            status: true, 
+            feedbackGiven: application.FeedbackGiven 
+        };
+    } else {
+        return { 
+            status: false, 
+            feedbackGiven: false 
+        };
+    }
+}
 
   async updatePerson(personData) {
     const query =
@@ -514,7 +532,6 @@ class User extends BaseModel {
   }
     
     async redeemProduct(userId, productId, productSize, contactNumber, deliveryAddress) {
-       // Validation
       if (!productSize.trim()) return { error: "Product size is required" };
       if (!contactNumber.trim()) return { error: "Contact number is required" };
       if (!deliveryAddress.trim()) return { error: "Delivery address is required" };
@@ -551,6 +568,42 @@ class User extends BaseModel {
           throw error;
       }
     }
+
+  async isApplicationVerified(userId, eventId) {
+    const query = `
+        SELECT Status FROM participants 
+        WHERE UserId = ? AND EventId = ? 
+        AND Status = 'VERIFIED';
+    `;
+    const [results] = await this.db.query(query, [userId, eventId]);
+    return results.length > 0;
+  }
+
+  async submitFeedback(userId, eventId, feedback) {
+    try {
+        const updateQuery = `
+            UPDATE participants 
+            SET Feedback = ? 
+            WHERE UserId = ? AND EventId = ? AND Status = 'VERIFIED';
+        `;
+        await this.db.query(updateQuery, [feedback, userId, eventId]);
+        return { success: true };
+    } catch (error) {
+        throw error;
+    }
+  }
+
+  async isFeedbackGiven(userId, eventId) {
+    const query = `
+      SELECT Feedback FROM participants 
+      WHERE UserId = ? AND EventId = ?;
+    `;
+    const [results] = await this.db.query(query, [userId, eventId]);
+    return results.length > 0 && results[0].Feedback !== null;
+  }
+
 }
+
+
 
 module.exports = User;

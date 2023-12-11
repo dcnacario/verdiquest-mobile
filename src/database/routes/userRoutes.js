@@ -69,5 +69,9 @@ router.post("/fetchPerson", userController.fetchPersonDetails);
 router.post("/updatePerson", userController.updatePerson);
 router.post("/updateInfo", userController.updateInfo);
 router.post("/getUserDailyTask", userController.getUserDailyTask);
+router.get("/checkApplicationVerified", userController.checkApplicationVerified);
+router.post("/submitFeedback", userController.submitEventFeedback);
+
+
 
 module.exports = router;

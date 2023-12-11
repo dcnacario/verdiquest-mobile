@@ -577,6 +577,60 @@ async function redeemProduct(request, response) {
   }
 }
 
+
+async function checkApplicationVerified(request, response) {
+  try {
+    const { userId, eventId } = request.query;
+
+    if (!userId || !eventId) {
+      return response.status(400).send({ message: "UserId and EventId are required" });
+    }
+
+    const isVerified = await user.isApplicationVerified(userId, eventId);
+    const feedbackGiven = await user.isFeedbackGiven(userId, eventId);
+
+    response.json({
+      success: true,
+      isVerified: isVerified,
+      feedbackGiven: feedbackGiven, 
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).send({
+      message: "Error checking verification status",
+      error: error.message,
+    });
+  }
+}
+
+async function submitEventFeedback(request, response) {
+  try {
+    const { userId, eventId, feedback } = request.body;
+
+    if (!userId || !eventId || !feedback) {
+      return response.status(400).send({ message: "All fields are required" });
+    }
+
+    const isFeedbackGiven = await user.isFeedbackGiven(userId, eventId);
+    if (isFeedbackGiven) {
+      return response.status(400).send({ message: "Feedback has already been given for this event" });
+    }
+
+    const result = await user.submitFeedback(userId, eventId, feedback);
+
+    response.json({
+      success: result.success,
+      message: "Feedback submitted successfully"
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).send({
+      message: "Error submitting feedback",
+      error: error.message
+    });
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
@@ -607,4 +661,6 @@ module.exports = {
   updateInfo,
   getUserDailyTask,
   redeemProduct,
+  checkApplicationVerified,
+  submitEventFeedback
 };
