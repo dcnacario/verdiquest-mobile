@@ -71,6 +71,7 @@ router.post("/updateInfo", userController.updateInfo);
 router.post("/getUserDailyTask", userController.getUserDailyTask);
 router.get("/checkApplicationVerified", userController.checkApplicationVerified);
 router.post("/submitFeedback", userController.submitEventFeedback);
+router.get("/checkIfAlreadyRedeemed", userController.checkIfAlreadyRedeemed);
 
 
 

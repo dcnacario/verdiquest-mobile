@@ -547,7 +547,13 @@ class User extends BaseModel {
   
           const pointsRequired = productResults[0].PointsRequired;
           const organizationId = productResults[0].OrganizationId;
-  
+          const productQuantity = productResults[0].Quantity;
+
+          if (productQuantity <= 0) {
+              await this.db.query('ROLLBACK');
+              return { error: "Product is out of stock" };
+          }
+          
           const deductPointsQuery = `UPDATE user SET VerdiPoints = VerdiPoints - ? WHERE UserId = ?`;
           await this.db.query(deductPointsQuery, [pointsRequired, userId]);
 
@@ -557,6 +563,9 @@ class User extends BaseModel {
           const transactionQuery = `INSERT INTO redeemtransaction (RedeemId, TransactionDate, ProductSize, ContactNumber, Destination) VALUES (?, NOW(), ?, ?, ?)`;
           const [redeemResult] = await this.db.query(redeemQuery, [productId, userId, organizationId]);
           const redeemId = redeemResult.insertId;
+
+          const updateProductQuery = `UPDATE products SET ProductQuantity = ProductQuantity - 1 WHERE ProductId = ?`;
+          await this.db.query(updateProductQuery, [productId]);
   
           await this.db.query(transactionQuery, [redeemId, productSize, contactNumber, deliveryAddress]);
   
@@ -567,6 +576,16 @@ class User extends BaseModel {
           await this.db.query('ROLLBACK');
           throw error;
       }
+    }
+
+    async isProductRedeemed(userId, productId) {
+      const query = `
+          SELECT RedeemId FROM redeem 
+          WHERE UserId = ? AND ProductId = ? AND Status = 'SUCCESS';
+      `;
+  
+      const [results] = await this.db.query(query, [userId, productId]);
+      return results.length > 0;
     }
 
   async isApplicationVerified(userId, eventId) {

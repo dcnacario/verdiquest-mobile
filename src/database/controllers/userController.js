@@ -631,6 +631,26 @@ async function submitEventFeedback(request, response) {
   }
 }
 
+async function checkIfAlreadyRedeemed(request, response) {
+  try {
+      const { userId, productId } = request.query;
+
+      if (!userId || !productId) {
+          return response.status(400).send({ message: "UserId and ProductId are required" });
+      }
+
+      const isAlreadyRedeemed = await user.isProductRedeemed(userId, productId);
+
+      response.json({ success: true, isAlreadyRedeemed });
+  } catch (error) {
+      console.error(error);
+      response.status(500).send({
+          message: "Error checking if the product is already redeemed",
+          error: error.message,
+      });
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
@@ -662,5 +682,6 @@ module.exports = {
   getUserDailyTask,
   redeemProduct,
   checkApplicationVerified,
-  submitEventFeedback
+  submitEventFeedback,
+  checkIfAlreadyRedeemed
 };
