@@ -5,6 +5,7 @@ import {
   Text,
   ScrollView,
   ActivityIndicator,
+  StatusBar,
 } from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
@@ -100,7 +101,7 @@ const EventMaster = ({ route }) => {
   //------------------------------------------------------------
   return (
     <View style={styles.container}>
-       <Svg
+      <Svg
         height={200}
         width={1440}
         viewBox="0 0 1440 320"
@@ -121,6 +122,7 @@ const EventMaster = ({ route }) => {
         <Text style={styles.textStyle}>Events</Text>
         <View style={{ flex: 1 }}></View>
       </View>
+      <View style={styles.divider}></View>
       <ScrollView style={styles.scrollView}>
         {isLoading ? (
           <ActivityIndicator size="large" color={theme.colors.primary} /> // Loading indicator)
@@ -164,11 +166,12 @@ const EventMaster = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 50,
     backgroundColor: theme.colors.background,
     flexDirection: "column",
     alignItems: "center",
     gap: 20,
+    paddingTop: StatusBar.currentHeight + 80,
+    paddingBottom: 20,
   },
   textStyle: {
     fontSize: 16,
@@ -200,6 +203,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: -25,
     zIndex: 1,
+  },
+  divider: {
+    width: "80%",
+    height: 1,
+    backgroundColor: "#161616",
+    marginTop: -10,
   },
 });
 

@@ -6,12 +6,13 @@ import {
   Text,
   ScrollView,
   Image,
+  StatusBar,
 } from "react-native";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import ipAddress from "../../database/ipAddress";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Path, Svg} from "react-native-svg"
+import { Path, Svg } from "react-native-svg";
+import { theme } from "../../../assets/style";
 const ViewSubmission = ({ route }) => {
   const { taskData } = route.params;
   const localhost = ipAddress;
@@ -50,7 +51,7 @@ const ViewSubmission = ({ route }) => {
   }, [taskData.UserDailyTaskId]);
 
   return (
-      <View style={styles.background}>
+    <View style={styles.background}>
       <Svg
         height={200}
         width={1440}
@@ -62,56 +63,56 @@ const ViewSubmission = ({ route }) => {
           d="M612.476 144.841L550.386 111.881C529.789 100.947 504.722 102.937 486.109 116.985L415.77 170.07C398.787 182.887 376.287 185.752 356.635 177.599L310.915 158.633C298.156 153.339 283.961 152.611 270.727 156.57L214.143 173.499C211.096 174.41 208.241 175.872 205.72 177.813C194.011 186.826 177.156 184.305 168.597 172.26L150.51 146.806C133.89 123.417 102.3 116.337 77.2875 130.397L0.635547 173.483L1.12709 99.8668C1.49588 44.6395 46.5654 0.167902 101.793 0.536689L681.203 4.40584C727.636 4.71591 765.026 42.6089 764.716 89.0422C764.538 115.693 743.66 137.608 717.049 139.075L612.476 144.841Z"
         />
       </Svg>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.taskName}>
-            {taskData.taskName || taskData.TaskName}
-          </Text>
-          <View style={styles.divider}></View>
-        </View>
-        {/* Content ScrollView */}
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollViewContent}
-        >
-          {fetchedTasks != null && fetchedTasks.length > 0 ? (
-            fetchedTasks.map((item) => (
-              <View key={item.TaskId} style={styles.cardContainer}>
-                <View style={styles.imagePlaceholder}>
-                  <Image
-                    source={{
-                      uri: `${localhost}/img/profilepicture/${item.ProfilePicture}`,
-                    }}
-                    style={styles.imageStyle}
-                  />
-                </View>
-                <View style={styles.textContainer}>
-                  <Text style={styles.name}>
-                    {item.FirstName} {item.LastName}
-                  </Text>
-                  <Text style={styles.status}>Status: {item.TaskStatus}</Text>
-                </View>
-                <TouchableOpacity
-                  style={[
-                    styles.button,
-                    {
-                      backgroundColor:
-                        item.TaskStatus == "Complete" ? "grey" : "#3D691B",
-                    },
-                  ]}
-                  onPress={() => goToViewSubmissionUser(item, fetchTasks)}
-                  disabled={item.TaskStatus == "Complete" ? true : false}
-                >
-                  {console.log(item)}
-                  <Text style={styles.buttonText}>View Submission</Text>
-                </TouchableOpacity>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.taskName}>
+          {taskData.taskName || taskData.TaskName}
+        </Text>
+        <View style={styles.divider}></View>
+      </View>
+      {/* Content ScrollView */}
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}
+      >
+        {fetchedTasks != null && fetchedTasks.length > 0 ? (
+          fetchedTasks.map((item) => (
+            <View key={item.TaskId} style={styles.cardContainer}>
+              <View style={styles.imagePlaceholder}>
+                <Image
+                  source={{
+                    uri: `${localhost}/img/profilepicture/${item.ProfilePicture}`,
+                  }}
+                  style={styles.imageStyle}
+                />
               </View>
-            ))
-          ) : (
-            <Text>No user submissions.</Text>
-          )}
-        </ScrollView>
-        <View style={styles.row}>
+              <View style={styles.textContainer}>
+                <Text style={styles.name}>
+                  {item.FirstName} {item.LastName}
+                </Text>
+                <Text style={styles.status}>Status: {item.TaskStatus}</Text>
+              </View>
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  {
+                    backgroundColor:
+                      item.TaskStatus == "Complete" ? "grey" : "#3D691B",
+                  },
+                ]}
+                onPress={() => goToViewSubmissionUser(item, fetchTasks)}
+                disabled={item.TaskStatus == "Complete" ? true : false}
+              >
+                {console.log(item)}
+                <Text style={styles.buttonText}>View Submission</Text>
+              </TouchableOpacity>
+            </View>
+          ))
+        ) : (
+          <Text>No user submissions.</Text>
+        )}
+      </ScrollView>
+      <View style={styles.row}>
         <Svg
           height={200}
           width="1440"
@@ -124,34 +125,35 @@ const ViewSubmission = ({ route }) => {
           />
         </Svg>
       </View>
-      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: theme.colors.background,
     alignItems: "center",
+    paddingTop: StatusBar.currentHeight + 20,
   },
   taskName: {
-    fontSize: 24, 
+    fontSize: 24,
     fontWeight: "bold",
-    color: "black", 
+    color: "black",
   },
 
   header: {
     paddingVertical: 20,
-    paddingHorizontal: 16, 
-    justifyContent: "center", 
-    alignItems: "center", 
-    width: "100%", 
+    paddingHorizontal: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
     marginTop: "10%",
   },
   logo: {
-    width: 50, 
-    height: 50, 
-    resizeMode: "contain", 
+    width: 50,
+    height: 50,
+    resizeMode: "contain",
   },
   scrollView: {
     width: "100%",

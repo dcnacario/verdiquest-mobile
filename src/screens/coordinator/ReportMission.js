@@ -7,13 +7,14 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   BackHandler,
+  StatusBar,
 } from "react-native";
 import { theme } from "../../../assets/style";
 import CoordEventCard from "../../components/CoordReportCard";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import ipAddress from "../../database/ipAddress";
-import { Path, Svg} from "react-native-svg"
+import { Path, Svg } from "react-native-svg";
 const ReportMission = ({ route }) => {
   const navigation = useNavigation();
   const { coordinator } = route.params;
@@ -92,7 +93,7 @@ const ReportMission = ({ route }) => {
 
   return (
     <View style={styles.container}>
-        <Svg
+      <Svg
         height={200}
         width={1440}
         viewBox="0 0 1440 320"
@@ -158,11 +159,11 @@ const ReportMission = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 50,
     backgroundColor: theme.colors.background,
     flexDirection: "column",
     alignItems: "center",
-    gap: 20,
+    gap: 10,
+    paddingTop: StatusBar.currentHeight + 80,
   },
   textStyle: {
     fontSize: 16,
@@ -183,11 +184,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     marginHorizontal: 5,
-    borderRadius: 10,
-    backgroundColor: "#4CAF50", // Change as per your inactive button color
+    borderRadius: 5,
+    backgroundColor: "#3F4A34", // Change as per your inactive button color
   },
   buttonActive: {
-    backgroundColor: "#3F4A34", // Change as per your active button color
+    backgroundColor: "#4CAF50", // Change as per your active button color
   },
   buttonText: {
     color: "white", // Change as per your inactive text color
@@ -196,30 +197,6 @@ const styles = StyleSheet.create({
   buttonTextActive: {
     color: "#FFFFFF", // Change as per your active text color
     textAlign: "center",
-  },
-  container: {
-    flex: 1,
-    paddingVertical: 50,
-    backgroundColor: theme.colors.background,
-    flexDirection: "column",
-    alignItems: "center",
-    gap: 20,
-  },
-  textStyle: {
-    fontSize: 16,
-    paddingVertical: 10,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  header: {
-    flexDirection: "row",
-    alignSelf: "stretch",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
-  scrollView: {
-    width: "90%", // Ensures ScrollView takes full width
   },
   svgCurve: {
     position: "absolute",
@@ -235,7 +212,7 @@ const styles = StyleSheet.create({
     left: -30,
     position: "absolute",
     bottom: -25,
-    zIndex: 1,
+    zIndex: 0,
   },
 });
 
