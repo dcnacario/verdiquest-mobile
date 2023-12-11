@@ -129,12 +129,12 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
     paddingTop: StatusBar.currentHeight + 80,
   },
-  // header: {
-  //   justifyContent: "center", // Center content horizontally
-  //   alignItems: "center", // Center content vertically
-  //   width: "100%", // Header width
-  //   marginTop: "10%",
-  // },
+  header: {
+    justifyContent: "center", // Center content horizontally
+    alignItems: "center", // Center content vertically
+    width: "100%", // Header width
+    marginTop: "10%",
+  },
   taskName: {
     fontSize: 24, // Adjust the size to match your design
     fontWeight: "bold",
