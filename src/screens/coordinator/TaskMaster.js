@@ -8,6 +8,7 @@ import {
   RefreshControl,
   Modal,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
@@ -237,11 +238,12 @@ const TaskMaster = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 50,
     backgroundColor: theme.colors.background,
     flexDirection: "column",
     alignItems: "center",
     gap: 20,
+    paddingTop: StatusBar.currentHeight + 80,
+    paddingBottom: 20,
   },
   textStyle: {
     fontSize: 16,

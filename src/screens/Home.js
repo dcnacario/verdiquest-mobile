@@ -29,8 +29,6 @@ const Home = ({ route }) => {
   const screenHeight = Dimensions.get("window").height;
   const paddingBottom = screenHeight * 0.15;
 
-  const screenWidth = Dimensions.get("window").width;
-
   const fetchTasks = async () => {
     try {
       const response = await axios.get(

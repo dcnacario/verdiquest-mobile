@@ -225,12 +225,14 @@ const TaskView = ({ route }) => {
         </View>
         {/* Task Description */}
         <View style={{ justifyContent: "flex-start" }}>
-          <Text style={styles.textInput}>Task Description</Text>
+          <Text style={styles.textInput}>Task Instruction</Text>
           <TextInput
             style={styles.modifiedDescriptioninputStyle}
             value={editTaskData.taskDescription}
             editable={isEditing}
             onChangeText={(text) => updateField("taskDescription", text)}
+            multiline={true}
+            numberOfLines={4}
           />
         </View>
         <View style={styles.row}>
@@ -428,7 +430,7 @@ const styles = StyleSheet.create({
     left: -30,
     position: "absolute",
     bottom: -25,
-    zIndex: 1,
+    zIndex: -2,
   },
 });
 

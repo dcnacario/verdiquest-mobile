@@ -7,6 +7,7 @@ import {
   Image,
   Text,
   Alert,
+  StatusBar,
 } from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
@@ -106,16 +107,6 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
     }
   };
 
-  const calculatePoints = (difficultyId) => {
-    const difficultyPointsMap = {
-      1: 150,
-      2: 250,
-      3: 500,
-    };
-
-    return difficultyPointsMap[difficultyId] || 0; // Default to 0 if difficultyId is not found
-  };
-
   useEffect(() => {
     const loadData = async () => {
       const data = await fetchDifficulty();
@@ -126,10 +117,6 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
 
   useEffect(() => {
     updateTaskData("difficultyId", selectedDifficulty);
-
-    // Calculate and set task points based on selected difficulty
-    const points = calculatePoints(selectedDifficulty);
-    updateTaskData("taskPoints", points.toString());
   }, [selectedDifficulty]);
 
   // Handle submit-----------------------------------------
@@ -182,14 +169,16 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
           />
         </View>
 
-        {/* Task Description */}
+        {/* Task Instruction */}
         <View style={{ justifyContent: "flex-start" }}>
-          <Text style={styles.textInput}>Task Description</Text>
+          <Text style={styles.textInput}>Task Instruction</Text>
           <TextInput
-            style={styles.inputStyle}
+            style={styles.modifiedDescriptionInputStyle}
             value={taskData.taskDescription}
             onChangeText={(text) => updateTaskData("taskDescription", text)}
-            placeholder="Enter task description"
+            placeholder="Enter task instruction"
+            multiline={true}
+            numberOfLines={4}
           />
         </View>
 
@@ -203,6 +192,16 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
               value={taskData.taskDuration.toString()}
               onChangeText={(text) => updateTaskData("taskDuration", text)}
               placeholder="in Minutes"
+              keyboardType="numeric"
+            />
+          </View>
+          <View style={styles.column}>
+            <Text style={styles.modifiedTextInput}>Task Points</Text>
+            <TextInput
+              style={styles.modifiedInputStyle}
+              value={taskData.taskPoints.toString()}
+              onChangeText={(text) => updateTaskData("taskPoints", text)}
+              placeholder="Enter VerdiPoints"
               keyboardType="numeric"
             />
           </View>
@@ -247,7 +246,7 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
             d="M161.5 41.4474L219.626 76.2389C241.673 89.435 269.675 87.1283 289.265 70.5023L323.5 41.4474L357.823 16.6873C375.519 3.92172 398.75 1.76916 418.49 11.0659L462.12 31.6136C475.56 37.9434 490.87 39.0619 505.088 34.7525L556.393 19.2018C562.151 17.4565 567.521 14.6238 572.213 10.857C583.853 1.51223 599.233 -1.76023 613.669 2.03681L718.763 29.68C745.125 36.6142 763.5 60.4475 763.5 87.7063V135.5H544H69.9837C31.3327 135.5 0 104.167 0 65.5163C0 39.7769 22.9464 20.0957 48.3856 24.016L161.5 41.4474Z"
           />
         </Svg>
-        </View>
+      </View>
     </View>
   );
 };
@@ -386,7 +385,16 @@ const styles = StyleSheet.create({
     left: -30,
     position: "absolute",
     bottom: -25,
-    zIndex: 1,
+    zIndex: -2,
+  },
+  modifiedDescriptionInputStyle: {
+    borderColor: "#44483E",
+    borderWidth: 1,
+    borderRadius: 12,
+    width: 280,
+    minHeight: 100,
+    padding: 10,
+    textAlignVertical: "top",
   },
 });
 
