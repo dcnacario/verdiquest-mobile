@@ -225,7 +225,7 @@ class Image {
       }
 
       const [row] = await this.db.query(
-        "UPDATE userdailytask SET TaskProof1 = ?, TaskProof2 = ?, TaskProof3 = ? WHERE UserDailyTaskId = ?",
+        "UPDATE userdailytask SET DateFinished = NOW(), TaskProof1 = ?, TaskProof2 = ?, TaskProof3 = ?, TaskStatus = 'Completed' WHERE UserDailyTaskId = ?",
         [fileNames[0], fileNames[1], fileNames[2], userDailyTaskId]
       );
 

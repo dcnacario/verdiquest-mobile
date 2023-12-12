@@ -15,47 +15,67 @@ const ProductRedeem = ({ route }) => {
 
     const [isAlreadyRedeemed, setIsAlreadyRedeemed] = useState(false);
 
+    const checkIfAlreadyRedeemed = async () => {
+        try {
+            const response = await axios.get(`${localhost}/user/checkIfAlreadyRedeemed`, {
+                params: {
+                    userId: user.UserId,
+                    productId: product.ProductId,
+                },
+            });
+
+            if (response.data.success) {
+                setIsAlreadyRedeemed(response.data.isAlreadyRedeemed);
+            } else {
+                console.error("Error checking if product is already redeemed:", response.data.message);
+            }
+        } catch (error) {
+            console.error("Axios error:", error.response.data);
+            Alert.alert("Error", "An error occurred while checking if the product is already redeemed");
+        }
+    };
+
     useEffect(() => {
         checkIfAlreadyRedeemed();
     }, []);
 
     const handleRedeem = async () => {
-      if (isAlreadyRedeemed) {
-          Alert.alert("Notice", "This product has already been redeemed.");
-          return;
-      }
-      if (!productSize.trim()) {
-          Alert.alert("Validation Error", "Product size is required");
-          return;
-      }
-      if (!contactNumber.trim()) {
-          Alert.alert("Validation Error", "Contact number is required");
-          return;
-      }
-      if (!deliveryAddress.trim()) {
-          Alert.alert("Validation Error", "Delivery address is required");
-          return;
-      }
+        if (isAlreadyRedeemed) {
+            Alert.alert("Notice", "This product has already been redeemed.");
+            return;
+        }
+        if (!productSize.trim()) {
+            Alert.alert("Validation Error", "Product size is required");
+            return;
+        }
+        if (!contactNumber.trim()) {
+            Alert.alert("Validation Error", "Contact number is required");
+            return;
+        }
+        if (!deliveryAddress.trim()) {
+            Alert.alert("Validation Error", "Delivery address is required");
+            return;
+        }
 
-      try {
-          const response = await axios.post(`${localhost}/user/redeemProduct`, {
-              userId: user.UserId,
-              productId: product.ProductId,
-              productSize,
-              contactNumber,
-              deliveryAddress
-          });
+        try {
+            const response = await axios.post(`${localhost}/user/redeemProduct`, {
+                userId: user.UserId,
+                productId: product.ProductId,
+                productSize,
+                contactNumber,
+                deliveryAddress
+            });
 
-          if (response.data.success) {
-              Alert.alert("Success", "Product redeemed successfully");
-          } else {
-              Alert.alert("Error", response.data.message);
-          }
-      } catch (error) {
-          console.error("Axios error:", error.response.data);
-          Alert.alert("Error", "An error occurred while redeeming the product");
-      }
-  };
+            if (response.data.success) {
+                Alert.alert("Success", "Product redeemed successfully");
+            } else {
+                Alert.alert("Error", response.data.message);
+            }
+        } catch (error) {
+            console.error("Axios error:", error.response.data);
+            Alert.alert("Error", "An error occurred while redeeming the product");
+        }
+    };
 
     return (
         <View style={styles.background}>
@@ -97,71 +117,65 @@ const ProductRedeem = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    backgroundColor: '#f5f5f5', 
-  },
-  eventDetailsContainer: {
-    backgroundColor: "rgba(123, 144, 75, 0.25);",
-    padding: 30,
-    width: "100%",
-    alignItems: "center",
-    borderRadius: 10,
-    marginTop: 20,
-  },
-  imageStyle: {
-    width: 100,
-    height: 100,
-    resizeMode: 'cover',
-    borderRadius: 100 / 2,
-  },
-  headerText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 2,
-    alignSelf: "center",
-  },
-  cardImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginBottom: 15,
-  },
-  label: {
-    alignSelf: "flex-start",
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: "#44483E",
-    marginTop: 10,
-  },
-  inputStyle: {
-    alignSelf: "stretch",
-    borderColor: "#44483E",
-    borderWidth: 1,
-    borderRadius: 12,
-    height: 45,
-    marginBottom: 10,
-    padding: 10,
-    fontSize: 14,
-    color: "#444",
-  },
-  confirmButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    alignItems: 'center',
-    marginTop: 20,
-    width: "100%",
-  },
-  confirmButtonText: {
-      color: 'white',
-      fontSize: 18,
-      fontWeight: 'bold',
-  },
+    background: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 20,
+        backgroundColor: '#f5f5f5',
+    },
+    eventDetailsContainer: {
+        backgroundColor: "rgba(123, 144, 75, 0.25)",
+        padding: 30,
+        width: "100%",
+        alignItems: "center",
+        borderRadius: 10,
+        marginTop: 20,
+    },
+    imageStyle: {
+        width: 100,
+        height: 100,
+        resizeMode: 'cover',
+        borderRadius: 100 / 2,
+    },
+    headerText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 2,
+        alignSelf: "center",
+    },
+    label: {
+        alignSelf: "flex-start",
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: "#44483E",
+        marginTop: 10,
+    },
+    inputStyle: {
+        alignSelf: "stretch",
+        borderColor: "#44483E",
+        borderWidth: 1,
+        borderRadius: 12,
+        height: 45,
+        marginBottom: 10,
+        padding: 10,
+        fontSize: 14,
+        color: "#444",
+    },
+    confirmButton: {
+        backgroundColor: '#4CAF50',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 20,
+        alignItems: 'center',
+        marginTop: 20,
+        width: "100%",
+    },
+    confirmButtonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
 });
 
 export default ProductRedeem;

@@ -266,7 +266,6 @@ class User extends BaseModel {
         const taskEndTime = new Date(task.DateTaken);
         taskEndTime.setMinutes(taskEndTime.getMinutes() + task.TaskDuration);
 
-        // Check if the task has expired
         if (new Date() > taskEndTime && task.TaskStatus === "Ongoing") {
           const updateQuery = `
                         UPDATE userdailytask 
@@ -276,9 +275,7 @@ class User extends BaseModel {
           await this.db.query(updateQuery, [userId, taskId]);
           await this.db.query("COMMIT");
           return { isAccepted: false, isExpired: true };
-        }
-        // Check if the task has been cancelled
-        else if (task.TaskStatus === "Cancelled") {
+        } else if (task.TaskStatus === "Cancelled") {
           await this.db.query("COMMIT");
           return { isAccepted: false, isExpired: false };
         }
@@ -325,7 +322,6 @@ class User extends BaseModel {
       };
     }
 
-    // Return a successful response
     return { message: "Task marked as canceled", taskRemoved: true };
   }
 
@@ -455,7 +451,6 @@ class User extends BaseModel {
             `;
       await this.db.query(insertQuery, [userId, eventId, organizationId]);
 
-      // Commit the transaction
       await this.db.query("COMMIT");
 
       return { result: "Event Application Successful", alreadyApplied: false };
@@ -466,11 +461,29 @@ class User extends BaseModel {
   }
 
   async eventApplyStatus(userId, eventId) {
-    const query =
-      "SELECT * FROM participants WHERE UserId = ? AND EventId = ? AND Status = 'UNVERIFIED'";
+    const query = `
+      SELECT 
+        *,
+        (Feedback IS NOT NULL AND Feedback <> '') AS FeedbackGiven 
+      FROM participants 
+      WHERE UserId = ? AND EventId = ? AND (Status = 'UNVERIFIED' OR Status = 'VERIFIED')
+    `;
+
     const [results] = await this.db.query(query, [userId, eventId]);
-    return results.length > 0;
-  }
+
+    if (results.length > 0) {
+        const application = results[0];
+        return { 
+            status: true, 
+            feedbackGiven: application.FeedbackGiven 
+        };
+    } else {
+        return { 
+            status: false, 
+            feedbackGiven: false 
+        };
+    }
+}
 
   async updatePerson(personData) {
     const query =
@@ -513,64 +526,96 @@ class User extends BaseModel {
     }
   }
 
-  async redeemProduct(
-    userId,
-    productId,
-    productSize,
-    contactNumber,
-    deliveryAddress
-  ) {
-    // Validation
-    if (!productSize.trim()) return { error: "Product size is required" };
-    if (!contactNumber.trim()) return { error: "Contact number is required" };
-    if (!deliveryAddress.trim())
-      return { error: "Delivery address is required" };
+    
+    async redeemProduct(userId, productId, productSize, contactNumber, deliveryAddress) {
+      if (!productSize.trim()) return { error: "Product size is required" };
+      if (!contactNumber.trim()) return { error: "Contact number is required" };
+      if (!deliveryAddress.trim()) return { error: "Delivery address is required" };
+      try {
+          await this.db.query('START TRANSACTION');
+          const productQuery = `SELECT PointsRequired, OrganizationId FROM products WHERE ProductId = ?`;
+          const [productResults] = await this.db.query(productQuery, [productId]);
+  
+          if (!productResults || productResults.length === 0) {
+              await this.db.query('ROLLBACK');
+              return { error: "Product not found or invalid ProductId" };
+          }
+  
+          const pointsRequired = productResults[0].PointsRequired;
+          const organizationId = productResults[0].OrganizationId;
+          const productQuantity = productResults[0].Quantity;
+
+          if (productQuantity <= 0) {
+              await this.db.query('ROLLBACK');
+              return { error: "Product is out of stock" };
+          }
+          
+          const deductPointsQuery = `UPDATE user SET VerdiPoints = VerdiPoints - ? WHERE UserId = ?`;
+          await this.db.query(deductPointsQuery, [pointsRequired, userId]);
+
+          const redeemQuery = `INSERT INTO redeem (ProductId, UserId, Status) VALUES (?, ?, 'PROCESSING')`;
+          await this.db.query(redeemQuery, [productId, userId]);
+
+          const transactionQuery = `INSERT INTO redeemtransaction (RedeemId, TransactionDate, ProductSize, ContactNumber, Destination) VALUES (?, NOW(), ?, ?, ?)`;
+          const [redeemResult] = await this.db.query(redeemQuery, [productId, userId, organizationId]);
+          const redeemId = redeemResult.insertId;
+
+          const updateProductQuery = `UPDATE products SET ProductQuantity = ProductQuantity - 1 WHERE ProductId = ?`;
+          await this.db.query(updateProductQuery, [productId]);
+  
+          await this.db.query(transactionQuery, [redeemId, productSize, contactNumber, deliveryAddress]);
+  
+          await this.db.query('COMMIT');
+  
+          return { success: true, redeemId, message: "Product redeemed successfully" };
+      } catch (error) {
+          await this.db.query('ROLLBACK');
+          throw error;
+
+    async isProductRedeemed(userId, productId) {
+      const query = `
+          SELECT RedeemId FROM redeem 
+          WHERE UserId = ? AND ProductId = ? AND Status = 'SUCCESS';
+      `;
+  
+      const [results] = await this.db.query(query, [userId, productId]);
+      return results.length > 0;
+    }
+
+  async isApplicationVerified(userId, eventId) {
+    const query = `
+        SELECT Status FROM participants 
+        WHERE UserId = ? AND EventId = ? 
+        AND Status = 'VERIFIED';
+    `;
+    const [results] = await this.db.query(query, [userId, eventId]);
+    return results.length > 0;
+  }
+
+  async submitFeedback(userId, eventId, feedback) {
     try {
-      await this.db.query("START TRANSACTION");
-      const productQuery = `SELECT PointsRequired, OrganizationId FROM products WHERE ProductId = ?`;
-      const [productResults] = await this.db.query(productQuery, [productId]);
-
-      if (!productResults || productResults.length === 0) {
-        await this.db.query("ROLLBACK");
-        return { error: "Product not found or invalid ProductId" };
-      }
-
-      const pointsRequired = productResults[0].PointsRequired;
-      const organizationId = productResults[0].OrganizationId;
-
-      const deductPointsQuery = `UPDATE user SET VerdiPoints = VerdiPoints - ? WHERE UserId = ?`;
-      await this.db.query(deductPointsQuery, [pointsRequired, userId]);
-
-      const redeemQuery = `INSERT INTO redeem (ProductId, UserId, Status) VALUES (?, ?, 'PROCESSING')`;
-      await this.db.query(redeemQuery, [productId, userId]);
-
-      const transactionQuery = `INSERT INTO redeemtransaction (RedeemId, TransactionDate, ProductSize, ContactNumber, Destination) VALUES (?, NOW(), ?, ?, ?)`;
-      const [redeemResult] = await this.db.query(redeemQuery, [
-        productId,
-        userId,
-        organizationId,
-      ]);
-      const redeemId = redeemResult.insertId;
-
-      await this.db.query(transactionQuery, [
-        redeemId,
-        productSize,
-        contactNumber,
-        deliveryAddress,
-      ]);
-
-      await this.db.query("COMMIT");
-
-      return {
-        success: true,
-        redeemId,
-        message: "Product redeemed successfully",
-      };
+        const updateQuery = `
+            UPDATE participants 
+            SET Feedback = ? 
+            WHERE UserId = ? AND EventId = ? AND Status = 'VERIFIED';
+        `;
+        await this.db.query(updateQuery, [feedback, userId, eventId]);
+        return { success: true };
     } catch (error) {
-      await this.db.query("ROLLBACK");
-      throw error;
+        throw error;
     }
   }
+
+  async isFeedbackGiven(userId, eventId) {
+    const query = `
+      SELECT Feedback FROM participants 
+      WHERE UserId = ? AND EventId = ?;
+    `;
+    const [results] = await this.db.query(query, [userId, eventId]);
+    return results.length > 0 && results[0].Feedback !== null;
+  }
 }
+
+
 
 module.exports = User;
