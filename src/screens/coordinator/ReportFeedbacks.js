@@ -133,7 +133,6 @@ const styles = StyleSheet.create({
     justifyContent: "center", // Center content horizontally
     alignItems: "center", // Center content vertically
     width: "100%", // Header width
-    marginTop: "10%",
   },
   taskName: {
     fontSize: 24, // Adjust the size to match your design
