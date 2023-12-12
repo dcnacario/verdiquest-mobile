@@ -3,20 +3,17 @@ const bcrypt = require("bcrypt");
 
 class User extends BaseModel {
   constructor(db) {
-    // Accept the 'db' object as a parameter
     super("user");
-    this.db = db; // Assign the 'db' object to the instance variable
+    this.db = db; 
   }
 
   async insertUser(userData) {
     try {
-      // Check if email already exists
       const [existingUser] = await this.db.query(
         `SELECT Email FROM ${this.tableName} WHERE Email = ?`,
         [userData.email]
       );
 
-      // If email exists, throw an error or return a specific message
       if (existingUser.length > 0) {
         throw new Error("Email already registered");
       }
@@ -65,7 +62,6 @@ class User extends BaseModel {
 
   async fetchUser(userData) {
     try {
-      // Fetch the user by email
       const [result] = await this.db.query(
         "SELECT * FROM user WHERE email = ?",
         [userData.email]
@@ -212,7 +208,6 @@ class User extends BaseModel {
 
       if (existingTasks.length > 0) {
         if (existingTasks[0].PreviouslyCanceled) {
-          // Re-accepting a previously cancelled task
           const updateQuery = `
                         UPDATE userdailytask 
                         SET HasBeenCancelled = false, DateTaken = NOW(), TaskStatus = 'Ongoing' 
@@ -222,19 +217,16 @@ class User extends BaseModel {
           await this.db.query("COMMIT");
           return { reaccepted: true, alreadyAccepted: false };
         } else {
-          // Task is already accepted and not canceled
           await this.db.query("COMMIT");
           return { alreadyAccepted: true };
         }
       } else {
-        // Accepting the task for the first time
         const insertQuery = `
                     INSERT INTO userdailytask (UserId, TaskId, DateTaken, TaskStatus) 
                     VALUES (?, ?, NOW(), 'Ongoing')
                 `;
         await this.db.query(insertQuery, [userId, taskId]);
 
-        // Optionally update task count
         const updateTaskCountQuery = `
                     UPDATE user 
                     SET TaskCount = TaskCount + 1 
@@ -483,7 +475,7 @@ class User extends BaseModel {
             feedbackGiven: false 
         };
     }
-}
+  }
 
   async updatePerson(personData) {
     const query =
@@ -617,7 +609,5 @@ class User extends BaseModel {
   }
 
 }
-
-
 
 module.exports = User;
