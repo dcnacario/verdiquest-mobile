@@ -487,13 +487,13 @@ class User extends BaseModel {
 
   async updatePerson(personData) {
     const query =
-      "UPDATE person SET FirstName = ?, Initial = ?, LastName = ?, PhoneNumber = ? WHERE PersonId = ?";
-    const [results] = await this.db.query(query, [
-      personData.firstName,
-      personData.middleInitial,
-      personData.lastName,
-      personData.phoneNumber,
-      personData.personId,
+        "UPDATE person SET FirstName = ?, Initial = ?, LastName = ?, PhoneNumber = ? WHERE PersonId = ?";
+        const [results] = await this.db.query(query, [
+        personData.firstName,
+        personData.middleInitial,
+        personData.lastName,
+        personData.phoneNumber,
+        personData.personId,
     ]);
 
     const [result_user] = await this.db.query(
@@ -525,7 +525,6 @@ class User extends BaseModel {
       throw error;
     }
   }
-
     
     async redeemProduct(userId, productId, productSize, contactNumber, deliveryAddress) {
       if (!productSize.trim()) return { error: "Product size is required" };
@@ -571,6 +570,8 @@ class User extends BaseModel {
       } catch (error) {
           await this.db.query('ROLLBACK');
           throw error;
+      }
+    }
 
     async isProductRedeemed(userId, productId) {
       const query = `
@@ -614,6 +615,7 @@ class User extends BaseModel {
     const [results] = await this.db.query(query, [userId, eventId]);
     return results.length > 0 && results[0].Feedback !== null;
   }
+
 }
 
 
