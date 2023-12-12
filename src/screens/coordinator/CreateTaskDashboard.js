@@ -8,6 +8,8 @@ import {
   Text,
   Alert,
   StatusBar,
+  Modal,
+  ScrollView,
 } from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
@@ -18,6 +20,7 @@ import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import ipAddress from "../../database/ipAddress";
 import { Path, Svg } from "react-native-svg";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
   const { fetchDifficulty } = useContext(TaskContext);
@@ -32,6 +35,7 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
   const [difficultyData, setDifficultyData] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [taskCover, setTaskCover] = useState(imageSource);
+  const [infoModalVisible, setInfoModalVisible] = useState(false);
 
   const [taskData, setTaskData] = useState({
     organizationId: coordinator.OrganizationId,
@@ -42,6 +46,112 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
     taskPoints: "",
     Status: "Active",
   });
+
+  const InfoModal = ({ isVisible, onClose }) => {
+    return (
+      <Modal
+        transparent={true}
+        visible={isVisible}
+        animationType="fade"
+        onRequestClose={onClose}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Task Difficulty Levels</Text>
+            <ScrollView>
+              <Text style={styles.modalSectionTitle}>Easy:</Text>
+              <Text style={styles.modalTextInfo}>
+                <Text style={styles.modalInfoSubTitle}>Criteria:</Text>
+                {"\n"}Tasks suitable for beginners or those new to
+                sustainability efforts. Require minimal time, resources, or
+                expertise.{"\n"}
+                <Text style={styles.modalInfoSubTitle}>Examples:</Text>
+                {"\n"}Use a reusable alternative.{"\n"}
+                Pick up a bag of trash/litter in local areas.{"\n"}
+                <Text style={styles.modalInfoSubTitle}>Proof:</Text>
+                {"\n"}
+                Submit a photo of the reusable item. Submit a photo of the
+                filled bag of collected litter.
+              </Text>
+
+              <Text style={styles.modalSectionTitle}>Moderate:</Text>
+              <Text style={styles.modalTextInfo}>
+                <Text style={styles.modalInfoSubTitle}>Criteria:</Text>
+                {"\n"}Tasks suitable for individuals with some experience in
+                sustainability. Involve a moderate level of time, resources, or
+                expertise.{"\n"}
+                <Text style={styles.modalInfoSubTitle}>Examples:</Text>
+                {"\n"}Pick up a bag of trash/litter in rural areas.{"\n"}Recycle
+                and sell plastic or glass bottles.{"\n"}Plant/Grow a seedling in
+                your backyard.{"\n"}
+                <Text style={styles.modalInfoSubTitle}>Proof:</Text>
+                {"\n"}
+                Submit a photo of the filled bag of rural litter.{"\n"}Submit a
+                photo of the recycled items and proof of sale.{"\n"}Submit a
+                photo of the planted seedling in your backyard.
+              </Text>
+
+              <Text style={styles.modalSectionTitle}>Hard:</Text>
+              <Text style={styles.modalTextInfo}>
+                <Text style={styles.modalInfoSubTitle}>Criteria:</Text>
+                {"\n"}Tasks suitable for those with a commitment to
+                sustainability. Involve a significant investment of time,
+                resources, or expertise.{"\n"}
+                <Text style={styles.modalInfoSubTitle}>Examples:</Text>
+                {"\n"}Join a community cleanup event.{"\n"}Buy Eco-Friendly or
+                Locally made products.{"\n"}Build a compost in your backyard.
+                {"\n"}
+                <Text style={styles.modalInfoSubTitle}>Proof:</Text>
+                {"\n"}
+                Submit a photo of your participation in the community cleanup.
+                {"\n"}Submit a photo of the Eco-Friendly or Locally made
+                products you purchased.{"\n"}Submit a photo of the composting
+                setup in your backyard.
+              </Text>
+
+              <Text style={styles.modalSectionTitle}>Challenging:</Text>
+              <Text style={styles.modalTextInfo}>
+                <Text style={styles.modalInfoSubTitle}>Criteria:</Text>
+                {"\n"}Tasks suitable for sustainability enthusiasts. Involve
+                creativity, innovation, or active promotion.{"\n"}
+                <Text style={styles.modalInfoSubTitle}>Examples:</Text>
+                {"\n"}Create Eco-Friendly products/items from scratch.{"\n"}
+                Promote/Invite others to the concept of sustainability through
+                the application, flyers, etc.
+                {"\n"}
+                <Text style={styles.modalInfoSubTitle}>Proof:</Text>
+                {"\n"}
+                Submit a photo of the Eco-Friendly product you created.{"\n"}
+                Provide evidence of your promotional efforts, such as photos of
+                flyers or screenshots of social media posts.
+              </Text>
+
+              <Text style={styles.modalSectionTitle}>Expert:</Text>
+              <Text style={styles.modalTextInfo}>
+                <Text style={styles.modalInfoSubTitle}>Criteria:</Text>
+                {"\n"}Tasks suitable for sustainability leaders or those seeking
+                significant impact. Involve coordination, leadership, or
+                participation in large-scale events.{"\n"}
+                <Text style={styles.modalInfoSubTitle}>Examples:</Text>
+                {"\n"}Organize a community cleanup event.{"\n"}Join a tree
+                planting event.
+                {"\n"}
+                <Text style={styles.modalInfoSubTitle}>Proof:</Text>
+                {"\n"}
+                Submit a series of photos capturing different stages of the
+                cleanup and participants.{"\n"}Submit photos of your
+                participation in the tree planting event.
+              </Text>
+
+              <TouchableOpacity style={styles.button} onPress={onClose}>
+                <Text style={styles.buttonText}>Close</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
 
   const updateTaskData = (field, value) => {
     setTaskData({ ...taskData, [field]: value });
@@ -158,6 +268,11 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
           )}
         </TouchableOpacity>
 
+        <InfoModal
+          isVisible={infoModalVisible}
+          onClose={() => setInfoModalVisible(false)}
+        />
+
         {/* Task Name */}
         <View style={{ justifyContent: "flex-start" }}>
           <Text style={styles.textInput}>Task Name</Text>
@@ -227,12 +342,28 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
             ))}
           </Picker>
         </View>
-
-        <Button
-          title={isSubmitting ? "Creating..." : "Create"}
-          onPress={uploadImage}
-          disabled={isSubmitting}
-        />
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between", // Center the child elements
+            alignItems: "center",
+            gap: 70, // Center vertically
+          }}
+        >
+          <View style={{ flex: 1 }}></View>
+          <Button
+            title={isSubmitting ? "Creating..." : "Create"}
+            onPress={uploadImage}
+            disabled={isSubmitting}
+          />
+          <TouchableOpacity onPress={() => setInfoModalVisible(true)}>
+            <MaterialIcons
+              name="info-outline"
+              size={32}
+              color={theme.colors.primary}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.row1}>
         <Svg
@@ -395,6 +526,60 @@ const styles = StyleSheet.create({
     minHeight: 100,
     padding: 10,
     textAlignVertical: "top",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    width: "100%", // Set the width to 100%
+    height: "100%", // Set the height to 100%
+  },
+  modalContent: {
+    width: 300, // Set your desired width
+    height: 500, // Set your desired height
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTextInfo: {
+    textAlign: "justify",
+    paddingVertical: 5,
+  },
+  modalSectionTitle: {
+    fontWeight: "bold",
+    alignSelf: "flex-start",
+    paddingVertical: 5,
+    fontSize: 16,
+  },
+  modalInfoSubTitle: {
+    fontWeight: "500",
+    paddingVertical: 5,
+  },
+  modalTitle: {
+    fontWeight: "bold",
+    fontSize: 20,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    backgroundColor: theme.colors.primary,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
 
