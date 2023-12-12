@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TextInput, TouchableOpacity, Image, Text, } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  Text,
+} from "react-native";
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
 import * as ImagePicker from "expo-image-picker";
@@ -384,7 +391,7 @@ const styles = StyleSheet.create({
     left: -30,
     position: "absolute",
     bottom: -25,
-    zIndex: 1,
+    zIndex: -1,
   },
 });
 

@@ -36,43 +36,15 @@ router.get("/products", userController.fetchProducts);
 router.post("/applyEvent", userController.applyForEvent);
 router.get("/eventApplyStatus", userController.eventApplicationStatus);
 router.post("/redeemProduct", userController.redeemProduct);
-router.post("/subscribe", async (req, res) => {
-  try {
-    const response = await axios.post(
-      "https://api.paymongo.com/v1/links",
-      {
-        data: {
-          attributes: {
-            amount: 12900,
-            description: "Subscription for VerdiQuest",
-          },
-        },
-      },
-      {
-        headers: {
-          Authorization: `Basic ${Buffer.from(
-            "sk_test_Po7Yyc5yDxdHNgNxWbgMsRTq"
-          ).toString("base64")}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    const checkoutUrl = response.data.data.attributes.checkout_url;
-    console.log(checkoutUrl.toString());
-  } catch (error) {
-    console.error("Error:", error.response ? error.response.data : error);
-    res.status(500).send("Error creating payment link");
-  }
-});
 router.post("/fetchPerson", userController.fetchPersonDetails);
 router.post("/updatePerson", userController.updatePerson);
 router.post("/updateInfo", userController.updateInfo);
 router.post("/getUserDailyTask", userController.getUserDailyTask);
-router.get("/checkApplicationVerified", userController.checkApplicationVerified);
+router.get(
+  "/checkApplicationVerified",
+  userController.checkApplicationVerified
+);
 router.post("/submitFeedback", userController.submitEventFeedback);
 router.get("/checkIfAlreadyRedeemed", userController.checkIfAlreadyRedeemed);
-
-
 
 module.exports = router;

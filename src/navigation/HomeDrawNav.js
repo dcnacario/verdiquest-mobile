@@ -1,7 +1,10 @@
-import React,{useContext} from "react";
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
+import React, { useContext } from "react";
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+} from "@react-navigation/drawer";
 import Profile from "../screens/Profile";
-import Subscription from "../screens/Subscription";
 import Home from "../screens/Home";
 import { Text, View } from "react-native";
 import ProfileStack from "./ProfileStack";
@@ -15,11 +18,15 @@ const Drawer = createDrawerNavigator();
 
 function LogoutButton() {
   const navigation = useNavigation();
-  const {logout} = useContext(AuthContext)
-
+  const { logout } = useContext(AuthContext);
 
   return (
-    <TouchableOpacity onPress={()=>logout(navigation)}><Text style={{fontWeight: "bold", marginRight: 50, color:"#BA1A1A"}}><MaterialIcons name="logout"/>Logout</Text></TouchableOpacity>
+    <TouchableOpacity onPress={() => logout(navigation)}>
+      <Text style={{ fontWeight: "bold", marginRight: 50, color: "#BA1A1A" }}>
+        <MaterialIcons name="logout" />
+        Logout
+      </Text>
+    </TouchableOpacity>
   );
 }
 
@@ -50,8 +57,6 @@ const HomeDrawNav = ({ route }) => {
           borderRadius: 30,
           padding: 10,
         },
-        
-        
       }}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
@@ -64,12 +69,6 @@ const HomeDrawNav = ({ route }) => {
       <Drawer.Screen
         name="Profile"
         component={ProfileStack}
-        initialParams={{ user: user }}
-        options={{ headerShown: false }}
-      />
-      <Drawer.Screen
-        name="Subscription"
-        component={Subscription}
         initialParams={{ user: user }}
         options={{ headerShown: false }}
       />

@@ -48,7 +48,7 @@ router.post("/subscribe", async (req, res) => {
       {
         data: {
           attributes: {
-            amount: 12900,
+            amount: 22900,
             description: "Subscription for VerdiQuest",
           },
         },
