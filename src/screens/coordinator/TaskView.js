@@ -288,6 +288,7 @@ const TaskView = ({ route }) => {
             title={isEditing ? "Save" : "Edit"}
             onPress={handleEditSave}
             disabled={isSubmitting}
+            icon={"update"}
           />
         </View>
       </View>

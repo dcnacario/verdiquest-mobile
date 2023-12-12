@@ -18,6 +18,7 @@ import axios from "axios";
 import ipAddress from "../../database/ipAddress";
 import { useIsFocused } from "@react-navigation/native";
 import { Path, Svg } from "react-native-svg";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const TaskMaster = ({ route }) => {
   const [fetchedTasks, setFetchedTasks] = useState([]);
@@ -65,6 +66,12 @@ const TaskMaster = ({ route }) => {
   //navigate to creation of task
   const goToCreateTask = () => {
     navigation.navigate("CreateTaskDashboard", {
+      coordinator: coordinator,
+      // onTaskCreated: fetchTasks,
+    });
+  };
+  const goToAdvance = () => {
+    navigation.navigate("AdvanceSettingTask", {
       coordinator: coordinator,
       // onTaskCreated: fetchTasks,
     });
@@ -184,7 +191,26 @@ const TaskMaster = ({ route }) => {
           <Button title="+ Create" onPress={() => goToCreateTask()} />
         </View>
         <Text style={styles.textStyle}>Tasks</Text>
-        <View style={{ flex: 1 }}></View>
+        <View style={{ flex: 1 }}>
+          <View
+            style={{ alignSelf: "flex-end", flexDirection: "row", gap: 15 }}
+          >
+            <TouchableOpacity onPress={goToAdvance}>
+              <MaterialIcons
+                name="settings"
+                size={32}
+                color={theme.colors.primary}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <MaterialIcons
+                name="info-outline"
+                size={32}
+                color={theme.colors.primary}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
       <View style={styles.divider}></View>
       <ScrollView

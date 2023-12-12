@@ -33,13 +33,8 @@ const Button = ({
         ]}
         disabled={disabled}
       >
-        {img ? <Image source={img} style={styles.img} /> : null}
-        <Text style={[styles.buttonText, { color: textColor }]}>
-          {icon ? (
-            <MaterialIcon name={icon} size={16} color={textColor} />
-          ) : null}{" "}
-          {title}
-        </Text>
+        {icon ? <MaterialIcon name={icon} size={16} color={textColor} /> : null}
+        <Text style={[styles.buttonText, { color: textColor }]}>{title}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -62,6 +57,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     paddingVertical: 5,
     paddingHorizontal: 20,
+    justifyContent: "center",
   },
   buttonText: {
     fontSize: 12,

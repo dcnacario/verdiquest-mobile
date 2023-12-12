@@ -330,6 +330,7 @@ const ViewEvent = ({ route }) => {
             title={isEditing ? "Save" : "Edit"}
             onPress={handleEditSave}
             disabled={isSubmit}
+            icon={"update"}
           />
         </View>
       </View>
