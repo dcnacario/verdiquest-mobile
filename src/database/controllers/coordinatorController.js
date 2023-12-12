@@ -753,7 +753,6 @@ async function updateTaskLimit(request, response) {
       ExpertLimit,
       OrganizationId,
     } = request.body;
-    console.log(EasyLimit);
 
     const taskLimit = {
       EasyLimit,

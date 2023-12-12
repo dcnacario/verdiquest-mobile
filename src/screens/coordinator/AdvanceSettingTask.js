@@ -26,6 +26,50 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
     setCoordinator({ ...coordinatorData, [field]: value });
   };
 
+  const checkRange = async () => {
+    if (coordinatorData.SubscriptionStatus === "Inactive") {
+      if (
+        coordinatorData.EasyLimit > 0 &&
+        coordinatorData.EasyLimit < 11 &&
+        coordinatorData.ModerateLimit > 0 &&
+        coordinatorData.ModerateLimit < 9 &&
+        coordinatorData.HardLimit > 0 &&
+        coordinatorData.HardLimit < 5 &&
+        coordinatorData.ChallengingLimit > 0 &&
+        coordinatorData.ChallengingLimit < 2 &&
+        coordinatorData.ExpertLimit > 0 &&
+        coordinatorData.ExpertLimit < 2
+      ) {
+        await handleUpdateTask();
+      } else {
+        Alert.alert(
+          "Invalid Ranged",
+          "Please input required range for each field\n Easy - 1 to 10 \n Moderate - 1 to 8 \n Hard - 1 to 4 \n Challenging and Expert - 1 only"
+        );
+      }
+    } else {
+      if (
+        coordinatorData.EasyLimit > 0 &&
+        coordinatorData.EasyLimit < 21 &&
+        coordinatorData.ModerateLimit > 0 &&
+        coordinatorData.ModerateLimit < 17 &&
+        coordinatorData.HardLimit > 0 &&
+        coordinatorData.HardLimit < 9 &&
+        coordinatorData.ChallengingLimit > 0 &&
+        coordinatorData.ChallengingLimit < 3 &&
+        coordinatorData.ExpertLimit > 0 &&
+        coordinatorData.ExpertLimit < 3
+      ) {
+        await handleUpdateTask();
+      } else {
+        Alert.alert(
+          "Invalid Ranged",
+          "Please input required range for each field\n Easy - 1 to 20 \n Moderate - 1 to 16 \n Hard - 1 to 8 \n Challenging and Expert 1 to 2"
+        );
+      }
+    }
+  };
+
   //api call
   const handleUpdateTask = async () => {
     if (isEditing) {
@@ -94,6 +138,7 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
             editable={isEditing}
             value={coordinatorData.EasyLimit.toString()}
             onChangeText={(text) => updateTaskLimit("EasyLimit", text)}
+            keyboardType="numeric"
           />
         </View>
         <View style={{ justifyContent: "flex-start" }}>
@@ -103,6 +148,7 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
             editable={isEditing}
             value={coordinatorData.ModerateLimit.toString()}
             onChangeText={(text) => updateTaskLimit("ModerateLimit", text)}
+            keyboardType="numeric"
           />
         </View>
         <View style={{ justifyContent: "flex-start" }}>
@@ -112,6 +158,7 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
             editable={isEditing}
             value={coordinatorData.HardLimit.toString()}
             onChangeText={(text) => updateTaskLimit("HardLimit", text)}
+            keyboardType="numeric"
           />
         </View>
         <View style={{ justifyContent: "flex-start" }}>
@@ -121,6 +168,7 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
             editable={isEditing}
             value={coordinatorData.ChallengingLimit.toString()}
             onChangeText={(text) => updateTaskLimit("ChallengingLimit", text)}
+            keyboardType="numeric"
           />
         </View>
         <View style={{ justifyContent: "flex-start" }}>
@@ -130,13 +178,14 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
             editable={isEditing}
             value={coordinatorData.ExpertLimit.toString()}
             onChangeText={(text) => updateTaskLimit("ExpertLimit", text)}
+            keyboardType="numeric"
           />
         </View>
         <Button
           title={isEditing ? "Save Changes" : "Update"}
           disabled={isSubmitting}
           icon={"update"}
-          onPress={handleUpdateTask}
+          onPress={checkRange}
         />
         <View style={styles.row1}>
           <Svg
