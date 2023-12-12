@@ -246,42 +246,50 @@ class User extends BaseModel {
   async checkTaskAccepted(userId, taskId) {
     try {
       await this.db.query("START TRANSACTION");
+  
       const query = `
-                SELECT udt.*, dt.TaskDuration FROM userdailytask udt
-                JOIN dailytask dt ON udt.TaskId = dt.TaskId
-                WHERE udt.UserId = ? AND udt.TaskId = ?
-            `;
-      const [results] = await this.db.query(query, [userId, taskId]);
-
+        SELECT udt.*, dt.TaskDuration, dt.TaskPoints, dt.TaskName, dt.TaskDescription, dt.TaskImage,
+              COALESCE((SELECT TaskStatus FROM userdailytask WHERE UserId = ? AND TaskId = ?), 'NotStarted') AS TaskStatus
+        FROM userdailytask udt
+        JOIN dailytask dt ON udt.TaskId = dt.TaskId
+        WHERE udt.UserId = ? AND udt.TaskId = ?
+      `;
+      const [results] = await this.db.query(query, [userId, taskId, userId, taskId]);
+  
       if (results.length > 0) {
         const task = results[0];
         const taskEndTime = new Date(task.DateTaken);
         taskEndTime.setMinutes(taskEndTime.getMinutes() + task.TaskDuration);
-
+  
         if (new Date() > taskEndTime && task.TaskStatus === "Ongoing") {
           const updateQuery = `
-                        UPDATE userdailytask 
-                        SET TaskStatus = 'Expired', DateFinished = NOW()
-                        WHERE UserId = ? AND TaskId = ?
-                    `;
+            UPDATE userdailytask 
+            SET TaskStatus = 'Expired', DateFinished = NOW()
+            WHERE UserId = ? AND TaskId = ?
+          `;
           await this.db.query(updateQuery, [userId, taskId]);
           await this.db.query("COMMIT");
-          return { isAccepted: false, isExpired: true };
+          return { isAccepted: false, isExpired: true, isCompleted: task.TaskStatus === "Completed" };
         } else if (task.TaskStatus === "Cancelled") {
           await this.db.query("COMMIT");
-          return { isAccepted: false, isExpired: false };
+          return { isAccepted: false, isExpired: false, isCompleted: task.TaskStatus === "Completed" };
         }
-
+  
         await this.db.query("COMMIT");
         return {
           isAccepted: true,
           dateTaken: task.DateTaken,
           taskDuration: task.TaskDuration,
           isExpired: false,
+          isCompleted: task.TaskStatus === "Completed",
+          taskPoints: task.TaskPoints,
+          taskName: task.TaskName,
+          taskDescription: task.TaskDescription,
+          taskImage: task.TaskImage,
         };
       } else {
         await this.db.query("COMMIT");
-        return { isAccepted: false, isExpired: false };
+        return { isAccepted: false, isExpired: false, isCompleted: false };
       }
     } catch (error) {
       await this.db.query("ROLLBACK");
@@ -289,6 +297,7 @@ class User extends BaseModel {
       throw error;
     }
   }
+  
 
   async fetchAcceptedTasks(userId) {
     const query = `

@@ -208,28 +208,6 @@ async function updateUser(request, response) {
   }
 }
 
-async function updateUser(request, response) {
-  try {
-    const { verdiPoints, password, userId } = request.body;
-
-    const userData = {
-      verdiPoints,
-      password,
-      userId,
-    };
-
-    const result = await user.updateUser(userData);
-    return response.json({
-      message: "User updated successfully!",
-      success: true,
-      result: result,
-    });
-  } catch (error) {
-    console.error(error);
-    response.status(500).json({ success: false, message: "Server error" });
-  }
-}
-
 async function fetchTaskDetails(request, response) {
   try {
     const taskId = request.params.taskId;
@@ -287,12 +265,14 @@ async function checkTaskAccepted(request, response) {
       success: true,
       isAccepted: result.isAccepted,
       taskExpired: result.isExpired,
+      isCompleted: result.isCompleted,
     });
   } catch (error) {
     console.error(`Error checking task acceptance: ${error}`);
     response.status(500).send({ success: false, message: "Server error" });
   }
 }
+
 
 async function fetchAcceptedTasks(request, response) {
   const userId = request.params.userId;
