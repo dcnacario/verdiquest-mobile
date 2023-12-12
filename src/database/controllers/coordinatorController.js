@@ -743,6 +743,41 @@ async function fetchCoordinators(request, response) {
   }
 }
 
+async function updateTaskLimit(request, response) {
+  try {
+    const {
+      EasyLimit,
+      ModerateLimit,
+      HardLimit,
+      ChallengingLimit,
+      ExpertLimit,
+      OrganizationId,
+    } = request.body;
+    console.log(EasyLimit);
+
+    const taskLimit = {
+      EasyLimit,
+      ModerateLimit,
+      HardLimit,
+      ChallengingLimit,
+      ExpertLimit,
+      OrganizationId,
+    };
+
+    const result = await coordinator.updateTaskLimit(taskLimit);
+    return response.json({
+      message: "Task Limit updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
 module.exports = {
   registerOrganization,
   registerCoordinator,
@@ -772,4 +807,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   fetchCoordinators,
+  updateTaskLimit,
 };

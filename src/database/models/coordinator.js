@@ -548,6 +548,26 @@ class Coordinator extends BaseModel {
       throw error;
     }
   }
+
+  async updateTaskLimit(taskLimit) {
+    try {
+      const sql =
+        "UPDATE organization SET EasyLimit = ?, ModerateLimit = ?, HardLimit = ?, ChallengingLimit = ?, ExpertLimit = ? WHERE OrganizationId = ?";
+      const [result] = await this.db.query(sql, [
+        taskLimit.EasyLimit,
+        taskLimit.ModerateLimit,
+        taskLimit.HardLimit,
+        taskLimit.ChallengingLimit,
+        taskLimit.ExpertLimit,
+        taskLimit.OrganizationId,
+      ]);
+      const task = result.affectedRows;
+      return task;
+    } catch (error) {
+      console.error(`Error updating task limit: ${error}`);
+      throw error;
+    }
+  }
 }
 
 module.exports = Coordinator;

@@ -10,7 +10,7 @@ import {
 import { theme } from "../../../assets/style";
 import Button from "../../components/Button";
 import { TaskProvider, TaskContext } from "../../navigation/TaskContext";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import axios from "axios";
 import ipAddress from "../../database/ipAddress";
 import { Path, Svg } from "react-native-svg";
@@ -19,15 +19,56 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
   const localhost = ipAddress;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  console.log(coordinator);
+  const isFocused = useIsFocused();
+  const [coordinatorData, setCoordinator] = useState(coordinator);
 
-  const [taskLimit, setTaskLimit] = useState({
-    easyLimit: coordinator.EasyLimit.toString(),
-    moderateLimit: coordinator.ModerateLimit.toString(),
-    hardLimit: coordinator.HardLimit.toString(),
-    challengingLimit: coordinator.ChallengingLimit.toString(),
-    expertLimit: coordinator.ExpertLimit.toString(),
-  });
+  const updateTaskLimit = (field, value) => {
+    setCoordinator({ ...coordinatorData, [field]: value });
+  };
+
+  //api call
+  const handleUpdateTask = async () => {
+    if (isEditing) {
+      if (isSubmitting) return;
+      setIsSubmitting(true);
+      try {
+        const response = await axios.post(
+          `${localhost}/coordinator/updateTaskLimit`,
+          coordinatorData
+        );
+        console.log(coordinatorData);
+        fetchCoordinatorData();
+      } catch (error) {
+        console.error("Error updating task:", error);
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+    setIsEditing(!isEditing);
+  };
+
+  const fetchCoordinatorData = async () => {
+    try {
+      // Replace with your API call to fetch coordinator data
+      const response = await axios.post(
+        `${localhost}/coordinator/fetchCoordinator`,
+        {
+          coordinatorId: coordinator.CoordinatorId,
+        }
+      );
+      setCoordinator(response.data.fetchedUser);
+    } catch (error) {
+      console.log("Error fetching coordinator data:", error);
+    }
+  };
+
+  //
+
+  useEffect(() => {
+    if (isFocused) {
+      fetchCoordinatorData();
+    }
+  }, [isFocused]);
 
   return (
     <View style={styles.background}>
@@ -51,7 +92,8 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
           <TextInput
             style={styles.inputStyle}
             editable={isEditing}
-            value={taskLimit.easyLimit}
+            value={coordinatorData.EasyLimit.toString()}
+            onChangeText={(text) => updateTaskLimit("EasyLimit", text)}
           />
         </View>
         <View style={{ justifyContent: "flex-start" }}>
@@ -59,7 +101,8 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
           <TextInput
             style={styles.inputStyle}
             editable={isEditing}
-            value={taskLimit.moderateLimit}
+            value={coordinatorData.ModerateLimit.toString()}
+            onChangeText={(text) => updateTaskLimit("ModerateLimit", text)}
           />
         </View>
         <View style={{ justifyContent: "flex-start" }}>
@@ -67,7 +110,8 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
           <TextInput
             style={styles.inputStyle}
             editable={isEditing}
-            value={taskLimit.hardLimit}
+            value={coordinatorData.HardLimit.toString()}
+            onChangeText={(text) => updateTaskLimit("HardLimit", text)}
           />
         </View>
         <View style={{ justifyContent: "flex-start" }}>
@@ -75,7 +119,8 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
           <TextInput
             style={styles.inputStyle}
             editable={isEditing}
-            value={taskLimit.challengingLimit}
+            value={coordinatorData.ChallengingLimit.toString()}
+            onChangeText={(text) => updateTaskLimit("ChallengingLimit", text)}
           />
         </View>
         <View style={{ justifyContent: "flex-start" }}>
@@ -83,13 +128,15 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
           <TextInput
             style={styles.inputStyle}
             editable={isEditing}
-            value={taskLimit.expertLimit}
+            value={coordinatorData.ExpertLimit.toString()}
+            onChangeText={(text) => updateTaskLimit("ExpertLimit", text)}
           />
         </View>
         <Button
-          title={isSubmitting ? "Updating..." : "Update"}
+          title={isEditing ? "Save Changes" : "Update"}
           disabled={isSubmitting}
           icon={"update"}
+          onPress={handleUpdateTask}
         />
         <View style={styles.row1}>
           <Svg
