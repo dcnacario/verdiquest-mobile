@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, TextInput, Image, Text, Alert, TouchableOpacity } from "react-native";
 import ipAddress from "../database/ipAddress";
 import defaultImage from '../../assets/img/default-image.png';
 import axios from "axios";
+
 
 const ProductRedeem = ({ route }) => {
     const localhost = ipAddress;
@@ -10,6 +12,7 @@ const ProductRedeem = ({ route }) => {
     const [productSize, setProductSize] = useState('');
     const [contactNumber, setContactNumber] = useState('');
     const [deliveryAddress, setDeliveryAddress] = useState('');
+
     const [isAlreadyRedeemed, setIsAlreadyRedeemed] = useState(false);
 
     const checkIfAlreadyRedeemed = async () => {
