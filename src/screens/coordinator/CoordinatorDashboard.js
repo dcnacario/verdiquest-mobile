@@ -23,7 +23,7 @@ const CoordinatorDashboard = ({ route }) => {
 
   return (
     <View style={styles.background}>
-           <Svg
+      <Svg
         height={200}
         width={1440}
         viewBox="0 0 1440 320"
@@ -34,11 +34,10 @@ const CoordinatorDashboard = ({ route }) => {
           d="M612.476 144.841L550.386 111.881C529.789 100.947 504.722 102.937 486.109 116.985L415.77 170.07C398.787 182.887 376.287 185.752 356.635 177.599L310.915 158.633C298.156 153.339 283.961 152.611 270.727 156.57L214.143 173.499C211.096 174.41 208.241 175.872 205.72 177.813C194.011 186.826 177.156 184.305 168.597 172.26L150.51 146.806C133.89 123.417 102.3 116.337 77.2875 130.397L0.635547 173.483L1.12709 99.8668C1.49588 44.6395 46.5654 0.167902 101.793 0.536689L681.203 4.40584C727.636 4.71591 765.026 42.6089 764.716 89.0422C764.538 115.693 743.66 137.608 717.049 139.075L612.476 144.841Z"
         />
       </Svg>
-    <ScrollView
-      keyboardShouldPersistTaps="handled"
-      style={{ backgroundColor: theme.colors.background, flex: 1 }}
-    >
-     
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        style={{ backgroundColor: theme.colors.background, flex: 1 }}
+      >
         {/* Profile Picture */}
         <Image
           source={require("../../../assets/img/default-profile.png")}
@@ -87,7 +86,7 @@ const CoordinatorDashboard = ({ route }) => {
             editable={false}
           />
         </View>
-        <TouchableOpacity onPress={goToRegister}>
+        {/* <TouchableOpacity onPress={goToRegister}>
           <Text
             style={{
               fontWeight: "bold",
@@ -99,9 +98,9 @@ const CoordinatorDashboard = ({ route }) => {
           >
             Remove
           </Text>
-        </TouchableOpacity>
-    </ScrollView>
-    <View style={styles.row}>
+        </TouchableOpacity> */}
+      </ScrollView>
+      <View style={styles.row}>
         <Svg
           height={200}
           width="1440"

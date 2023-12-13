@@ -17,6 +17,7 @@ import axios from "axios";
 import ipAddress from "../../database/ipAddress";
 import defaultImage from "../../../assets/img/default-image.png";
 import { Path, Svg } from "react-native-svg";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const CoordInterface = ({ route }) => {
   const [coordinator, setCoordinator] = useState(route.params.coordinator);
@@ -69,6 +70,9 @@ const CoordInterface = ({ route }) => {
   const goToReward = () => {
     navigation.navigate("CoordinatorProduct", { coordinator: coordinator });
   };
+  const goToSubscription = () => {
+    navigation.navigate("Subscription", { coordinator: coordinator });
+  };
 
   const isDisable = coordinator.Rank === 0 ? true : false;
 
@@ -90,16 +94,41 @@ const CoordInterface = ({ route }) => {
         <View style={styles.profileHeader}>
           <View style={{ alignSelf: "flex-end" }}>
             <TouchableOpacity onPress={goToOrganizationProfile}>
-              {coordinator.OrganizationImage != null ? (
-                <Image
-                  source={{
-                    uri: `${localhost}/img/organization/${coordinator.OrganizationImage}`,
+              <View
+                style={{
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {coordinator.OrganizationImage != null ? (
+                  <Image
+                    source={{
+                      uri: `${localhost}/img/organization/${coordinator.OrganizationImage}`,
+                    }}
+                    style={styles.profileAvatar}
+                  />
+                ) : (
+                  <Image source={defaultImage} style={styles.profileAvatar} />
+                )}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
                   }}
-                  style={styles.profileAvatar}
-                />
-              ) : (
-                <Image source={defaultImage} style={styles.profileAvatar} />
-              )}
+                >
+                  <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+                    {coordinator.OrganizationName}
+                  </Text>
+                  {coordinator.SubscriptionStatus === "Inactive" ? null : (
+                    <MaterialIcons
+                      name="star"
+                      size={16}
+                      color={theme.colors.primary}
+                    />
+                  )}
+                </View>
+              </View>
             </TouchableOpacity>
           </View>
           <View style={{ flex: 1 }}></View>
@@ -154,6 +183,9 @@ const CoordInterface = ({ route }) => {
           <View style={styles.rightButton}>
             <Button title="Rewards" onPress={goToReward} disabled={isDisable} />
           </View>
+        </View>
+        <View style={{ marginHorizontal: "30%", marginVertical: 20 }}>
+          <Button title="Subscription" onPress={goToSubscription} />
         </View>
       </ScrollView>
       <View style={styles.row1}>

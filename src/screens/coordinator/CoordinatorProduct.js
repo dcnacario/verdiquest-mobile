@@ -3,7 +3,7 @@ import {
   StyleSheet,
   View,
   Text,
-  ScrollView,
+  StatusBar,
   FlatList,
   ActivityIndicator,
 } from "react-native";
@@ -23,6 +23,7 @@ const CoordinatorProduct = ({ route }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [fetchedProducts, setFetchProducts] = useState([]);
   const isFocused = useIsFocused();
+  const [numberOfRewards, setNumberOfRewards] = useState(0);
 
   const goCreateProduct = () => {
     navigation.navigate("CoordinatorAddProduct", { coordinator: coordinator });
@@ -32,6 +33,11 @@ const CoordinatorProduct = ({ route }) => {
       dataProduct: item,
       coordinator: coordinator,
     });
+  };
+
+  const canCreateReward = (status, numOfProducts) => {
+    if (status === "Inactive" && numOfProducts >= 2) return true;
+    else if (status === "Active" && numOfProducts >= 6) return true;
   };
 
   //FETCHING PRODUCT FROM DB
@@ -45,6 +51,7 @@ const CoordinatorProduct = ({ route }) => {
         }
       );
       setFetchProducts(response.data.fetchTable);
+      setNumberOfRewards(fetchProducts.length);
     } catch (error) {
       console.error("Error fetching product table", error);
       return []; // Return an empty array in case of an error
@@ -61,24 +68,32 @@ const CoordinatorProduct = ({ route }) => {
 
   return (
     <View style={styles.container}>
-    <Svg
-      height={200}
-      width={1440}
-      viewBox="0 0 1440 320"
-      style={styles.svgCurve}
-    >
-      <Path
-        fill="#7B904B"
-        d="M612.476 144.841L550.386 111.881C529.789 100.947 504.722 102.937 486.109 116.985L415.77 170.07C398.787 182.887 376.287 185.752 356.635 177.599L310.915 158.633C298.156 153.339 283.961 152.611 270.727 156.57L214.143 173.499C211.096 174.41 208.241 175.872 205.72 177.813C194.011 186.826 177.156 184.305 168.597 172.26L150.51 146.806C133.89 123.417 102.3 116.337 77.2875 130.397L0.635547 173.483L1.12709 99.8668C1.49588 44.6395 46.5654 0.167902 101.793 0.536689L681.203 4.40584C727.636 4.71591 765.026 42.6089 764.716 89.0422C764.538 115.693 743.66 137.608 717.049 139.075L612.476 144.841Z"
-      />
-    </Svg>
+      <Svg
+        height={200}
+        width={1440}
+        viewBox="0 0 1440 320"
+        style={styles.svgCurve}
+      >
+        <Path
+          fill="#7B904B"
+          d="M612.476 144.841L550.386 111.881C529.789 100.947 504.722 102.937 486.109 116.985L415.77 170.07C398.787 182.887 376.287 185.752 356.635 177.599L310.915 158.633C298.156 153.339 283.961 152.611 270.727 156.57L214.143 173.499C211.096 174.41 208.241 175.872 205.72 177.813C194.011 186.826 177.156 184.305 168.597 172.26L150.51 146.806C133.89 123.417 102.3 116.337 77.2875 130.397L0.635547 173.483L1.12709 99.8668C1.49588 44.6395 46.5654 0.167902 101.793 0.536689L681.203 4.40584C727.636 4.71591 765.026 42.6089 764.716 89.0422C764.538 115.693 743.66 137.608 717.049 139.075L612.476 144.841Z"
+        />
+      </Svg>
       <View style={styles.header}>
         <View style={{ flex: 1, alignItems: "flex-start" }}>
-          <Button title="+ Add" onPress={goCreateProduct} />
+          <Button
+            title="+ Add"
+            onPress={goCreateProduct}
+            disabled={canCreateReward(
+              coordinator.SubscriptionStatus,
+              numberOfRewards
+            )}
+          />
         </View>
         <Text style={styles.textStyle}>Rewards</Text>
         <View style={{ flex: 1 }}></View>
       </View>
+      <View style={styles.divider}></View>
       <View style={styles.card}>
         <View>
           {isLoading ? (
@@ -127,6 +142,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     gap: 20,
+    paddingTop: StatusBar.currentHeight + 80,
   },
   cardRow: {
     flexDirection: "row", // Aligns children in a row
@@ -179,6 +195,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: -25,
     zIndex: 1,
+  },
+  divider: {
+    width: "80%",
+    height: 1,
+    backgroundColor: "#161616",
+    marginTop: -10,
   },
 });
 

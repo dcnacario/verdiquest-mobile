@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const Coordinator = require("../models/coordinator");
 const fs = require("fs");
 const path = require("path");
+const axios = require("axios");
 
 const coordinator = new Coordinator(db);
 
@@ -743,6 +744,149 @@ async function fetchCoordinators(request, response) {
   }
 }
 
+async function updateTaskLimit(request, response) {
+  try {
+    const {
+      EasyLimit,
+      ModerateLimit,
+      HardLimit,
+      ChallengingLimit,
+      ExpertLimit,
+      OrganizationId,
+    } = request.body;
+
+    const taskLimit = {
+      EasyLimit,
+      ModerateLimit,
+      HardLimit,
+      ChallengingLimit,
+      ExpertLimit,
+      OrganizationId,
+    };
+
+    const result = await coordinator.updateTaskLimit(taskLimit);
+    return response.json({
+      message: "Task Limit updated successfully!",
+      success: true,
+      result: result,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function doSubscribe(request, response) {
+  try {
+    const { OrganizationId } = request.body;
+    const today = new Date();
+    const expirationDate = new Date(today);
+    expirationDate.setDate(today.getDate() + 30);
+    const subscriberData = {
+      OrganizationId,
+      Status: "Pending", // You can set an initial status
+      SubscriptionEnd: expirationDate.toISOString(),
+    };
+
+    const paymongoResponse = await axios.post(
+      "https://api.paymongo.com/v1/links",
+      {
+        data: {
+          attributes: {
+            amount: 22900,
+            description: "Subscription for VerdiQuest",
+          },
+        },
+      },
+      {
+        headers: {
+          Authorization: `Basic ${Buffer.from(
+            "sk_test_Po7Yyc5yDxdHNgNxWbgMsRTq"
+          ).toString("base64")}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const checkoutUrl = paymongoResponse.data.data.attributes.checkout_url;
+    const id = paymongoResponse.data.data.id;
+
+    // Update the status to 'Pending' in your database
+    const lastInsertedId = await coordinator.insertSubscription(subscriberData);
+
+    // Send the checkoutUrl as a response to the client
+    response.json({ checkoutUrl });
+
+    const dateToday = new Date();
+
+    const subscriberTransactionData = {
+      SubscriptionId: lastInsertedId,
+      SubscriptionCost: 229,
+      ModeOfTransaction: "GCash",
+      SubscriptionDate: dateToday.toISOString(),
+    };
+
+    // Use setInterval for repeated execution
+    const intervalId = setInterval(async () => {
+      try {
+        console.log("Checking payment status...");
+        // Use the payment gateway's API to get the payment details
+        const payMongoResponseGet = await axios.get(
+          `https://api.paymongo.com/v1/links/${id}`,
+          {
+            headers: {
+              Authorization: `Basic ${Buffer.from(
+                "sk_test_Po7Yyc5yDxdHNgNxWbgMsRTq"
+              ).toString("base64")}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const paymentStatus = payMongoResponseGet.data.data.attributes.status;
+        console.log("Payment status:", paymentStatus);
+
+        // Check if payment status is 'paid'
+        if (paymentStatus === "paid") {
+          clearInterval(intervalId); // Stop further executions
+          console.log("Payment is 'paid'. Updating database...");
+          await coordinator.updateSubscriptionStatus("Paid", lastInsertedId);
+          await coordinator.updateOrganizationSubscriptionStatus(
+            "Active",
+            OrganizationId
+          );
+          await coordinator.insertSubscriptionTransaction(
+            subscriberTransactionData
+          );
+          // Only send the updated response to the client if it hasn't been sent yet
+          if (!response.headersSent) {
+            response.json({ checkoutUrl, paymentStatus: "Paid" });
+          }
+        }
+
+        // Continue checking until payment is 'paid'
+      } catch (error) {
+        console.error(
+          "Error checking payment status:",
+          error.response ? error.response.data : error
+        );
+        // Handle error, or log it
+      }
+    }, 5000); // Execute every 5 seconds
+  } catch (error) {
+    console.error(
+      "Error creating payment link:",
+      error.response ? error.response.data : error
+    );
+    // Only send an error response if it hasn't been sent yet
+    if (!response.headersSent) {
+      response.status(500).json({ error: "Error creating payment link" });
+    }
+  }
+}
+
 module.exports = {
   registerOrganization,
   registerCoordinator,
@@ -772,4 +916,6 @@ module.exports = {
   updateProduct,
   deleteProduct,
   fetchCoordinators,
+  updateTaskLimit,
+  doSubscribe,
 };

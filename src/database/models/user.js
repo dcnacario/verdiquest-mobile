@@ -497,16 +497,16 @@ class User extends BaseModel {
     const [results] = await this.db.query(query, [userId, eventId]);
 
     if (results.length > 0) {
-        const application = results[0];
-        return { 
-            status: true, 
-            feedbackGiven: application.FeedbackGiven 
-        };
+      const application = results[0];
+      return {
+        status: true,
+        feedbackGiven: application.FeedbackGiven,
+      };
     } else {
-        return { 
-            status: false, 
-            feedbackGiven: false 
-        };
+      return {
+        status: false,
+        feedbackGiven: false,
+      };
     }
   }
 
@@ -603,10 +603,10 @@ class User extends BaseModel {
           SELECT RedeemId FROM redeem 
           WHERE UserId = ? AND ProductId = ? AND Status = 'SUCCESS';
       `;
-  
-      const [results] = await this.db.query(query, [userId, productId]);
-      return results.length > 0;
-    }
+
+    const [results] = await this.db.query(query, [userId, productId]);
+    return results.length > 0;
+  }
 
   async isApplicationVerified(userId, eventId) {
     const query = `
@@ -620,15 +620,15 @@ class User extends BaseModel {
 
   async submitFeedback(userId, eventId, feedback) {
     try {
-        const updateQuery = `
+      const updateQuery = `
             UPDATE participants 
             SET Feedback = ? 
             WHERE UserId = ? AND EventId = ? AND Status = 'VERIFIED';
         `;
-        await this.db.query(updateQuery, [feedback, userId, eventId]);
-        return { success: true };
+      await this.db.query(updateQuery, [feedback, userId, eventId]);
+      return { success: true };
     } catch (error) {
-        throw error;
+      throw error;
     }
   }
 
@@ -640,7 +640,5 @@ class User extends BaseModel {
     const [results] = await this.db.query(query, [userId, eventId]);
     return results.length > 0 && results[0].Feedback !== null;
   }
-
-}
 
 module.exports = User;

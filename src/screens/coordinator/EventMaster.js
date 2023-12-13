@@ -18,10 +18,12 @@ const EventMaster = ({ route }) => {
   const navigation = useNavigation();
   const localhost = ipAddress;
   const [isLoading, setIsLoading] = useState(false);
-  const imageSource = { uri: `` };
   const [eventCover, setEventCover] = useState({});
   const [fetchedEvents, setFetchedEvents] = useState([]);
   const { coordinator } = route.params;
+  const [numberOfEvents, setNumberOfEvents] = useState(0);
+  console.log(coordinator);
+
   const goCreateEvent = (coordinator, onFetchEvent) => {
     navigation.navigate("CoordinatorAddEvent", {
       coordinator: coordinator,
@@ -51,6 +53,11 @@ const EventMaster = ({ route }) => {
     }
   };
 
+  const canCreateEvent = (status, numOfEvents) => {
+    if (status === "Inactive" && numOfEvents >= 2) return true;
+    else if (status === "Active" && numOfEvents >= 4) return true;
+  };
+
   //fetching Events
   const fetchEvent = async () => {
     setIsLoading(true);
@@ -68,6 +75,7 @@ const EventMaster = ({ route }) => {
         })
       );
       setFetchedEvents(eventWithCount);
+      setNumberOfEvents(eventWithCount.length);
     } catch (error) {
       console.error("Error fetching events table", error);
       return []; // Return an empty array in case of an error
@@ -117,6 +125,10 @@ const EventMaster = ({ route }) => {
           <Button
             title="+ Create"
             onPress={() => goCreateEvent(coordinator, fetchEvent)}
+            disabled={canCreateEvent(
+              coordinator.SubscriptionStatus,
+              numberOfEvents
+            )}
           />
         </View>
         <Text style={styles.textStyle}>Events</Text>
@@ -202,7 +214,7 @@ const styles = StyleSheet.create({
     left: -30,
     position: "absolute",
     bottom: -25,
-    zIndex: 1,
+    zIndex: -1,
   },
   divider: {
     width: "80%",

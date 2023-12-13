@@ -548,6 +548,88 @@ class Coordinator extends BaseModel {
       throw error;
     }
   }
+
+  async updateTaskLimit(taskLimit) {
+    try {
+      const sql =
+        "UPDATE organization SET EasyLimit = ?, ModerateLimit = ?, HardLimit = ?, ChallengingLimit = ?, ExpertLimit = ? WHERE OrganizationId = ?";
+      const [result] = await this.db.query(sql, [
+        taskLimit.EasyLimit,
+        taskLimit.ModerateLimit,
+        taskLimit.HardLimit,
+        taskLimit.ChallengingLimit,
+        taskLimit.ExpertLimit,
+        taskLimit.OrganizationId,
+      ]);
+      const task = result.affectedRows;
+      return task;
+    } catch (error) {
+      console.error(`Error updating task limit: ${error}`);
+      throw error;
+    }
+  }
+
+  async insertSubscription(subscriptionData) {
+    try {
+      const sql =
+        "INSERT INTO subscription (OrganizationId, Status, SubscriptionEnd) VALUES (?,?,?)";
+      const [result] = await this.db.query(sql, [
+        subscriptionData.OrganizationId,
+        subscriptionData.Status,
+        subscriptionData.SubscriptionEnd,
+      ]);
+      const insertedSubscriptionId = result.insertId;
+
+      return insertedSubscriptionId;
+    } catch (error) {
+      console.error(`Error inserting Subscription`, error);
+      throw error;
+    }
+  }
+
+  async updateSubscriptionStatus(Status, lastInsertedId) {
+    try {
+      const sql = "UPDATE subscription SET Status = ? WHERE SubscriptionId = ?";
+      const [result] = await this.db.query(sql, [Status, lastInsertedId]);
+      const subscriptionUpdate = result.affectedRows;
+      return subscriptionUpdate;
+    } catch (error) {
+      console.error(`Error updating Subscription`, error);
+      throw error;
+    }
+  }
+
+  async updateOrganizationSubscriptionStatus(Status, OrganizationId) {
+    try {
+      const sql =
+        "UPDATE organization SET SubscriptionStatus = ? WHERE OrganizationId = ?";
+      const [result] = await this.db.query(sql, [Status, OrganizationId]);
+      const orgSubscription = result.affectedRows;
+      return orgSubscription;
+    } catch (error) {
+      console.error(`Error updating Subscription`, error);
+      throw error;
+    }
+  }
+
+  async insertSubscriptionTransaction(subscriptionTransactionData) {
+    try {
+      const sql =
+        "INSERT INTO subscriptiontransaction (SubscriptionId, SubscriptionCost, ModeOfTransaction,SubscriptionDate) VALUES (?,?,?,?)";
+      const [result] = await this.db.query(sql, [
+        subscriptionTransactionData.SubscriptionId,
+        subscriptionTransactionData.SubscriptionCost,
+        subscriptionTransactionData.ModeOfTransaction,
+        subscriptionTransactionData.SubscriptionDate,
+      ]);
+      const insertedSubscriptionId = result.insertId;
+
+      return insertedSubscriptionId;
+    } catch (error) {
+      console.error(`Error inserting Subscription Transaction`, error);
+      throw error;
+    }
+  }
 }
 
 module.exports = Coordinator;
