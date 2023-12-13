@@ -26,9 +26,9 @@ const TaskList = ({ route }) => {
   style={{ flex: 1, borderWidth: 1, borderColor: 'red' }}
   contentContainerStyle={{ paddingBottom: 120 }}
 >
-        <View style={{ flex: 1 }}>
-          <TaskListHeader title={title} route={route.params} />
-        </View>
+      <View style={{ flex: 1 }}>
+        <TaskListHeader title={title} route={route.params} />
+      </View>
       </ScrollView>
       <View style={styles.row}>
         <Svg

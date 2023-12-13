@@ -15,9 +15,13 @@ const OngoingTask = ({ tasks }) => {
             case "1":
                 return "Easy";
             case "2":
-                return "Normal";
+                return "Moderate";
             case "3":
                 return "Hard";
+            case "4":
+                return "Challenging";
+            case "5":
+                return "Expert";
             default:
                 return "Unknown";
             }
@@ -36,8 +40,6 @@ const OngoingTask = ({ tasks }) => {
         }
         return text;
     };
-
-
 
     return (
         <View style={styles.container}>

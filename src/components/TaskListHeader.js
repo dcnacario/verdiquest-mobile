@@ -6,19 +6,20 @@ import {
   TouchableOpacity,
   FlatList,
   ScrollView,
+  RefreshControl,
 } from "react-native";
 import { theme } from "../../assets/style";
 import CardTask from "./CardTask";
 import axios from "axios";
 import ipAddress from "../database/ipAddress";
 import { useNavigation } from "@react-navigation/native";
-import { Path, Svg } from "react-native-svg";
 
 const TaskListHeader = ({ route }) => {
   const navigation = useNavigation();
   const user = route?.params?.user || {};
   const [tasks, setTasks] = useState([]);
   const [selectedDifficulty, setSelectedDifficulty] = useState("All");
+  const [refreshing, setRefreshing] = useState(false);
   const localhost = ipAddress;
 
   useEffect(() => {
@@ -47,8 +48,10 @@ const TaskListHeader = ({ route }) => {
   const difficulties = [
     { id: "0", title: "All" },
     { id: "1", title: "Easy" },
-    { id: "2", title: "Normal" },
+    { id: "2", title: "Moderate" },
     { id: "3", title: "Hard" },
+    { id: "4", title: "Challenging" },
+    { id: "5", title: "Expert" },
   ];
 
   const getDifficulty = (difficultyId) => {
@@ -59,9 +62,13 @@ const TaskListHeader = ({ route }) => {
       case "1":
         return "Easy";
       case "2":
-        return "Normal";
+        return "Moderate";
       case "3":
         return "Hard";
+      case "4":
+        return "Challenging";
+      case "5":
+        return "Expert";
       default:
         return "Unknown";
     }
@@ -79,6 +86,12 @@ const TaskListHeader = ({ route }) => {
     </TouchableOpacity>
   );
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchTasksByDifficulty(selectedDifficulty);
+    setRefreshing(false);
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -90,8 +103,7 @@ const TaskListHeader = ({ route }) => {
         showsHorizontalScrollIndicator={false}
         extraData={selectedDifficulty}
       />
-      <ScrollView style={{ flex: 1, width: "100%" }}>
-        {/* Your task list */}
+    <ScrollView style={{ flex: 1, width: "100%" }} refreshControl={ <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> }>
         {tasks.length > 0 ? (
           tasks.map((task, index) => (
             <CardTask
@@ -132,7 +144,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   difficultyButton: {
-    width: 70,
+    width: 100,
     padding: 10,
     marginHorizontal: 6,
     backgroundColor: "#E0E0E0",

@@ -9,7 +9,8 @@ const RewardCard = ({
     productName, 
     productDescription, 
     requiredPoints,
-    userPoints, // Assuming userPoints is passed as a prop
+    productQuantity,
+    userPoints, 
     onPress
 }) => {
     const getImageSource = () => {
@@ -35,6 +36,10 @@ const RewardCard = ({
                     </Text>
                     <Text>Redeem for {requiredPoints} VP</Text>
                     <Progress.Bar progress={progress} color={theme.colors.primary} height={4} />
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 80 }}>
+                        <Text style={{ fontSize: 12, marginRight: 5 }}>Stocks:</Text>
+                        <Text style={{fontWeight: 'bold', fontSize: 12,}}>{productQuantity}</Text>
+                    </View>
                 </View>
             </TouchableOpacity>
         </View>

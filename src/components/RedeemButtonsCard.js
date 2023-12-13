@@ -70,6 +70,7 @@ const RedeemButtonsCard = ({ onCardPress, userPoint }) => {
                         productName={item.ProductName}
                         productDescription={item.ProductDescription}
                         requiredPoints={item.PointsRequired}
+                        productQuantity={item.ProductQuantity}
                         userPoints={Number(userPoint.replace(/,/g, ''))}
                         onPress={() => onCardPress(item)}
                     />

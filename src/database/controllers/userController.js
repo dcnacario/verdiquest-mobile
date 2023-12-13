@@ -156,9 +156,9 @@ async function userEasyTasks(request, response) {
   }
 }
 
-async function userNormalTasks(request, response) {
+async function userModerateTasks(request, response) {
   try {
-    const fetchedTable = await user.fetchNormalTask();
+    const fetchedTable = await user.fetchModerateTask();
     return response.json({
       success: true,
       fetchedTable: fetchedTable,
@@ -186,28 +186,35 @@ async function userHardTasks(request, response) {
   }
 }
 
-async function updateUser(request, response) {
+async function userChallengingTasks(request, response) {
   try {
-    const { verdiPoints, password, userId } = request.body;
-
-    const userData = {
-      verdiPoints,
-      password,
-      userId,
-    };
-
-    const result = await user.updateUser(userData);
+    const fetchedTable = await user.fetchChallengingTask();
     return response.json({
-      message: "User updated successfully!",
       success: true,
-      result: result,
+      fetchedTable: fetchedTable,
     });
   } catch (error) {
     console.error(error);
-    response.status(500).json({ success: false, message: "Server error" });
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
   }
 }
 
+async function userExpertTasks(request, response) {
+  try {
+    const fetchedTable = await user.fetchExpertTask();
+    return response.json({
+      success: true,
+      fetchedTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
 async function updateUser(request, response) {
   try {
     const { verdiPoints, password, userId } = request.body;
@@ -287,12 +294,14 @@ async function checkTaskAccepted(request, response) {
       success: true,
       isAccepted: result.isAccepted,
       taskExpired: result.isExpired,
+      isCompleted: result.isCompleted,
     });
   } catch (error) {
     console.error(`Error checking task acceptance: ${error}`);
     response.status(500).send({ success: false, message: "Server error" });
   }
 }
+
 
 async function fetchAcceptedTasks(request, response) {
   const userId = request.params.userId;
@@ -657,8 +666,10 @@ module.exports = {
   updateUser,
   userAllTasks,
   userEasyTasks,
-  userNormalTasks,
+  userModerateTasks,
   userHardTasks,
+  userChallengingTasks,
+  userExpertTasks,
   fetchTaskDetails,
   userAllDifficultyTasks,
   acceptTask,
