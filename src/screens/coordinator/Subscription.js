@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,15 @@ import axios from "axios";
 const Subscription = ({ route }) => {
   const { coordinator } = route.params;
   const localhost = ipAddress;
+
+
+  const fetchSubscription = async () => {
+    try {
+ss
+    }catch(error){
+
+    }
+  }
 
   const handleSubscribe = async () => {
     try {
@@ -61,6 +70,7 @@ const Subscription = ({ route }) => {
           />
           <Text style={styles.name}>{coordinator.OrganizationName}</Text>
         </View>
+        {coordinator.SubscriptionStatus === "Active" ? (
         <View style={styles.textContainer}>
           <Text style={styles.title}>Basic Subscription</Text>
           <Text style={styles.features}>
@@ -70,10 +80,11 @@ const Subscription = ({ route }) => {
             {"\n"}
             {">"} 2 Rewards{"\n"}
           </Text>
-        </View>
+        </View>) : null
+        }
       </View>
 
-      <TouchableOpacity style={styles.card} onPress={handleSubscribe}>
+      <TouchableOpacity style={styles.card} onPress={handleSubscribe} disabled={coordinator.SubscriptionStatus === "Active" ? true : false}>
         <View style={styles.leftContainer}>
           <Image
             style={styles.avatar}
@@ -95,10 +106,11 @@ const Subscription = ({ route }) => {
           <Text style={styles.price}>For Only ₱229/Mo.</Text>
         </View>
       </TouchableOpacity>
-
+      { coordinator.SubscriptionStatus === "Active" ? (
       <TouchableOpacity style={styles.button} onPress={handleSubscribe}>
         <Text style={styles.buttonText}>Avail Subscription</Text>
-      </TouchableOpacity>
+      </TouchableOpacity>): null
+      }
       <Svg
         height={200}
         width="1440"

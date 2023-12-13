@@ -42,5 +42,6 @@ router.post("/deleteProduct", coordinatorController.deleteProduct);
 router.post("/fetchCoordinators", coordinatorController.fetchCoordinators);
 router.post("/updateTaskLimit", coordinatorController.updateTaskLimit);
 router.post("/subscribe", coordinatorController.doSubscribe);
+router.post("/fetchSubscription", coordinatorController.fetchSubscription);
 
 module.exports = router;

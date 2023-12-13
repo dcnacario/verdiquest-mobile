@@ -630,6 +630,17 @@ class Coordinator extends BaseModel {
       throw error;
     }
   }
+
+  async fetchSubscription(orgId){
+    try {
+      const sql = "SELECT * FROM subscription WHERE OrganizationId = ?";
+      const [result] = await this.db.query(sql, [orgId]);
+      return result.length > 0 ? result : null;
+    }catch(error){
+      console.error(`Error fetching subscription`, error);
+      throw error;
+    }
+  }
 }
 
 module.exports = Coordinator;
