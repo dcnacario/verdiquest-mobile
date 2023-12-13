@@ -70,6 +70,9 @@ const CoordInterface = ({ route }) => {
   const goToReward = () => {
     navigation.navigate("CoordinatorProduct", { coordinator: coordinator });
   };
+  const goToSubscription = () => {
+    navigation.navigate("Subscription", { coordinator: coordinator });
+  };
 
   const isDisable = coordinator.Rank === 0 ? true : false;
 
@@ -180,6 +183,9 @@ const CoordInterface = ({ route }) => {
           <View style={styles.rightButton}>
             <Button title="Rewards" onPress={goToReward} disabled={isDisable} />
           </View>
+        </View>
+        <View style={{ marginHorizontal: "30%", marginVertical: 20 }}>
+          <Button title="Subscription" onPress={goToSubscription} />
         </View>
       </ScrollView>
       <View style={styles.row1}>

@@ -41,34 +41,6 @@ router.post("/updateProduct", coordinatorController.updateProduct);
 router.post("/deleteProduct", coordinatorController.deleteProduct);
 router.post("/fetchCoordinators", coordinatorController.fetchCoordinators);
 router.post("/updateTaskLimit", coordinatorController.updateTaskLimit);
-router.post("/subscribe", async (req, res) => {
-  try {
-    const response = await axios.post(
-      "https://api.paymongo.com/v1/links",
-      {
-        data: {
-          attributes: {
-            amount: 22900,
-            description: "Subscription for VerdiQuest",
-          },
-        },
-      },
-      {
-        headers: {
-          Authorization: `Basic ${Buffer.from(
-            "sk_test_Po7Yyc5yDxdHNgNxWbgMsRTq"
-          ).toString("base64")}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    const checkoutUrl = response.data.data.attributes.checkout_url;
-    console.log(checkoutUrl.toString());
-  } catch (error) {
-    console.error("Error:", error.response ? error.response.data : error);
-    res.status(500).send("Error creating payment link");
-  }
-});
+router.post("/subscribe", coordinatorController.doSubscribe);
 
 module.exports = router;

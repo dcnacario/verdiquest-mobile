@@ -1,11 +1,38 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Linking,
+  Alert,
+} from "react-native";
 import { Path, Svg } from "react-native-svg";
-const Subscription = () => {
-  // Function to handle the subscription option click
-  const handleSubscriptionSelect = (type) => {
-    console.log(`${type} subscription selected.`);
-    // Add navigation or state update logic here
+import ipAddress from "../../database/ipAddress";
+import { theme } from "../../../assets/style";
+import axios from "axios";
+
+const Subscription = ({ route }) => {
+  const { coordinator } = route.params;
+  const localhost = ipAddress;
+
+  const handleSubscribe = async () => {
+    try {
+      const response = await axios.post(`${localhost}/coordinator/subscribe`, {
+        OrganizationId: coordinator.OrganizationId,
+      });
+      const checkoutUrl = response.data.checkoutUrl;
+
+      // Open the checkout URL in the device's default browser
+      await Linking.openURL(checkoutUrl);
+    } catch (error) {
+      console.error("Error:", error.response ? error.response.data : error);
+      Alert.alert(
+        "Error",
+        "Failed to initiate subscription. Please try again."
+      );
+    }
   };
 
   return (
@@ -26,40 +53,50 @@ const Subscription = () => {
 
       <View style={styles.card}>
         <View style={styles.leftContainer}>
-          <Image style={styles.avatar} />
-          <Text style={styles.name}>Ram P. De la Cruz</Text>
+          <Image
+            style={styles.avatar}
+            source={{
+              uri: `${localhost}/img/organization/${coordinator.OrganizationImage}`,
+            }}
+          />
+          <Text style={styles.name}>{coordinator.OrganizationName}</Text>
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.title}>Basic Subscription</Text>
           <Text style={styles.features}>
-            *Limited Task Taking{"\n"}
-            *Limited to 1 Event{"\n"}
-            *Regular VerdiPoints Earning
+            {">"}10 Tasks per Month{"\n"}
+            {">"} 2 Events per Month{"\n"}
+            {">"} 5 Coordinators
+            {"\n"}
+            {">"} 2 Rewards{"\n"}
           </Text>
         </View>
       </View>
 
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() => handleSubscriptionSelect("Volunteer+")}
-      >
+      <TouchableOpacity style={styles.card} onPress={handleSubscribe}>
         <View style={styles.leftContainer}>
-          <Image style={styles.avatar1} />
-          <Text style={styles.name1}>Ram P. De la Cruz</Text>
+          <Image
+            style={styles.avatar}
+            source={{
+              uri: `${localhost}/img/organization/${coordinator.OrganizationImage}`,
+            }}
+          />
+          <Text style={styles.name1}>{coordinator.OrganizationName}</Text>
         </View>
         <View style={styles.textContainer}>
-          <Text style={styles.title}>Volunteer+ Subscriber</Text>
+          <Text style={styles.title}>Organization+ Subscriber</Text>
           <Text style={styles.features}>
-            * Can take more Tasks and Difficulty{"\n"}* More Achievements{"\n"}*
-            Join many events{"\n"}* Bonus VerdiPoints Earning{"\n"}* Subscriber
-            Icon{"\n"}
-            And More++{"\n"}
+            {">"} 20 Tasks per Month{"\n"}
+            {">"} 4 Events per Month{"\n"}
+            {">"} 12 Coordinators
+            {"\n"}
+            {">"} 6 Rewards{"\n"}
           </Text>
-          <Text style={styles.price}>For Only ₱129/Mo.</Text>
+          <Text style={styles.price}>For Only ₱229/Mo.</Text>
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handleSubscribe}>
         <Text style={styles.buttonText}>Avail Subscription</Text>
       </TouchableOpacity>
       <Svg
@@ -145,6 +182,7 @@ const styles = StyleSheet.create({
   features: {
     textAlign: "left",
     marginBottom: 4,
+    fontWeight: "500",
   },
   price: {
     fontWeight: "bold",
@@ -152,7 +190,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   button: {
-    backgroundColor: "#34A853", // Green color
+    backgroundColor: theme.colors.primary, // Green color
     borderRadius: 20,
     bottom: 10,
     paddingVertical: 12,
