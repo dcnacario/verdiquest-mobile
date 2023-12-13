@@ -97,25 +97,25 @@ const ProductDetails = ({ route }) => {
                   {product.ProductDescription}
               </Text>
           </View>
-          {hasEnoughPoints ? (
-        <View style={styles.redeemContainer}>
-          <TouchableOpacity
-            style={styles.earnPointsButton}
-            onPress={handleRedeemPress}
-          >
-            <Text style={styles.earnPointsButtonText}>REDEEM</Text>
-          </TouchableOpacity>
-          <View style={styles.eligibleTextContainer}>
-            <Text style={styles.sufficientBalanceText}>
-              You are now eligible to redeem this {product.ProductName}
+          { hasEnoughPoints ? (
+            <View style={styles.redeemContainer}>
+              <TouchableOpacity
+                style={styles.earnPointsButton}
+                onPress={handleRedeemPress}
+              >
+                <Text style={styles.earnPointsButtonText}>REDEEM</Text>
+              </TouchableOpacity>
+              <View style={styles.eligibleTextContainer}>
+                <Text style={styles.sufficientBalanceText}>
+                  You are now eligible to redeem this {product.ProductName}
+                </Text>
+              </View>
+            </View>
+          ) : (
+            <Text style={styles.insufficientBalanceText}>
+              Ineligible to redeem, insufficient balance
             </Text>
-          </View>
-        </View>
-      ) : (
-        <Text style={styles.insufficientBalanceText}>
-          Ineligible to redeem, insufficient balance
-        </Text>
-      )}
+          )}
       </ScrollView>
       <View style={styles.BottomRow}>
         <Svg
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   earnPointsButton: {
-    backgroundColor: "green",
+    backgroundColor: "#3D691B",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 20,

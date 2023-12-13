@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F7F2FA',
         borderRadius: 15,
         marginVertical: 10,
-        marginHorizontal: 16, // Adjusted for slightly wider cards
+        marginHorizontal: 16, 
         padding: 20,
         shadowColor: "#000",
         shadowOffset: {
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     },
     cardDifficulty: {
         fontSize: 16,
-        color: '#4CAF50', // Use appropriate color for the difficulty
+        color: '#4CAF50', 
         marginBottom: 8,
     },
     cardDescription: {
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     viewButton: {
-        backgroundColor: '#3D691B', // Use your theme color
+        backgroundColor: '#3D691B', 
         borderRadius: 20,
         paddingVertical: 10,
         paddingHorizontal: 16,
