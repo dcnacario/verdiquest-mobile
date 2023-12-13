@@ -29,45 +29,45 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 2,
         elevation: 5,
-        backgroundColor: '#FFFFFF', // Changed to white to match your card
+        backgroundColor: '#FFFFFF', 
         padding: 20,
         margin: 20,
         borderRadius: 20,
     },
     headerStyle: {
         fontWeight: 'bold',
-        fontSize: 24, // Adjusted font size
-        marginBottom: 10, // Added spacing
-        textAlign: 'center', // Centered text
+        fontSize: 24,
+        marginBottom: 10, 
+        textAlign: 'center', 
     },
     timeContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10, // Added spacing
+        marginBottom: 10, 
     },
     textStyle: {
-        marginLeft: 5, // Added space between icon and text
+        marginLeft: 5, 
         fontWeight: 'bold',
-        color: '#3D691B', // Adjusted text color
+        color: '#3D691B', 
     },
     detailsContainer: {
-        marginBottom: 10, // Added spacing
+        marginBottom: 10, 
     },
     titleStyle: {
         fontWeight: 'bold',
         fontSize: 18,
-        marginBottom: 5, // Added spacing
+        marginBottom: 5, 
     },
     descriptionStyle: {
-        fontSize: 16, // Adjusted font size
+        fontSize: 16, 
     },
     rewardTextStyle: {
         fontWeight: 'bold',
-        alignSelf: 'flex-end', // Align to the right
-        fontSize: 18, // Adjusted font size
+        alignSelf: 'flex-end', 
+        fontSize: 18, 
     },
     rewardValueStyle: {
-        color: theme.colors.primary, // Adjusted color to match your theme
+        color: theme.colors.primary, 
     },
 });
 

@@ -232,7 +232,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
     },
     imageContainer: {
-        margin: 20,
+        marginTop: 100,
+        marginRight: 20,
+        marginLeft: 20,
     },
     textStyle: {
         fontWeight: "bold",
@@ -286,7 +288,7 @@ const styles = StyleSheet.create({
     },
     bottomWavy: {
         position: 'absolute',
-        bottom: -310,
+        bottom: -320,
         left: -300,
         zIndex: 0,
     },

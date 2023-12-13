@@ -6,19 +6,20 @@ import {
   TouchableOpacity,
   FlatList,
   ScrollView,
+  RefreshControl,
 } from "react-native";
 import { theme } from "../../assets/style";
 import CardTask from "./CardTask";
 import axios from "axios";
 import ipAddress from "../database/ipAddress";
 import { useNavigation } from "@react-navigation/native";
-import { Path, Svg } from "react-native-svg";
 
 const TaskListHeader = ({ route }) => {
   const navigation = useNavigation();
   const user = route?.params?.user || {};
   const [tasks, setTasks] = useState([]);
   const [selectedDifficulty, setSelectedDifficulty] = useState("All");
+  const [refreshing, setRefreshing] = useState(false);
   const localhost = ipAddress;
 
   useEffect(() => {
@@ -85,6 +86,12 @@ const TaskListHeader = ({ route }) => {
     </TouchableOpacity>
   );
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchTasksByDifficulty(selectedDifficulty);
+    setRefreshing(false);
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -96,8 +103,7 @@ const TaskListHeader = ({ route }) => {
         showsHorizontalScrollIndicator={false}
         extraData={selectedDifficulty}
       />
-      <ScrollView style={{ flex: 1, width: "100%" }}>
-        {/* Your task list */}
+    <ScrollView style={{ flex: 1, width: "100%" }} refreshControl={ <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> }>
         {tasks.length > 0 ? (
           tasks.map((task, index) => (
             <CardTask
