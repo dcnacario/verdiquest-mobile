@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import RewardCard from "../components/RewardCard";
 import PointCard from "../components/PointCard";
+
 import { theme } from "../../assets/style";
 import {
   ScrollView,
@@ -8,6 +9,8 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Dimensions,
+  StatusBar,
 } from "react-native";
 import ipAddress from "../database/ipAddress";
 import { Path, Svg } from "react-native-svg";
@@ -21,6 +24,8 @@ const ProductDetails = ({ route }) => {
   const [userPoint, setUserPoints] = useState("0");
   const isFocused = useIsFocused();
   const navigation = useNavigation();
+  const screenHeight = Dimensions.get("window").height;
+  const paddingBottom = screenHeight * 0.15;
 
   const fetchVerdiPoints = async () => {
     try {
@@ -51,12 +56,17 @@ const ProductDetails = ({ route }) => {
     navigation.navigate("ProductRedeem", { product: product, user: user });
   };
 
-  console.log(product.ProductImage);
   const userPointsNumber = userPoint ? Number(userPoint.replace(/,/g, "")) : 0;
   const hasEnoughPoints = userPointsNumber >= product.PointsRequired;
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        backgroundColor: theme.colors.background,
+        flex: 1,
+        marginTop: StatusBar.currentHeight,
+      }}
+    >
       <Svg
         height={200}
         width={1440}
@@ -69,44 +79,45 @@ const ProductDetails = ({ route }) => {
         />
       </Svg>
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.pointCardContainer}>
-          <PointCard points={formatPoints(userPoint)} />
-        </View>
-        <View style={styles.rewardCardContainer}>
-          <RewardCard
-            imageUrl={`${localhost}/img/product/${product.ProductImage}`}
-            productName={product.ProductName}
-            requiredPoints={product.PointsRequired}
-            userPoints={userPointsNumber}
-          />
-        </View>
-        <Text style={styles.descriptionTitle}>Product Description</Text>
-        <View style={styles.descriptionContainer}>
-          <Text style={styles.descriptionText}>
-            {product.ProductDescription}
-          </Text>
-        </View>
-        {hasEnoughPoints ? (
-          <View style={styles.redeemContainer}>
-            <TouchableOpacity
-              style={styles.earnPointsButton}
-              onPress={handleRedeemPress}
-            >
-              <Text style={styles.earnPointsButtonText}>REDEEM</Text>
-            </TouchableOpacity>
-            <View style={styles.eligibleTextContainer}>
-              <Text style={styles.sufficientBalanceText}>
-                You are now eligible to redeem this {product.ProductName}
-              </Text>
-            </View>
+          <View style={styles.pointCardContainer}>
+              <PointCard points={formatPoints(userPoint)} />
           </View>
-        ) : (
-          <Text style={styles.insufficientBalanceText}>
-            Ineligible to redeem, insufficient balance
-          </Text>
-        )}
+          <View style={styles.rewardCardContainer}>
+              <RewardCard
+                  imageUrl={`${localhost}/img/product/${product.ProductImage}`}
+                  productName={product.ProductName}
+                  productQuantity={product.ProductQuantity}
+                  requiredPoints={product.PointsRequired}
+                  userPoints={userPointsNumber}
+              />
+          </View>
+          <Text style={styles.descriptionTitle}>Product Description</Text>
+          <View style={styles.descriptionContainer}>
+              <Text style={styles.descriptionText}>
+                  {product.ProductDescription}
+              </Text>
+          </View>
+          {hasEnoughPoints ? (
+        <View style={styles.redeemContainer}>
+          <TouchableOpacity
+            style={styles.earnPointsButton}
+            onPress={handleRedeemPress}
+          >
+            <Text style={styles.earnPointsButtonText}>REDEEM</Text>
+          </TouchableOpacity>
+          <View style={styles.eligibleTextContainer}>
+            <Text style={styles.sufficientBalanceText}>
+              You are now eligible to redeem this {product.ProductName}
+            </Text>
+          </View>
+        </View>
+      ) : (
+        <Text style={styles.insufficientBalanceText}>
+          Ineligible to redeem, insufficient balance
+        </Text>
+      )}
       </ScrollView>
-      <View style={styles.row}>
+      <View style={styles.BottomRow}>
         <Svg
           height={200}
           width="1440"
@@ -120,7 +131,9 @@ const ProductDetails = ({ route }) => {
         </Svg>
       </View>
     </View>
-  );
+);
+
+  
 };
 
 const styles = StyleSheet.create({
@@ -129,7 +142,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     backgroundColor: theme.colors.background,
-    paddingVertical: 20,
+    paddingVertical: 50,
   },
   pointCardContainer: {
     flexDirection: "row",
@@ -162,7 +175,6 @@ const styles = StyleSheet.create({
   descriptionText: {
     fontSize: 14,
   },
-
   redeemContainer: {
     alignItems: "center",
     marginBottom: 20,
@@ -195,18 +207,18 @@ const styles = StyleSheet.create({
   },
   svgCurve: {
     position: "absolute",
-    top: -2,
-    left: -316,
-    zIndex: 0,
+    top: -80,
+    left: -300,
+    zIndex: 1,
   },
-  row: {
+  BottomRow: {
     flexDirection: "row",
     height: 0,
     justifyContent: "center",
     alignItems: "center",
     left: -30,
     position: "absolute",
-    bottom: -30,
+    bottom: -25,
     zIndex: 0,
   },
 });

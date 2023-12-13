@@ -147,7 +147,7 @@ class User extends BaseModel {
     }
   }
 
-  async fetchNormalTask() {
+  async fetchModerateTask() {
     try {
       const [result] = await this.db.query(
         "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.DifficultyId = 2 AND udt.TaskStatus is NULL;"
@@ -163,6 +163,30 @@ class User extends BaseModel {
     try {
       const [result] = await this.db.query(
         "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.DifficultyId = 3 AND udt.TaskStatus is NULL ;"
+      );
+      return result.length > 0 ? result : [];
+    } catch (error) {
+      console.error(`Error fetching easy tasks: ${error}`);
+      throw error;
+    }
+  }
+
+  async fetchChallengingTask() {
+    try {
+      const [result] = await this.db.query(
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.DifficultyId = 4 AND udt.TaskStatus is NULL ;"
+      );
+      return result.length > 0 ? result : [];
+    } catch (error) {
+      console.error(`Error fetching easy tasks: ${error}`);
+      throw error;
+    }
+  }
+
+  async fetchExpertTask() {
+    try {
+      const [result] = await this.db.query(
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.DifficultyId = 5 AND udt.TaskStatus is NULL ;"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
@@ -415,7 +439,7 @@ class User extends BaseModel {
   async fetchProducts() {
     try {
       const query =
-        "SELECT ProductId, ProductImage, ProductName, ProductDescription, PointsRequired FROM products";
+        "SELECT ProductId, ProductImage, ProductName, ProductDescription, PointsRequired, ProductQuantity FROM products";
       const [products] = await this.db.query(query);
       return products;
     } catch (error) {

@@ -47,8 +47,10 @@ const TaskListHeader = ({ route }) => {
   const difficulties = [
     { id: "0", title: "All" },
     { id: "1", title: "Easy" },
-    { id: "2", title: "Normal" },
+    { id: "2", title: "Moderate" },
     { id: "3", title: "Hard" },
+    { id: "4", title: "Challenging" },
+    { id: "5", title: "Expert" },
   ];
 
   const getDifficulty = (difficultyId) => {
@@ -62,6 +64,7 @@ const TaskListHeader = ({ route }) => {
         return "Normal";
       case "3":
         return "Hard";
+        
       default:
         return "Unknown";
     }
@@ -132,7 +135,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   difficultyButton: {
-    width: 70,
+    width: 100,
     padding: 10,
     marginHorizontal: 6,
     backgroundColor: "#E0E0E0",

@@ -156,9 +156,9 @@ async function userEasyTasks(request, response) {
   }
 }
 
-async function userNormalTasks(request, response) {
+async function userModerateTasks(request, response) {
   try {
-    const fetchedTable = await user.fetchNormalTask();
+    const fetchedTable = await user.fetchModerateTask();
     return response.json({
       success: true,
       fetchedTable: fetchedTable,
@@ -186,6 +186,35 @@ async function userHardTasks(request, response) {
   }
 }
 
+async function userChallengingTasks(request, response) {
+  try {
+    const fetchedTable = await user.fetchChallengingTask();
+    return response.json({
+      success: true,
+      fetchedTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
+async function userExpertTasks(request, response) {
+  try {
+    const fetchedTable = await user.fetchExpertTask();
+    return response.json({
+      success: true,
+      fetchedTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
 async function updateUser(request, response) {
   try {
     const { verdiPoints, password, userId } = request.body;
@@ -637,8 +666,10 @@ module.exports = {
   updateUser,
   userAllTasks,
   userEasyTasks,
-  userNormalTasks,
+  userModerateTasks,
   userHardTasks,
+  userChallengingTasks,
+  userExpertTasks,
   fetchTaskDetails,
   userAllDifficultyTasks,
   acceptTask,
