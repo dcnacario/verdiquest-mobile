@@ -143,6 +143,24 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
                 participation in the tree planting event.
               </Text>
 
+              <Text style={styles.modalSectionTitle}>VERDIPOINTS:</Text>
+              <Text style={styles.modalTextInfo}>
+                <Text style={styles.modalInfoSubTitle}>1VP = 1Peso</Text>
+                {"\n"}
+                {"\n"}Easy = 0.20 - 0.49 VP
+                {"\n"}Moderate = 0.50 - 0.99 VP
+                {"\n"}Hard = 1 - 4 VP
+                {"\n"}Challenging = 5 - 9 VP
+                {"\n"}Expert = 10 - 20 VP
+                {"\n"}
+                {"\n"}75 VP = Bracelets, Stickers, Ballpens
+                {"\n"}50-300 VP = Vouchers
+                {"\n"}150 VP = Mugs, Umbrella
+                {"\n"}300 VP = T-shirt
+                {"\n"}700 VP = VIP Event Ticket
+                {"\n"}
+              </Text>
+
               <TouchableOpacity style={styles.button} onPress={onClose}>
                 <Text style={styles.buttonText}>Close</Text>
               </TouchableOpacity>
@@ -179,9 +197,19 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
       quality: 1,
     });
 
-    if (!result.canceled && result.assets) {
-      setTaskCover({ uri: result.assets[0].uri });
+    if (result.cancelled) {
+      // User canceled image selection
+      Alert.alert("Image Selection Canceled", "You didn't select an image.");
+      return;
     }
+
+    if (!result.assets || result.assets.length === 0) {
+      // No image selected
+      Alert.alert("No Image Selected", "Please select an image to upload.");
+      return;
+    }
+
+    setTaskCover({ uri: result.assets[0].uri });
   };
 
   const uploadImage = async () => {
@@ -210,7 +238,8 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
       const result = await response.data;
       navigation.navigate("TaskMaster", { coordinator: coordinator });
     } catch (error) {
-      console.error("Error during image upload: ", error.message);
+      console.log("Error during image upload: ", error.message);
+      Alert.alert("No Image Selected", "Please select an image to upload.");
       return null;
     } finally {
       setIsSubmitting(false); // Re-enable the button
@@ -261,7 +290,7 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
       </Svg>
       <View style={styles.eventDetailsContainer}>
         <TouchableOpacity onPress={pickImage} style={styles.imagePlaceholder}>
-          {taskCover ? (
+          {taskCover != null ? (
             <Image source={taskCover} style={styles.img} />
           ) : (
             <Text style={styles.imagePlaceholderText}>Select Image</Text>

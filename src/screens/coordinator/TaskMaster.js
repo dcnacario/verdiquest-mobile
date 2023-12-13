@@ -157,7 +157,25 @@ const TaskMaster = ({ route }) => {
                 {"\n"}
                 Submit a series of photos capturing different stages of the
                 cleanup and participants.{"\n"}Submit photos of your
-                participation in the tree planting event.
+                participation in the tree planting event.{"\n"}
+              </Text>
+
+              <Text style={styles.modalSectionTitle}>VERDIPOINTS:</Text>
+              <Text style={styles.modalTextInfo}>
+                <Text style={styles.modalInfoSubTitle}>1VP = 1Peso</Text>
+                {"\n"}
+                {"\n"}Easy = 0.20 - 0.49 VP
+                {"\n"}Moderate = 0.50 - 0.99 VP
+                {"\n"}Hard = 1 - 4 VP
+                {"\n"}Challenging = 5 - 9 VP
+                {"\n"}Expert = 10 - 20 VP
+                {"\n"}
+                {"\n"}75 VP = Bracelets, Stickers, Ballpens
+                {"\n"}50-300 VP = Vouchers
+                {"\n"}150 VP = Mugs, Umbrella
+                {"\n"}300 VP = T-shirt
+                {"\n"}700 VP = VIP Event Ticket
+                {"\n"}
               </Text>
 
               <TouchableOpacity style={styles.button} onPress={onClose}>
