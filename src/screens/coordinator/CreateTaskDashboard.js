@@ -538,10 +538,12 @@ const styles = StyleSheet.create({
   modalContent: {
     width: 300, // Set your desired width
     height: 500, // Set your desired height
-    backgroundColor: "white",
+    backgroundColor: "#839655",
     borderRadius: 20,
     padding: 20,
     alignItems: "center",
+    borderColor: "#454545",
+    borderWidth: 3,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -554,20 +556,24 @@ const styles = StyleSheet.create({
   modalTextInfo: {
     textAlign: "justify",
     paddingVertical: 5,
+    color: "#FFFFFF",
   },
   modalSectionTitle: {
     fontWeight: "bold",
     alignSelf: "flex-start",
     paddingVertical: 5,
     fontSize: 16,
+    color: "#FFFFFF",
   },
   modalInfoSubTitle: {
     fontWeight: "500",
     paddingVertical: 5,
+    color: "#FFFFFF",
   },
   modalTitle: {
     fontWeight: "bold",
     fontSize: 20,
+    color: "#FFFFFF",
   },
   button: {
     borderRadius: 20,

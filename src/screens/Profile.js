@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import {Text, View, StyleSheet, ScrollView, Dimensions, StatusBar,Image} from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+  StatusBar,
+  Image,
+} from "react-native";
 import { theme } from "../../assets/style";
 import IntroCard from "../components/IntroCard";
 import OrganizationCard from "../components/OrganizationCard";
@@ -9,13 +17,14 @@ import axios from "axios";
 import ipAddress from "../database/ipAddress";
 import { useNavigation } from "@react-navigation/native";
 import defaultProfile from "../../assets/img/verdiquestlogo-ver2.png";
-import { Path, Svg } from "react-native-svg"
+import { Path, Svg } from "react-native-svg";
 
 const Profile = ({ route }) => {
   const navigation = useNavigation();
   const screenHeight = Dimensions.get("window").height;
   const paddingBottom = screenHeight * 0.15;
   const { user } = route.params;
+  console.log(user);
   const localhost = ipAddress;
   const [personDetails, setPerson] = useState({
     FirstName: "",
@@ -53,6 +62,8 @@ const Profile = ({ route }) => {
     }
   };
 
+  console.log(user.OrganizationId);
+
   const fetchOrganizationDetails = async () => {
     try {
       const response = await axios.get(
@@ -84,93 +95,90 @@ const Profile = ({ route }) => {
 
   useEffect(() => {
     fetchPerson();
+    if (user.OrganizationId === null) return;
     fetchOrganizationDetails();
   }, []);
 
   return (
     <View style={styles.container}>
-    <Svg
-      height={200}
-      width={1440}
-      viewBox="0 0 1440 320"
-      style={styles.svgCurve}
-    >
-      <Path
-        fill="#7B904B"
-        d="M612.476 144.841L550.386 111.881C529.789 100.947 504.722 102.937 486.109 116.985L415.77 170.07C398.787 182.887 376.287 185.752 356.635 177.599L310.915 158.633C298.156 153.339 283.961 152.611 270.727 156.57L214.143 173.499C211.096 174.41 208.241 175.872 205.72 177.813C194.011 186.826 177.156 184.305 168.597 172.26L150.51 146.806C133.89 123.417 102.3 116.337 77.2875 130.397L0.635547 173.483L1.12709 99.8668C1.49588 44.6395 46.5654 0.167902 101.793 0.536689L681.203 4.40584C727.636 4.71591 765.026 42.6089 764.716 89.0422C764.538 115.693 743.66 137.608 717.049 139.075L612.476 144.841Z"
-      />
-    </Svg>
-    <ScrollView
-      keyboardShouldPersistTaps="handled"
-      style={{
-        backgroundColor: theme.colors.background,
-        flex: 1,
-        paddingTop: StatusBar.currentHeight,
-      }}
-      contentContainerStyle={{ paddingBottom: paddingBottom }}
-    >
-      <View style={{ flex: 1 }}>
-        <View style={{ position: "absolute", top: 60, right: 20, zIndex: 1 }}>
-          <Ionicons
-            name="settings-outline"
-            size={20}
-            color="black"
-            onPress={() => goToEditProfile(personDetails)}
-          />
-        </View>
-        <View style={{ flex: 1, marginTop: 10 }}>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              marginBottom: 20,
-              marginHorizontal: 20,
-            }}
-          >
-            <View style={styles.profileContainer}>
-              <Image
-                source={
-                  user.ProfilePicture
-                    ? {
-                        uri: `${localhost}/img/profilepicture/${user.ProfilePicture}`,
-                      }
-                    : defaultProfile
-                }
-                style={styles.imageStyle}
-              />
-            </View>
-            <Text style={styles.nameLabel}>
-              {personDetails.FirstName} {personDetails.Initial}{" "}
-              {personDetails.LastName}
-            </Text>
-            <Text style={styles.emailLabel}>{user.Email}</Text>
-            <Text style={styles.roleLabel}>
-              {user.SubscriptionStatus === "Inactive"
-                ? "Volunteer"
-                : "Volunteer+"}
-            </Text>
+      <Svg
+        height={200}
+        width={1440}
+        viewBox="0 0 1440 320"
+        style={styles.svgCurve}
+      >
+        <Path
+          fill="#7B904B"
+          d="M612.476 144.841L550.386 111.881C529.789 100.947 504.722 102.937 486.109 116.985L415.77 170.07C398.787 182.887 376.287 185.752 356.635 177.599L310.915 158.633C298.156 153.339 283.961 152.611 270.727 156.57L214.143 173.499C211.096 174.41 208.241 175.872 205.72 177.813C194.011 186.826 177.156 184.305 168.597 172.26L150.51 146.806C133.89 123.417 102.3 116.337 77.2875 130.397L0.635547 173.483L1.12709 99.8668C1.49588 44.6395 46.5654 0.167902 101.793 0.536689L681.203 4.40584C727.636 4.71591 765.026 42.6089 764.716 89.0422C764.538 115.693 743.66 137.608 717.049 139.075L612.476 144.841Z"
+        />
+      </Svg>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        style={{
+          backgroundColor: theme.colors.background,
+          flex: 1,
+          paddingTop: StatusBar.currentHeight,
+        }}
+        contentContainerStyle={{ paddingBottom: paddingBottom }}
+      >
+        <View style={{ flex: 1 }}>
+          <View style={{ position: "absolute", top: 60, right: 20, zIndex: 1 }}>
+            <Ionicons
+              name="settings-outline"
+              size={20}
+              color="black"
+              onPress={() => goToEditProfile(personDetails)}
+            />
           </View>
+          <View style={{ flex: 1, marginTop: 10 }}>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: 20,
+                marginHorizontal: 20,
+              }}
+            >
+              <View style={styles.profileContainer}>
+                <Image
+                  source={
+                    user.ProfilePicture
+                      ? {
+                          uri: `${localhost}/img/profilepicture/${user.ProfilePicture}`,
+                        }
+                      : defaultProfile
+                  }
+                  style={styles.imageStyle}
+                />
+              </View>
+              <Text style={styles.nameLabel}>
+                {personDetails.FirstName} {personDetails.Initial}{" "}
+                {personDetails.LastName}
+              </Text>
+              <Text style={styles.emailLabel}>{user.Email}</Text>
+              <Text style={styles.roleLabel}>Volunteer</Text>
+            </View>
+          </View>
+          <View style={styles.introContainer}>
+            <IntroCard
+              editable={isEditing}
+              onPress={editIntro}
+              inputValue={userDescription}
+              onInputChange={handleTextInputChange}
+            />
+          </View>
+          <View style={styles.organizationContainer}>
+            <OrganizationCard
+              organization={orgDetails.OrganizationName || "N/A"}
+            />
+          </View>
+          {/* <View style={styles.achievementsContainer}>
+            <AchievementCard />
+          </View> */}
         </View>
-        <View style={styles.introContainer}>
-          <IntroCard
-            editable={isEditing}
-            onPress={editIntro}
-            inputValue={userDescription}
-            onInputChange={handleTextInputChange}
-          />
-        </View>
-        <View style={styles.organizationContainer}>
-          <OrganizationCard
-            organization={orgDetails.OrganizationName || "N/A"}
-          />
-        </View>
-        <View style={styles.achievementsContainer}>
-          <AchievementCard />
-        </View>
-      </View>
-    </ScrollView>
-    <View style={styles.row}>
+      </ScrollView>
+      <View style={styles.row}>
         <Svg
           height={200}
           width="1440"
@@ -243,7 +251,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -2,
     left: -316,
-    zIndex: 1,
+    zIndex: 0,
   },
   row: {
     flexDirection: "row",
@@ -253,7 +261,7 @@ const styles = StyleSheet.create({
     left: -30,
     position: "absolute",
     bottom: -25,
-    zIndex: 1,
+    zIndex: 0,
   },
 });
 
