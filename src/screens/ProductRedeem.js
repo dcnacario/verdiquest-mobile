@@ -286,9 +286,12 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
         margin: 10,
+        alignItems: "center",
+        width: "25%",
     },
     cancelButtonText: {
         color: "white",
+        fontSize: 18,
         fontWeight: "bold",
     },
     successModal: {
@@ -303,7 +306,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
     closeButton: {
-        backgroundColor: "#4CAF50",
+        backgroundColor: "#3D691B",
         padding: 10,
         borderRadius: 10,
         margin: 10,
