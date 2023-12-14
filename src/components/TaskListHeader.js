@@ -309,19 +309,16 @@ const styles = StyleSheet.create({
   },
   modalTextInfo: {
     textAlign: "justify",
-    paddingVertical: 1,
     color: "#FFFFFF",
   },
   modalSectionTitle: {
     fontWeight: "bold",
     alignSelf: "flex-start",
-    paddingVertical: 1,
     fontSize: 16,
     color: "#FFFFFF",
   },
   modalInfoSubTitle: {
     fontWeight: "500",
-    paddingVertical: 1,
     color: "#FFFFFF",
   },
   modalTitle: {
