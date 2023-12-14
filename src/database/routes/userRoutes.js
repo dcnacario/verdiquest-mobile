@@ -47,6 +47,5 @@ router.get(
   userController.checkApplicationVerified
 );
 router.post("/submitFeedback", userController.submitEventFeedback);
-router.get("/checkIfAlreadyRedeemed", userController.checkIfAlreadyRedeemed);
 
 module.exports = router;

@@ -40,6 +40,7 @@ const TaskListHeader = ({ route }) => {
           : `${localhost}/user/fetch${difficultyTitle}Task`;
 
       const response = await axios.get(endpoint);
+      console.log(response.data)
       if (response.data.success) {
         setTasks(response.data.fetchedTable);
       } else {
@@ -49,6 +50,7 @@ const TaskListHeader = ({ route }) => {
       console.error("Error fetching tasks:", error);
     }
   };
+
 
   const InfoModal = ({ isVisible, onClose }) => {
     return (
