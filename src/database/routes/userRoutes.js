@@ -47,6 +47,6 @@ router.get(
   userController.checkApplicationVerified
 );
 router.post("/submitFeedback", userController.submitEventFeedback);
-router.get("/checkIfAlreadyRedeemed", userController.checkIfAlreadyRedeemed);
+router.post("/fetchLimits", userController.fetchLimits);
 
 module.exports = router;

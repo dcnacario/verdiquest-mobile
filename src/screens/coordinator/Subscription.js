@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,21 @@ import axios from "axios";
 const Subscription = ({ route }) => {
   const { coordinator } = route.params;
   const localhost = ipAddress;
+  const [subscriber, setSubscriber] = useState({});
+  const [isUnsubscribeConfirmed, setIsUnsubscribeConfirmed] = useState(false);
+  const [unsubscribeText, setUnsubscribeText] = useState("Cancel Subscription");
+
+  const fetchSubscription = async () => {
+    try {
+      const response = await axios.post(
+        `${localhost}/coordinator/fetchSubscription`,
+        { organizationId: coordinator.OrganizationId }
+      );
+      setSubscriber(response.data.fetchTable);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleSubscribe = async () => {
     try {
@@ -35,6 +50,32 @@ const Subscription = ({ route }) => {
     }
   };
 
+  const handleUnsubscribeToggle = () => {
+    if (isUnsubscribeConfirmed) {
+      Alert.alert("Unsubscribe Successful", "You have unsubscribed.");
+      setIsUnsubscribeConfirmed(false);
+      setUnsubscribeText("Cancel Subscription"); // Reset to "Cancel Subscription"
+    } else {
+      setUnsubscribeText("Confirm Unsubscribe?"); // Change to "Confirm Unsubscribe?"
+      setIsUnsubscribeConfirmed(!isUnsubscribeConfirmed); // Toggle the confirmation state
+    }
+  };
+
+  useEffect(() => {
+    fetchSubscription();
+  }, [coordinator.OrganizationId]);
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  console.log(subscriber);
+
   return (
     <View style={styles.container}>
       <Svg
@@ -50,7 +91,6 @@ const Subscription = ({ route }) => {
       </Svg>
 
       <Text style={styles.headerText}>Subscription</Text>
-
       <View style={styles.card}>
         <View style={styles.leftContainer}>
           <Image
@@ -73,7 +113,11 @@ const Subscription = ({ route }) => {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.card} onPress={handleSubscribe}>
+      <TouchableOpacity
+        style={styles.card}
+        onPress={handleSubscribe}
+        disabled={coordinator.SubscriptionStatus === "Active" ? true : false}
+      >
         <View style={styles.leftContainer}>
           <Image
             style={styles.avatar}
@@ -92,13 +136,34 @@ const Subscription = ({ route }) => {
             {"\n"}
             {">"} 6 Rewards{"\n"}
           </Text>
-          <Text style={styles.price}>For Only ₱229/Mo.</Text>
+          <Text style={styles.price}>
+            {coordinator.SubscriptionStatus !== "Active"
+              ? "For Only ₱229/Mo."
+              : "Claimed"}
+          </Text>
         </View>
       </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={handleSubscribe}>
-        <Text style={styles.buttonText}>Avail Subscription</Text>
+      <View style={{ marginBottom: 20 }}>
+        <Text style={styles.textStyle}>Subscription Ends in:</Text>
+        <Text style={styles.textStyle}>
+          {formatDate(subscriber[0]?.SubscriptionEnd)}
+        </Text>
+      </View>
+      {coordinator.SubscriptionStatus !== "Active" ? (
+        <TouchableOpacity style={styles.button} onPress={handleSubscribe}>
+          <Text style={styles.buttonText}>Avail Subscription</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity style={styles.button} disabled={true}>
+          <Text style={styles.buttonText}>Already Subscribed</Text>
+        </TouchableOpacity>
+      )}
+      <TouchableOpacity onPress={handleUnsubscribeToggle}>
+        <Text style={{ fontWeight: "500", fontSize: 12, color: "#BA1A1A" }}>
+          {unsubscribeText}
+        </Text>
       </TouchableOpacity>
+
       <Svg
         height={200}
         width="1440"
@@ -226,6 +291,12 @@ const styles = StyleSheet.create({
     bottom: -115,
     left: -300,
     zIndex: -1,
+  },
+  textStyle: {
+    color: "#3D691B",
+    fontWeight: "500",
+    marginVertical: 5,
+    textAlign: "center",
   },
 });
 

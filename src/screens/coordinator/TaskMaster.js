@@ -157,11 +157,29 @@ const TaskMaster = ({ route }) => {
                 {"\n"}
                 Submit a series of photos capturing different stages of the
                 cleanup and participants.{"\n"}Submit photos of your
-                participation in the tree planting event.
+                participation in the tree planting event.{"\n"}
+              </Text>
+
+              <Text style={styles.modalSectionTitle}>VERDIPOINTS:</Text>
+              <Text style={styles.modalTextInfo}>
+                <Text style={styles.modalInfoSubTitle}>1VP = 1Peso</Text>
+                {"\n"}
+                {"\n"}Easy = 0.20 - 0.49 VP
+                {"\n"}Moderate = 0.50 - 0.99 VP
+                {"\n"}Hard = 1 - 4 VP
+                {"\n"}Challenging = 5 - 9 VP
+                {"\n"}Expert = 10 - 20 VP
+                {"\n"}
+                {"\n"}75 VP = Bracelets, Stickers, Ballpens
+                {"\n"}50-300 VP = Vouchers
+                {"\n"}150 VP = Mugs, Umbrella
+                {"\n"}300 VP = T-shirt
+                {"\n"}700 VP = VIP Event Ticket
+                {"\n"}
               </Text>
 
               <TouchableOpacity style={styles.button} onPress={onClose}>
-                <Text style={styles.buttonText}>Close</Text>
+                <Text style={styles.buttonText}>Ok</Text>
               </TouchableOpacity>
             </ScrollView>
           </View>
@@ -439,6 +457,8 @@ const styles = StyleSheet.create({
     elevation: 2,
     backgroundColor: theme.colors.primary,
     marginTop: 10,
+    width: "40%",
+    alignSelf: "center",
   },
   svgCurve: {
     position: "absolute",
@@ -467,10 +487,12 @@ const styles = StyleSheet.create({
   modalContent: {
     width: 300, // Set your desired width
     height: 500, // Set your desired height
-    backgroundColor: "white",
+    backgroundColor: "#839655",
     borderRadius: 20,
     padding: 20,
     alignItems: "center",
+    borderColor: "#454545",
+    borderWidth: 3,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -483,20 +505,24 @@ const styles = StyleSheet.create({
   modalTextInfo: {
     textAlign: "justify",
     paddingVertical: 5,
+    color: "#FFFFFF",
   },
   modalSectionTitle: {
     fontWeight: "bold",
     alignSelf: "flex-start",
     paddingVertical: 5,
     fontSize: 16,
+    color: "#FFFFFF",
   },
   modalInfoSubTitle: {
     fontWeight: "500",
     paddingVertical: 5,
+    color: "#FFFFFF",
   },
   modalTitle: {
     fontWeight: "bold",
     fontSize: 20,
+    color: "#FFFFFF",
   },
 });
 

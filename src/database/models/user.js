@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 class User extends BaseModel {
   constructor(db) {
     super("user");
-    this.db = db; 
+    this.db = db;
   }
 
   async insertUser(userData) {
@@ -23,9 +23,8 @@ class User extends BaseModel {
       };
 
       const [result] = await this.db.query(
-        `INSERT INTO ${this.tableName} (SubscriptionStatus, VerdiPoints, Email, Password, ProfilePicture, TaskCount, DateRegistered, LastActive) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO ${this.tableName} (VerdiPoints, Email, Password, ProfilePicture, TaskCount, DateRegistered, LastActive) VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
-          "Inactive",
           0,
           userData.email,
           userData.password,
@@ -53,6 +52,7 @@ class User extends BaseModel {
           userData.province,
         ]
       );
+
       return insertedId;
     } catch (error) {
       console.error(`Error inserting user`, error);
@@ -138,7 +138,7 @@ class User extends BaseModel {
   async fetchEasyTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.DifficultyId = 1 AND udt.TaskStatus is NULL"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 1 AND dt.isDeleted = 0"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
@@ -150,11 +150,11 @@ class User extends BaseModel {
   async fetchModerateTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.DifficultyId = 2 AND udt.TaskStatus is NULL;"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 2 AND dt.isDeleted = 0"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
-      console.error(`Error fetching easy tasks: ${error}`);
+      console.error(`Error fetching moderate tasks: ${error}`);
       throw error;
     }
   }
@@ -162,11 +162,11 @@ class User extends BaseModel {
   async fetchHardTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.DifficultyId = 3 AND udt.TaskStatus is NULL ;"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 3 AND dt.isDeleted = 0"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
-      console.error(`Error fetching easy tasks: ${error}`);
+      console.error(`Error fetching hard tasks: ${error}`);
       throw error;
     }
   }
@@ -174,11 +174,11 @@ class User extends BaseModel {
   async fetchChallengingTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.DifficultyId = 4 AND udt.TaskStatus is NULL ;"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 4 AND dt.isDeleted = 0"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
-      console.error(`Error fetching easy tasks: ${error}`);
+      console.error(`Error fetching challenging tasks: ${error}`);
       throw error;
     }
   }
@@ -186,11 +186,11 @@ class User extends BaseModel {
   async fetchExpertTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.DifficultyId = 5 AND udt.TaskStatus is NULL ;"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 5 AND dt.isDeleted = 0"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
-      console.error(`Error fetching easy tasks: ${error}`);
+      console.error(`Error fetching expert tasks: ${error}`);
       throw error;
     }
   }
@@ -211,7 +211,7 @@ class User extends BaseModel {
   async fetchAllDifficultyTasks() {
     try {
       const [result] = await this.db.query(
-        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.isDeleted = 0 AND udt.TaskStatus is NULL ORDER BY dt.DifficultyId ASC;"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.isDeleted = 0 ORDER BY dt.DifficultyId ASC; "
       );
       return result.length > 0 ? result : [];
     } catch (error) {
@@ -270,7 +270,7 @@ class User extends BaseModel {
   async checkTaskAccepted(userId, taskId) {
     try {
       await this.db.query("START TRANSACTION");
-  
+
       const query = `
         SELECT udt.*, dt.TaskDuration, dt.TaskPoints, dt.TaskName, dt.TaskDescription, dt.TaskImage,
               COALESCE((SELECT TaskStatus FROM userdailytask WHERE UserId = ? AND TaskId = ?), 'NotStarted') AS TaskStatus
@@ -278,13 +278,18 @@ class User extends BaseModel {
         JOIN dailytask dt ON udt.TaskId = dt.TaskId
         WHERE udt.UserId = ? AND udt.TaskId = ?
       `;
-      const [results] = await this.db.query(query, [userId, taskId, userId, taskId]);
-  
+      const [results] = await this.db.query(query, [
+        userId,
+        taskId,
+        userId,
+        taskId,
+      ]);
+
       if (results.length > 0) {
         const task = results[0];
         const taskEndTime = new Date(task.DateTaken);
         taskEndTime.setMinutes(taskEndTime.getMinutes() + task.TaskDuration);
-  
+
         if (new Date() > taskEndTime && task.TaskStatus === "Ongoing") {
           const updateQuery = `
             UPDATE userdailytask 
@@ -293,12 +298,20 @@ class User extends BaseModel {
           `;
           await this.db.query(updateQuery, [userId, taskId]);
           await this.db.query("COMMIT");
-          return { isAccepted: false, isExpired: true, isCompleted: task.TaskStatus === "Completed" };
+          return {
+            isAccepted: false,
+            isExpired: true,
+            isCompleted: task.TaskStatus === "Completed",
+          };
         } else if (task.TaskStatus === "Cancelled") {
           await this.db.query("COMMIT");
-          return { isAccepted: false, isExpired: false, isCompleted: task.TaskStatus === "Completed" };
+          return {
+            isAccepted: false,
+            isExpired: false,
+            isCompleted: task.TaskStatus === "Completed",
+          };
         }
-  
+
         await this.db.query("COMMIT");
         return {
           isAccepted: true,
@@ -321,7 +334,6 @@ class User extends BaseModel {
       throw error;
     }
   }
-  
 
   async fetchAcceptedTasks(userId) {
     const query = `
@@ -512,13 +524,13 @@ class User extends BaseModel {
 
   async updatePerson(personData) {
     const query =
-        "UPDATE person SET FirstName = ?, Initial = ?, LastName = ?, PhoneNumber = ? WHERE PersonId = ?";
-        const [results] = await this.db.query(query, [
-        personData.firstName,
-        personData.middleInitial,
-        personData.lastName,
-        personData.phoneNumber,
-        personData.personId,
+      "UPDATE person SET FirstName = ?, Initial = ?, LastName = ?, PhoneNumber = ? WHERE PersonId = ?";
+    const [results] = await this.db.query(query, [
+      personData.firstName,
+      personData.middleInitial,
+      personData.lastName,
+      personData.phoneNumber,
+      personData.personId,
     ]);
 
     const [result_user] = await this.db.query(
@@ -550,62 +562,73 @@ class User extends BaseModel {
       throw error;
     }
   }
-    
-    async redeemProduct(userId, productId, productSize, contactNumber, deliveryAddress) {
-      if (!productSize.trim()) return { error: "Product size is required" };
-      if (!contactNumber.trim()) return { error: "Contact number is required" };
-      if (!deliveryAddress.trim()) return { error: "Delivery address is required" };
-      try {
-          await this.db.query('START TRANSACTION');
-          const productQuery = `SELECT PointsRequired, OrganizationId FROM products WHERE ProductId = ?`;
-          const [productResults] = await this.db.query(productQuery, [productId]);
-  
-          if (!productResults || productResults.length === 0) {
-              await this.db.query('ROLLBACK');
-              return { error: "Product not found or invalid ProductId" };
-          }
-  
-          const pointsRequired = productResults[0].PointsRequired;
-          const organizationId = productResults[0].OrganizationId;
-          const productQuantity = productResults[0].Quantity;
 
-          if (productQuantity <= 0) {
-              await this.db.query('ROLLBACK');
-              return { error: "Product is out of stock" };
-          }
-          
-          const deductPointsQuery = `UPDATE user SET VerdiPoints = VerdiPoints - ? WHERE UserId = ?`;
-          await this.db.query(deductPointsQuery, [pointsRequired, userId]);
+  async redeemProduct(
+    userId,
+    productId,
+    productSize,
+    contactNumber,
+    deliveryAddress
+  ) {
+    if (!productSize.trim()) return { error: "Product size is required" };
+    if (!contactNumber.trim()) return { error: "Contact number is required" };
+    if (!deliveryAddress.trim())
+      return { error: "Delivery address is required" };
+    try {
+      await this.db.query("START TRANSACTION");
 
-          const redeemQuery = `INSERT INTO redeem (ProductId, UserId, Status) VALUES (?, ?, 'PROCESSING')`;
-          await this.db.query(redeemQuery, [productId, userId]);
+      const productQuery = `SELECT PointsRequired, OrganizationId, ProductQuantity FROM products WHERE ProductId = ?`;
+      const [productResults] = await this.db.query(productQuery, [productId]);
 
-          const transactionQuery = `INSERT INTO redeemtransaction (RedeemId, TransactionDate, ProductSize, ContactNumber, Destination) VALUES (?, NOW(), ?, ?, ?)`;
-          const [redeemResult] = await this.db.query(redeemQuery, [productId, userId, organizationId]);
-          const redeemId = redeemResult.insertId;
-
-          const updateProductQuery = `UPDATE products SET ProductQuantity = ProductQuantity - 1 WHERE ProductId = ?`;
-          await this.db.query(updateProductQuery, [productId]);
-  
-          await this.db.query(transactionQuery, [redeemId, productSize, contactNumber, deliveryAddress]);
-  
-          await this.db.query('COMMIT');
-  
-          return { success: true, redeemId, message: "Product redeemed successfully" };
-      } catch (error) {
-          await this.db.query('ROLLBACK');
-          throw error;
+      if (!productResults || productResults.length === 0) {
+        await this.db.query("ROLLBACK");
+        return { error: "Product not found or invalid ProductId" };
       }
+
+      const pointsRequired = productResults[0].PointsRequired;
+      const organizationId = productResults[0].OrganizationId;
+      const productQuantity = productResults[0].ProductQuantity;
+
+      if (productQuantity <= 0) {
+        await this.db.query("ROLLBACK");
+        return { error: "Cannot redeem product, insufficient quantity" };
+      }
+
+      const deductPointsQuery = `UPDATE user SET VerdiPoints = VerdiPoints - ? WHERE UserId = ?`;
+      await this.db.query(deductPointsQuery, [pointsRequired, userId]);
+
+      const redeemQuery = `INSERT INTO redeem (ProductId, UserId, Status) VALUES (?, ?, 'PROCESSING')`;
+      await this.db.query(redeemQuery, [productId, userId]);
+
+      const transactionQuery = `INSERT INTO redeemtransaction (RedeemId, TransactionDate, ProductSize, ContactNumber, Destination) VALUES (?, NOW(), ?, ?, ?)`;
+      const [redeemResult] = await this.db.query(redeemQuery, [
+        productId,
+        userId,
+        organizationId,
+      ]);
+      const redeemId = redeemResult.insertId;
+
+      const updateProductQuery = `UPDATE products SET ProductQuantity = ProductQuantity - 1 WHERE ProductId = ?`;
+      await this.db.query(updateProductQuery, [productId]);
+
+      await this.db.query(transactionQuery, [
+        redeemId,
+        productSize,
+        contactNumber,
+        deliveryAddress,
+      ]);
+
+      await this.db.query("COMMIT");
+
+      return {
+        success: true,
+        redeemId,
+        message: "Product redeemed successfully",
+      };
+    } catch (error) {
+      await this.db.query("ROLLBACK");
+      throw error;
     }
-
-    async isProductRedeemed(userId, productId) {
-      const query = `
-          SELECT RedeemId FROM redeem 
-          WHERE UserId = ? AND ProductId = ? AND Status = 'SUCCESS';
-      `;
-
-    const [results] = await this.db.query(query, [userId, productId]);
-    return results.length > 0;
   }
 
   async isApplicationVerified(userId, eventId) {
@@ -641,4 +664,70 @@ class User extends BaseModel {
     return results.length > 0 && results[0].Feedback !== null;
   }
 }
+
+
+  async fetchLimits(orgId, userId, difficultyId) {
+    try {
+      let limitColumn;
+
+      // Determine which limit column to use based on the difficulty
+      switch (difficultyId) {
+        case 1:
+          limitColumn = "org.EasyLimit";
+          break;
+        case 2:
+          limitColumn = "org.ModerateLimit";
+          break;
+        case 3:
+          limitColumn = "org.HardLimit";
+          break;
+        case 4:
+          limitColumn = "org.ChallengingLimit";
+          break;
+        case 5:
+          limitColumn = "org.ExpertLimit";
+          break;
+        default:
+          limitColumn = "org.DefaultLimit";
+          break;
+      }
+
+      const sql = `
+     SELECT
+    org.OrganizationId,
+    org.EasyLimit,
+    org.ModerateLimit,
+    org.HardLimit,
+    org.ChallengingLimit,
+    org.ExpertLimit,
+    COUNT(CASE WHEN diff.Level = 'Easy' THEN 1 END) AS EasyTasksCount,
+    COUNT(CASE WHEN diff.Level = 'Moderate' THEN 1 END) AS ModerateTasksCount,
+    COUNT(CASE WHEN diff.Level = 'Hard' THEN 1 END) AS HardTasksCount,
+    COUNT(CASE WHEN diff.Level = 'Challenging' THEN 1 END) AS ChallengingTasksCount,
+    COUNT(CASE WHEN diff.Level = 'Expert' THEN 1 END) AS ExpertTasksCount
+FROM
+    organization org
+JOIN
+    dailytask dt ON org.OrganizationId = dt.OrganizationId
+JOIN
+    difficulty diff ON dt.DifficultyId = diff.DifficultyId
+LEFT JOIN
+    userdailytask udt ON dt.TaskId = udt.TaskId
+WHERE
+	udt.UserId = ?
+GROUP BY
+    org.OrganizationId, org.EasyLimit, org.ModerateLimit, org.HardLimit, org.ChallengingLimit, org.ExpertLimit;
+;
+    `;
+
+      const [result] = await this.db.query(sql, [userId]);
+
+      return result.length > 0 ? result : [];
+    } catch (error) {
+      console.error(`Error fetching limits`, error);
+      throw error;
+    }
+  }
+}
+
 module.exports = User;

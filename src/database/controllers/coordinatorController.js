@@ -887,6 +887,23 @@ async function doSubscribe(request, response) {
   }
 }
 
+async function fetchSubscription(request, response) {
+  try {
+    const { organizationId } = request.body;
+
+    const fetchedTable = await coordinator.fetchSubscription(organizationId);
+    return response.json({
+      success: true,
+      fetchTable: fetchedTable,
+    });
+  } catch (error) {
+    console.error(error);
+    response
+      .status(500)
+      .send({ message: "Server error", error: error.message });
+  }
+}
+
 module.exports = {
   registerOrganization,
   registerCoordinator,
@@ -918,4 +935,5 @@ module.exports = {
   fetchCoordinators,
   updateTaskLimit,
   doSubscribe,
+  fetchSubscription,
 };

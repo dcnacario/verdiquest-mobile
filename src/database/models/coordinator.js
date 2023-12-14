@@ -187,6 +187,7 @@ class Coordinator extends BaseModel {
           taskData.taskId,
         ]
       );
+      console.log(taskData.taskPoints);
       const taskUpdate = task.affectedRows;
       return taskUpdate;
     } catch (error) {
@@ -627,6 +628,17 @@ class Coordinator extends BaseModel {
       return insertedSubscriptionId;
     } catch (error) {
       console.error(`Error inserting Subscription Transaction`, error);
+      throw error;
+    }
+  }
+
+  async fetchSubscription(orgId) {
+    try {
+      const sql = "SELECT * FROM subscription WHERE OrganizationId = ?";
+      const [result] = await this.db.query(sql, [orgId]);
+      return result.length > 0 ? result : null;
+    } catch (error) {
+      console.error(`Error fetching subscription`, error);
       throw error;
     }
   }

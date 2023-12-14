@@ -302,7 +302,6 @@ async function checkTaskAccepted(request, response) {
   }
 }
 
-
 async function fetchAcceptedTasks(request, response) {
   const userId = request.params.userId;
   try {
@@ -572,27 +571,52 @@ async function getUserDailyTask(request, response) {
 
 async function redeemProduct(request, response) {
   try {
-      const { userId, productId, productSize, contactNumber, deliveryAddress } = request.body;
-      const redeemResult = await user.redeemProduct(userId, productId, productSize, contactNumber, deliveryAddress);
-
-      if (redeemResult.error) {
-          return response.status(400).json({ success: false, message: redeemResult.error });
+    const { userId, productId, productSize, contactNumber, deliveryAddress } =
+      request.body;
+    const redeemResult = await user.redeemProduct(
+      userId,
+      productId,
+      productSize,
+      contactNumber,
+      deliveryAddress
+    );
+    if (redeemResult.error) {
+      if (
+        redeemResult.error === "Cannot redeem product, insufficient quantity"
+      ) {
+        return response
+          .status(400)
+          .json({ success: false, message: "Product is out of stock" });
       }
 
-      response.json({ success: true, message: 'Product redeemed successfully', redeem: redeemResult });
+      return response
+        .status(400)
+        .json({ success: false, message: redeemResult.error });
+    }
+
+    response.json({
+      success: true,
+      message: "Product redeemed successfully",
+      redeem: redeemResult,
+    });
   } catch (error) {
-      console.error(error);
-      response.status(500).json({ success: false, message: 'Error redeeming product', error: error.message });
+    console.error(error);
+    response.status(500).json({
+      success: false,
+      message: "Error redeeming product",
+      error: error.message,
+    });
   }
 }
-
 
 async function checkApplicationVerified(request, response) {
   try {
     const { userId, eventId } = request.query;
 
     if (!userId || !eventId) {
-      return response.status(400).send({ message: "UserId and EventId are required" });
+      return response
+        .status(400)
+        .send({ message: "UserId and EventId are required" });
     }
 
     const isVerified = await user.isApplicationVerified(userId, eventId);
@@ -601,7 +625,7 @@ async function checkApplicationVerified(request, response) {
     response.json({
       success: true,
       isVerified: isVerified,
-      feedbackGiven: feedbackGiven, 
+      feedbackGiven: feedbackGiven,
     });
   } catch (error) {
     console.error(error);
@@ -622,41 +646,47 @@ async function submitEventFeedback(request, response) {
 
     const isFeedbackGiven = await user.isFeedbackGiven(userId, eventId);
     if (isFeedbackGiven) {
-      return response.status(400).send({ message: "Feedback has already been given for this event" });
+      return response
+        .status(400)
+        .send({ message: "Feedback has already been given for this event" });
     }
 
     const result = await user.submitFeedback(userId, eventId, feedback);
 
     response.json({
       success: result.success,
-      message: "Feedback submitted successfully"
+      message: "Feedback submitted successfully",
     });
   } catch (error) {
     console.error(error);
     response.status(500).send({
       message: "Error submitting feedback",
-      error: error.message
+      error: error.message,
     });
   }
 }
 
-async function checkIfAlreadyRedeemed(request, response) {
+async function fetchLimits(request, response) {
   try {
-      const { userId, productId } = request.query;
+    const { organizationId, userId, difficultyId } = request.body;
 
-      if (!userId || !productId) {
-          return response.status(400).send({ message: "UserId and ProductId are required" });
-      }
+    const fetchedTable = await user.fetchLimits(
+      organizationId,
+      userId,
+      difficultyId
+    );
 
-      const isAlreadyRedeemed = await user.isProductRedeemed(userId, productId);
-
-      response.json({ success: true, isAlreadyRedeemed });
+    return response.json({
+      success: true,
+      fetchTable: fetchedTable,
+    });
   } catch (error) {
-      console.error(error);
-      response.status(500).send({
-          message: "Error checking if the product is already redeemed",
-          error: error.message,
-      });
+    console.error(error);
+
+    return response.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 }
 
@@ -694,5 +724,5 @@ module.exports = {
   redeemProduct,
   checkApplicationVerified,
   submitEventFeedback,
-  checkIfAlreadyRedeemed
+  fetchLimits,
 };
