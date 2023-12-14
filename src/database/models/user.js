@@ -52,7 +52,7 @@ class User extends BaseModel {
           userData.province,
         ]
       );
-      
+
       return insertedId;
     } catch (error) {
       console.error(`Error inserting user`, error);
@@ -138,7 +138,7 @@ class User extends BaseModel {
   async fetchEasyTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 1"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 1 AND dt.isDeleted = 0"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
@@ -150,7 +150,7 @@ class User extends BaseModel {
   async fetchModerateTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 2"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 2 AND dt.isDeleted = 0"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
@@ -162,7 +162,7 @@ class User extends BaseModel {
   async fetchHardTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 3"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 3 AND dt.isDeleted = 0"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
@@ -174,7 +174,7 @@ class User extends BaseModel {
   async fetchChallengingTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 4"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 4 AND dt.isDeleted = 0"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
@@ -186,7 +186,7 @@ class User extends BaseModel {
   async fetchExpertTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 5"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 5 AND dt.isDeleted = 0"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
@@ -211,7 +211,7 @@ class User extends BaseModel {
   async fetchAllDifficultyTasks() {
     try {
       const [result] = await this.db.query(
-        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.isDeleted = 0 AND udt.TaskStatus is NULL ORDER BY dt.DifficultyId ASC;"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.isDeleted = 0 ORDER BY dt.DifficultyId ASC; "
       );
       return result.length > 0 ? result : [];
     } catch (error) {
@@ -563,59 +563,74 @@ class User extends BaseModel {
     }
   }
 
-  async redeemProduct(userId, productId, productSize, contactNumber, deliveryAddress) {
+  async redeemProduct(
+    userId,
+    productId,
+    productSize,
+    contactNumber,
+    deliveryAddress
+  ) {
     if (!productSize.trim()) return { error: "Product size is required" };
     if (!contactNumber.trim()) return { error: "Contact number is required" };
-    if (!deliveryAddress.trim()) return { error: "Delivery address is required" };
+    if (!deliveryAddress.trim())
+      return { error: "Delivery address is required" };
     try {
-        await this.db.query("START TRANSACTION");
+      await this.db.query("START TRANSACTION");
 
-        const productQuery = `SELECT PointsRequired, OrganizationId, ProductQuantity FROM products WHERE ProductId = ?`;
-        const [productResults] = await this.db.query(productQuery, [productId]);
+      const productQuery = `SELECT PointsRequired, OrganizationId, ProductQuantity FROM products WHERE ProductId = ?`;
+      const [productResults] = await this.db.query(productQuery, [productId]);
 
-        if (!productResults || productResults.length === 0) {
-            await this.db.query("ROLLBACK");
-            return { error: "Product not found or invalid ProductId" };
-        }
-
-        const pointsRequired = productResults[0].PointsRequired;
-        const organizationId = productResults[0].OrganizationId;
-        const productQuantity = productResults[0].ProductQuantity;
-
-        if (productQuantity <= 0) {
-            await this.db.query("ROLLBACK");
-            return { error: "Cannot redeem product, insufficient quantity" };
-        }
-
-        const deductPointsQuery = `UPDATE user SET VerdiPoints = VerdiPoints - ? WHERE UserId = ?`;
-        await this.db.query(deductPointsQuery, [pointsRequired, userId]);
-
-        const redeemQuery = `INSERT INTO redeem (ProductId, UserId, Status) VALUES (?, ?, 'PROCESSING')`;
-        await this.db.query(redeemQuery, [productId, userId]);
-
-        const transactionQuery = `INSERT INTO redeemtransaction (RedeemId, TransactionDate, ProductSize, ContactNumber, Destination) VALUES (?, NOW(), ?, ?, ?)`;
-        const [redeemResult] = await this.db.query(redeemQuery, [productId, userId, organizationId]);
-        const redeemId = redeemResult.insertId;
-
-        const updateProductQuery = `UPDATE products SET ProductQuantity = ProductQuantity - 1 WHERE ProductId = ?`;
-        await this.db.query(updateProductQuery, [productId]);
-
-        await this.db.query(transactionQuery, [redeemId, productSize, contactNumber, deliveryAddress]);
-
-        await this.db.query("COMMIT");
-
-        return {
-            success: true,
-            redeemId,
-            message: "Product redeemed successfully",
-        };
-    } catch (error) {
+      if (!productResults || productResults.length === 0) {
         await this.db.query("ROLLBACK");
-        throw error;
+        return { error: "Product not found or invalid ProductId" };
+      }
+
+      const pointsRequired = productResults[0].PointsRequired;
+      const organizationId = productResults[0].OrganizationId;
+      const productQuantity = productResults[0].ProductQuantity;
+
+      if (productQuantity <= 0) {
+        await this.db.query("ROLLBACK");
+        return { error: "Cannot redeem product, insufficient quantity" };
+      }
+
+      const deductPointsQuery = `UPDATE user SET VerdiPoints = VerdiPoints - ? WHERE UserId = ?`;
+      await this.db.query(deductPointsQuery, [pointsRequired, userId]);
+
+      const redeemQuery = `INSERT INTO redeem (ProductId, UserId, Status) VALUES (?, ?, 'PROCESSING')`;
+      await this.db.query(redeemQuery, [productId, userId]);
+
+      const transactionQuery = `INSERT INTO redeemtransaction (RedeemId, TransactionDate, ProductSize, ContactNumber, Destination) VALUES (?, NOW(), ?, ?, ?)`;
+      const [redeemResult] = await this.db.query(redeemQuery, [
+        productId,
+        userId,
+        organizationId,
+      ]);
+      const redeemId = redeemResult.insertId;
+
+      const updateProductQuery = `UPDATE products SET ProductQuantity = ProductQuantity - 1 WHERE ProductId = ?`;
+      await this.db.query(updateProductQuery, [productId]);
+
+      await this.db.query(transactionQuery, [
+        redeemId,
+        productSize,
+        contactNumber,
+        deliveryAddress,
+      ]);
+
+      await this.db.query("COMMIT");
+
+      return {
+        success: true,
+        redeemId,
+        message: "Product redeemed successfully",
+      };
+    } catch (error) {
+      await this.db.query("ROLLBACK");
+      throw error;
     }
   }
 
- 
   async isApplicationVerified(userId, eventId) {
     const query = `
         SELECT Status FROM participants 
@@ -647,6 +662,69 @@ class User extends BaseModel {
     `;
     const [results] = await this.db.query(query, [userId, eventId]);
     return results.length > 0 && results[0].Feedback !== null;
+  }
+
+  async fetchLimits(orgId, userId, difficultyId) {
+    try {
+      let limitColumn;
+
+      // Determine which limit column to use based on the difficulty
+      switch (difficultyId) {
+        case 1:
+          limitColumn = "org.EasyLimit";
+          break;
+        case 2:
+          limitColumn = "org.ModerateLimit";
+          break;
+        case 3:
+          limitColumn = "org.HardLimit";
+          break;
+        case 4:
+          limitColumn = "org.ChallengingLimit";
+          break;
+        case 5:
+          limitColumn = "org.ExpertLimit";
+          break;
+        default:
+          limitColumn = "org.DefaultLimit";
+          break;
+      }
+
+      const sql = `
+     SELECT
+    org.OrganizationId,
+    org.EasyLimit,
+    org.ModerateLimit,
+    org.HardLimit,
+    org.ChallengingLimit,
+    org.ExpertLimit,
+    COUNT(CASE WHEN diff.Level = 'Easy' THEN 1 END) AS EasyTasksCount,
+    COUNT(CASE WHEN diff.Level = 'Moderate' THEN 1 END) AS ModerateTasksCount,
+    COUNT(CASE WHEN diff.Level = 'Hard' THEN 1 END) AS HardTasksCount,
+    COUNT(CASE WHEN diff.Level = 'Challenging' THEN 1 END) AS ChallengingTasksCount,
+    COUNT(CASE WHEN diff.Level = 'Expert' THEN 1 END) AS ExpertTasksCount
+FROM
+    organization org
+JOIN
+    dailytask dt ON org.OrganizationId = dt.OrganizationId
+JOIN
+    difficulty diff ON dt.DifficultyId = diff.DifficultyId
+LEFT JOIN
+    userdailytask udt ON dt.TaskId = udt.TaskId
+WHERE
+	udt.UserId = ?
+GROUP BY
+    org.OrganizationId, org.EasyLimit, org.ModerateLimit, org.HardLimit, org.ChallengingLimit, org.ExpertLimit;
+;
+    `;
+
+      const [result] = await this.db.query(sql, [userId]);
+
+      return result.length > 0 ? result : [];
+    } catch (error) {
+      console.error(`Error fetching limits`, error);
+      throw error;
+    }
   }
 }
 

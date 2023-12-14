@@ -935,5 +935,5 @@ module.exports = {
   fetchCoordinators,
   updateTaskLimit,
   doSubscribe,
-  fetchSubscription
+  fetchSubscription,
 };

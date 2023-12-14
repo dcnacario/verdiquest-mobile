@@ -19,7 +19,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 
 const TaskListHeader = ({ route }) => {
   const navigation = useNavigation();
-  const user = route?.params?.user || {};
+  const user = route || {};
   const [tasks, setTasks] = useState([]);
   const [selectedDifficulty, setSelectedDifficulty] = useState("All");
   const [refreshing, setRefreshing] = useState(false);
@@ -40,17 +40,15 @@ const TaskListHeader = ({ route }) => {
           : `${localhost}/user/fetch${difficultyTitle}Task`;
 
       const response = await axios.get(endpoint);
-      console.log(response.data)
       if (response.data.success) {
         setTasks(response.data.fetchedTable);
       } else {
         console.log("Failed to fetch tasks");
       }
     } catch (error) {
-      console.error("Error fetching tasks:", error);
+      console.log("Error fetching tasks:", error);
     }
   };
-
 
   const InfoModal = ({ isVisible, onClose }) => {
     return (
@@ -228,6 +226,9 @@ const TaskListHeader = ({ route }) => {
               onPress={() =>
                 navigation.navigate("TaskDetails", { taskId: task.TaskId })
               }
+              organizationId={task.OrganizationId}
+              userId={user.UserId}
+              difficultyId={task.DifficultyId}
             />
           ))
         ) : (
