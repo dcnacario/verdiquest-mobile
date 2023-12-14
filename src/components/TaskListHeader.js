@@ -7,12 +7,15 @@ import {
   FlatList,
   ScrollView,
   RefreshControl,
+  StatusBar,
+  Modal,
 } from "react-native";
 import { theme } from "../../assets/style";
 import CardTask from "./CardTask";
 import axios from "axios";
 import ipAddress from "../database/ipAddress";
 import { useNavigation } from "@react-navigation/native";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const TaskListHeader = ({ route }) => {
   const navigation = useNavigation();
@@ -20,7 +23,9 @@ const TaskListHeader = ({ route }) => {
   const [tasks, setTasks] = useState([]);
   const [selectedDifficulty, setSelectedDifficulty] = useState("All");
   const [refreshing, setRefreshing] = useState(false);
+  const [easyTaskCount, setEasyTaskCount] = useState(0);
   const localhost = ipAddress;
+  const [infoModalVisible, setInfoModalVisible] = useState(false);
 
   useEffect(() => {
     fetchTasksByDifficulty("All");
@@ -43,6 +48,80 @@ const TaskListHeader = ({ route }) => {
     } catch (error) {
       console.error("Error fetching tasks:", error);
     }
+  };
+
+  const InfoModal = ({ isVisible, onClose }) => {
+    return (
+      <Modal
+        transparent={true}
+        visible={isVisible}
+        animationType="fade"
+        onRequestClose={onClose}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Difficulty Guide</Text>
+            <ScrollView>
+              <Text style={styles.modalSectionTitle}>EASY:</Text>
+              <Text style={styles.modalTextInfo}>
+                {"\n"}Task suitable for beginners to those who are new to
+                sustainability efforts It requires minimal time, resources, or
+                expertise.{"\n"}
+              </Text>
+
+              <Text style={styles.modalSectionTitle}>MODERATE:</Text>
+              <Text style={styles.modalTextInfo}>
+                {"\n"}Tasks suitable for individuals with some experience in
+                sustainability Involves a moderate level of time, resources, or
+                expertise.{"\n"}
+              </Text>
+
+              <Text style={styles.modalSectionTitle}>HARD:</Text>
+              <Text style={styles.modalTextInfo}>
+                {"\n"}Tasks suitable for those with a commitment to
+                sustainability Involves a significant investment of time,
+                resources, or expertise.{"\n"}
+              </Text>
+
+              <Text style={styles.modalSectionTitle}>CHALLENGING:</Text>
+              <Text style={styles.modalTextInfo}>
+                {"\n"}Tasks suitable for sustainability enthusiasts Involves
+                creativity, Innovation, or active promotion .{"\n"}
+              </Text>
+
+              <Text style={styles.modalSectionTitle}>EXPERT:</Text>
+              <Text style={styles.modalTextInfo}>
+                {"\n"}Tasks suitable for sustainability leaders or those seeking
+                significant impact Involves coordination, leadership, or
+                participation in large-scale events. {"\n"}
+              </Text>
+
+              {/* <Text style={styles.modalSectionTitle}>VERDIPOINTS:</Text>
+              <Text style={styles.modalTextInfo}>
+                <Text style={styles.modalInfoSubTitle}>1VP = 1Peso</Text>
+                {"\n"}
+                {"\n"}Easy = 0.20 - 0.49 VP
+                {"\n"}Moderate = 0.50 - 0.99 VP
+                {"\n"}Hard = 1 - 4 VP
+                {"\n"}Challenging = 5 - 9 VP
+                {"\n"}Expert = 10 - 20 VP
+                {"\n"}
+                {"\n"}75 VP = Bracelets, Stickers, Ballpens
+                {"\n"}50-300 VP = Vouchers
+                {"\n"}150 VP = Mugs, Umbrella
+                {"\n"}300 VP = T-shirt
+                {"\n"}700 VP = VIP Event Ticket
+                {"\n"}
+              </Text> */}
+
+              <TouchableOpacity style={styles.button} onPress={onClose}>
+                <Text style={styles.buttonText}>Ok</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+    );
   };
 
   const difficulties = [
@@ -94,6 +173,29 @@ const TaskListHeader = ({ route }) => {
 
   return (
     <View style={styles.container}>
+      <View
+        style={{
+          flexDirection: "row",
+          paddingBottom: 20,
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 10,
+        }}
+      >
+        <Text style={{ fontSize: 32, color: "#3D691B" }}>Tasks</Text>
+        <TouchableOpacity onPress={() => setInfoModalVisible(true)}>
+          <MaterialIcons
+            name="info-outline"
+            size={24}
+            color={theme.colors.primary}
+          />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.divider}></View>
+      <Text style={{ fontSize: 18, color: "#3D691B", marginBottom: 10 }}>
+        Filter
+      </Text>
+
       <FlatList
         data={difficulties}
         renderItem={renderItem}
@@ -103,7 +205,16 @@ const TaskListHeader = ({ route }) => {
         showsHorizontalScrollIndicator={false}
         extraData={selectedDifficulty}
       />
-    <ScrollView style={{ flex: 1, width: "100%" }} refreshControl={ <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> }>
+      <InfoModal
+        isVisible={infoModalVisible}
+        onClose={() => setInfoModalVisible(false)}
+      />
+      <ScrollView
+        style={{ flex: 1, width: "100%" }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {tasks.length > 0 ? (
           tasks.map((task, index) => (
             <CardTask
@@ -129,6 +240,8 @@ const TaskListHeader = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: StatusBar.currentHeight + 60,
+    alignItems: "center",
   },
 
   textStyle: {
@@ -137,7 +250,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   flatListContainer: {
-    marginTop: 100,
     gap: 5,
     justifyContent: "center",
     alignContent: "center",
@@ -162,6 +274,74 @@ const styles = StyleSheet.create({
     color: "#36454F",
     textAlign: "center",
     marginTop: 10,
+  },
+  divider: {
+    borderWidth: 0.5,
+    borderBlockColor: "black",
+    width: "40%",
+    marginBottom: 5,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    width: "100%", // Set the width to 100%
+    height: "100%", // Set the height to 100%
+  },
+  modalContent: {
+    width: 300, // Set your desired width
+    height: 500, // Set your desired height
+    backgroundColor: "#839655",
+    borderRadius: 20,
+    padding: 20,
+    alignItems: "center",
+    borderColor: "#454545",
+    borderWidth: 3,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTextInfo: {
+    textAlign: "justify",
+    paddingVertical: 1,
+    color: "#FFFFFF",
+  },
+  modalSectionTitle: {
+    fontWeight: "bold",
+    alignSelf: "flex-start",
+    paddingVertical: 1,
+    fontSize: 16,
+    color: "#FFFFFF",
+  },
+  modalInfoSubTitle: {
+    fontWeight: "500",
+    paddingVertical: 1,
+    color: "#FFFFFF",
+  },
+  modalTitle: {
+    fontWeight: "bold",
+    fontSize: 20,
+    color: "#FFFFFF",
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    backgroundColor: theme.colors.primary,
+    marginVertical: 10,
+    width: "40%",
+    alignSelf: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
 
