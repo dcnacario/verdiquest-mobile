@@ -11,7 +11,7 @@ const Details = ({ timeCompleted, taskDescription = 'No description available.',
                 <Text style={styles.textStyle}>Time Completion: {timeCompleted}</Text>
             </View>
             <View style={styles.detailsContainer}>
-                <Text style={styles.titleStyle}>Details</Text>
+                <Text style={styles.titleStyle}>Task Instruction</Text>
                 <Text style={styles.descriptionStyle}>{taskDescription}</Text>
             </View>
             <Text style={styles.rewardTextStyle}>Reward: {rewardPoints} <Text style={styles.rewardValueStyle}>VP</Text></Text>

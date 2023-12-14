@@ -572,19 +572,23 @@ async function getUserDailyTask(request, response) {
 
 async function redeemProduct(request, response) {
   try {
-      const { userId, productId, productSize, contactNumber, deliveryAddress } = request.body;
-      const redeemResult = await user.redeemProduct(userId, productId, productSize, contactNumber, deliveryAddress);
-
-      if (redeemResult.error) {
-          return response.status(400).json({ success: false, message: redeemResult.error });
+    const { userId, productId, productSize, contactNumber, deliveryAddress } = request.body;
+    const redeemResult = await user.redeemProduct(userId, productId, productSize, contactNumber, deliveryAddress);
+    if (redeemResult.error) {
+      if (redeemResult.error === "Cannot redeem product, insufficient quantity") {
+        return response.status(400).json({ success: false, message: "Product is out of stock" });
       }
 
-      response.json({ success: true, message: 'Product redeemed successfully', redeem: redeemResult });
+      return response.status(400).json({ success: false, message: redeemResult.error });
+    }
+
+    response.json({ success: true, message: 'Product redeemed successfully', redeem: redeemResult });
   } catch (error) {
-      console.error(error);
-      response.status(500).json({ success: false, message: 'Error redeeming product', error: error.message });
+    console.error(error);
+    response.status(500).json({ success: false, message: 'Error redeeming product', error: error.message });
   }
 }
+
 
 
 async function checkApplicationVerified(request, response) {
@@ -640,26 +644,6 @@ async function submitEventFeedback(request, response) {
   }
 }
 
-async function checkIfAlreadyRedeemed(request, response) {
-  try {
-      const { userId, productId } = request.query;
-
-      if (!userId || !productId) {
-          return response.status(400).send({ message: "UserId and ProductId are required" });
-      }
-
-      const isAlreadyRedeemed = await user.isProductRedeemed(userId, productId);
-
-      response.json({ success: true, isAlreadyRedeemed });
-  } catch (error) {
-      console.error(error);
-      response.status(500).send({
-          message: "Error checking if the product is already redeemed",
-          error: error.message,
-      });
-  }
-}
-
 module.exports = {
   registerUser,
   loginUser,
@@ -694,5 +678,4 @@ module.exports = {
   redeemProduct,
   checkApplicationVerified,
   submitEventFeedback,
-  checkIfAlreadyRedeemed
 };

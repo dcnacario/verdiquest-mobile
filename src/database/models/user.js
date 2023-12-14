@@ -23,9 +23,8 @@ class User extends BaseModel {
       };
 
       const [result] = await this.db.query(
-        `INSERT INTO ${this.tableName} (SubscriptionStatus, VerdiPoints, Email, Password, ProfilePicture, TaskCount, DateRegistered, LastActive) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO ${this.tableName} (VerdiPoints, Email, Password, ProfilePicture, TaskCount, DateRegistered, LastActive) VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
-          "Inactive",
           0,
           userData.email,
           userData.password,
@@ -53,6 +52,7 @@ class User extends BaseModel {
           userData.province,
         ]
       );
+      
       return insertedId;
     } catch (error) {
       console.error(`Error inserting user`, error);
@@ -138,7 +138,7 @@ class User extends BaseModel {
   async fetchEasyTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.DifficultyId = 1 AND udt.TaskStatus is NULL"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 1"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
@@ -150,11 +150,11 @@ class User extends BaseModel {
   async fetchModerateTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.DifficultyId = 2 AND udt.TaskStatus is NULL;"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 2"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
-      console.error(`Error fetching easy tasks: ${error}`);
+      console.error(`Error fetching moderate tasks: ${error}`);
       throw error;
     }
   }
@@ -162,11 +162,11 @@ class User extends BaseModel {
   async fetchHardTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.DifficultyId = 3 AND udt.TaskStatus is NULL ;"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 3"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
-      console.error(`Error fetching easy tasks: ${error}`);
+      console.error(`Error fetching hard tasks: ${error}`);
       throw error;
     }
   }
@@ -174,11 +174,11 @@ class User extends BaseModel {
   async fetchChallengingTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.DifficultyId = 4 AND udt.TaskStatus is NULL ;"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 4"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
-      console.error(`Error fetching easy tasks: ${error}`);
+      console.error(`Error fetching challenging tasks: ${error}`);
       throw error;
     }
   }
@@ -186,11 +186,11 @@ class User extends BaseModel {
   async fetchExpertTask() {
     try {
       const [result] = await this.db.query(
-        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId WHERE dt.DifficultyId = 5 AND udt.TaskStatus is NULL ;"
+        "SELECT dt.* FROM dailytask dt LEFT JOIN userdailytask udt ON dt.TaskId = udt.TaskId LEFT JOIN user u ON udt.UserId = u.UserId WHERE dt.DifficultyId = 5"
       );
       return result.length > 0 ? result : [];
     } catch (error) {
-      console.error(`Error fetching easy tasks: ${error}`);
+      console.error(`Error fetching expert tasks: ${error}`);
       throw error;
     }
   }
@@ -563,83 +563,59 @@ class User extends BaseModel {
     }
   }
 
-  async redeemProduct(
-    userId,
-    productId,
-    productSize,
-    contactNumber,
-    deliveryAddress
-  ) {
+  async redeemProduct(userId, productId, productSize, contactNumber, deliveryAddress) {
     if (!productSize.trim()) return { error: "Product size is required" };
     if (!contactNumber.trim()) return { error: "Contact number is required" };
-    if (!deliveryAddress.trim())
-      return { error: "Delivery address is required" };
+    if (!deliveryAddress.trim()) return { error: "Delivery address is required" };
     try {
-      await this.db.query("START TRANSACTION");
-      const productQuery = `SELECT PointsRequired, OrganizationId FROM products WHERE ProductId = ?`;
-      const [productResults] = await this.db.query(productQuery, [productId]);
+        await this.db.query("START TRANSACTION");
 
-      if (!productResults || productResults.length === 0) {
-        await this.db.query("ROLLBACK");
-        return { error: "Product not found or invalid ProductId" };
-      }
+        const productQuery = `SELECT PointsRequired, OrganizationId, ProductQuantity FROM products WHERE ProductId = ?`;
+        const [productResults] = await this.db.query(productQuery, [productId]);
 
-      const pointsRequired = productResults[0].PointsRequired;
-      const organizationId = productResults[0].OrganizationId;
-      const productQuantity = productResults[0].Quantity;
+        if (!productResults || productResults.length === 0) {
+            await this.db.query("ROLLBACK");
+            return { error: "Product not found or invalid ProductId" };
+        }
 
-      if (productQuantity <= 0) {
-        await this.db.query("ROLLBACK");
-        return { error: "Product is out of stock" };
-      }
+        const pointsRequired = productResults[0].PointsRequired;
+        const organizationId = productResults[0].OrganizationId;
+        const productQuantity = productResults[0].ProductQuantity;
 
-      const deductPointsQuery = `UPDATE user SET VerdiPoints = VerdiPoints - ? WHERE UserId = ?`;
-      await this.db.query(deductPointsQuery, [pointsRequired, userId]);
+        if (productQuantity <= 0) {
+            await this.db.query("ROLLBACK");
+            return { error: "Cannot redeem product, insufficient quantity" };
+        }
 
-      const redeemQuery = `INSERT INTO redeem (ProductId, UserId, Status) VALUES (?, ?, 'PROCESSING')`;
-      await this.db.query(redeemQuery, [productId, userId]);
+        const deductPointsQuery = `UPDATE user SET VerdiPoints = VerdiPoints - ? WHERE UserId = ?`;
+        await this.db.query(deductPointsQuery, [pointsRequired, userId]);
 
-      const transactionQuery = `INSERT INTO redeemtransaction (RedeemId, TransactionDate, ProductSize, ContactNumber, Destination) VALUES (?, NOW(), ?, ?, ?)`;
-      const [redeemResult] = await this.db.query(redeemQuery, [
-        productId,
-        userId,
-        organizationId,
-      ]);
-      const redeemId = redeemResult.insertId;
+        const redeemQuery = `INSERT INTO redeem (ProductId, UserId, Status) VALUES (?, ?, 'PROCESSING')`;
+        await this.db.query(redeemQuery, [productId, userId]);
 
-      const updateProductQuery = `UPDATE products SET ProductQuantity = ProductQuantity - 1 WHERE ProductId = ?`;
-      await this.db.query(updateProductQuery, [productId]);
+        const transactionQuery = `INSERT INTO redeemtransaction (RedeemId, TransactionDate, ProductSize, ContactNumber, Destination) VALUES (?, NOW(), ?, ?, ?)`;
+        const [redeemResult] = await this.db.query(redeemQuery, [productId, userId, organizationId]);
+        const redeemId = redeemResult.insertId;
 
-      await this.db.query(transactionQuery, [
-        redeemId,
-        productSize,
-        contactNumber,
-        deliveryAddress,
-      ]);
+        const updateProductQuery = `UPDATE products SET ProductQuantity = ProductQuantity - 1 WHERE ProductId = ?`;
+        await this.db.query(updateProductQuery, [productId]);
 
-      await this.db.query("COMMIT");
+        await this.db.query(transactionQuery, [redeemId, productSize, contactNumber, deliveryAddress]);
 
-      return {
-        success: true,
-        redeemId,
-        message: "Product redeemed successfully",
-      };
+        await this.db.query("COMMIT");
+
+        return {
+            success: true,
+            redeemId,
+            message: "Product redeemed successfully",
+        };
     } catch (error) {
-      await this.db.query("ROLLBACK");
-      throw error;
+        await this.db.query("ROLLBACK");
+        throw error;
     }
   }
 
-  async isProductRedeemed(userId, productId) {
-    const query = `
-          SELECT RedeemId FROM redeem 
-          WHERE UserId = ? AND ProductId = ? AND Status = 'SUCCESS';
-      `;
-
-    const [results] = await this.db.query(query, [userId, productId]);
-    return results.length > 0;
-  }
-
+ 
   async isApplicationVerified(userId, eventId) {
     const query = `
         SELECT Status FROM participants 

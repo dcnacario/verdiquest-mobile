@@ -6,7 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
+  ScrollView,Dimensions
 } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import * as ImagePicker from "expo-image-picker";
@@ -22,6 +22,8 @@ const EditProfileUser = ({ route }) => {
   const [initial, setInitial] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const screenHeight = Dimensions.get("window").height;
+  const paddingBottom = screenHeight * 0.15;
 
   const [userData, setUserData] = useState({
     email: user.Email,
@@ -149,7 +151,7 @@ const EditProfileUser = ({ route }) => {
 
   // Adjust styles and functionalities as per your needs
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: paddingBottom }}>
       <View style={styles.headerContainer}>
         <MaterialIcons name="settings" size={24} color="green" />
         <Text style={styles.headerTitle}>Edit Profile</Text>

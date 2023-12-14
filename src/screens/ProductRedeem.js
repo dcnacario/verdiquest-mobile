@@ -11,99 +11,67 @@ const ProductRedeem = ({ route }) => {
     const [productSize, setProductSize] = useState("");
     const [contactNumber, setContactNumber] = useState("");
     const [deliveryAddress, setDeliveryAddress] = useState("");
-    const [isAlreadyRedeemed, setIsAlreadyRedeemed] = useState(false);
+    const [isOutOfStockModalVisible, setOutOfStockModalVisible] = useState(false);
 
-    // Confirmation Modal State
     const [isConfirmationModalVisible, setConfirmationModalVisible] = useState(
         false
     );
 
-  // Success Modal State
     const [isSuccessModalVisible, setSuccessModalVisible] = useState(false);
 
-    const checkIfAlreadyRedeemed = async () => {
-        try {
-        const response = await axios.get(
-            `${localhost}/user/checkIfAlreadyRedeemed`,
-            {
-            params: {
-                userId: user.UserId,
-                productId: product.ProductId,
-            },
-            }
-        );
-
-        if (response.data.success) {
-            setIsAlreadyRedeemed(response.data.isAlreadyRedeemed);
-        } else {
-            console.error(
-            "Error checking if product is already redeemed:",
-            response.data.message
-            );
-        }
-        } catch (error) {
-        console.error("Axios error:", error.response.data);
-        Alert.alert(
-            "Error",
-            "An error occurred while checking if the product is already redeemed"
-        );
-        }
-    };
-
-    useEffect(() => {
-        checkIfAlreadyRedeemed();
-    }, []);
-
-    // Confirmation Modal Handlers
     const handleRedeemConfirmation = () => {
-        // Open the confirmation modal
         setConfirmationModalVisible(true);
     };
 
     const handleConfirmRedeem = async () => {
-        // Add any additional checks or validations if needed
-        if (isAlreadyRedeemed) {
-        Alert.alert("Notice", "This product has already been redeemed.");
-        return;
-        }
         if (!productSize.trim() || !contactNumber.trim() || !deliveryAddress.trim()) {
-        Alert.alert("Validation Error", "Please fill in all required fields");
-        return;
+            Alert.alert("Validation Error", "Please fill in all required fields");
+            return;
         }
-
+    
         try {
-        const response = await axios.post(`${localhost}/user/redeemProduct`, {
-            userId: user.UserId,
-            productId: product.ProductId,
-            productSize,
-            contactNumber,
-            deliveryAddress,
-        });
-
-        if (response.data.success) {
-            // Show success modal
-            setSuccessModalVisible(true);
-        } else {
-            Alert.alert("Error", response.data.message);
-        }
+            const response = await axios.post(`${localhost}/user/redeemProduct`, {
+                userId: user.UserId,
+                productId: product.ProductId,
+                productSize,
+                contactNumber,
+                deliveryAddress,
+            });
+            
+            console.log(response.data)
+    
+            if (response.data.success) {
+                setSuccessModalVisible(true);
+            } else {
+                if (response.data.message === "Product is out of stock") {
+                    setOutOfStockModalVisible(true);
+                } else {
+                    Alert.alert("Error", response.data.message || "An error occurred while redeeming the product");
+                }
+            }
         } catch (error) {
-        console.error("Axios error:", error.response.data);
-        Alert.alert(
-            "Error",
-            "An error occurred while redeeming the product"
-        );
+            if (error.response && error.response.status === 400 && error.response.data.message === "Product is out of stock") {
+                setOutOfStockModalVisible(true);
+              } else {
+                console.error("Axios error:", error.response ? error.response.data : error.message);
+                Alert.alert("Error", "An error occurred while redeeming the product");
+              }
+            
         } finally {
-        // Close the confirmation modal
-        setConfirmationModalVisible(false);
+            setConfirmationModalVisible(false);
         }
     };
-
+    
     const toggleConfirmationModal = () => {
         setConfirmationModalVisible(!isConfirmationModalVisible);
     };
 
     const toggleSuccessModal = () => {
         setSuccessModalVisible(!isSuccessModalVisible);
+    };
+
+    const toggleOutOfStockModal = () => {
+        setOutOfStockModalVisible(!isOutOfStockModalVisible);
     };
 
     return (
@@ -116,84 +84,60 @@ const ProductRedeem = ({ route }) => {
             }
             style={styles.imageStyle}
         />
-        <View style={styles.productDetailsContainer}>
-            <Text style={styles.headerText}>Delivery Details</Text>
+            <View style={styles.productDetailsContainer}>
+                <Text style={styles.headerText}>Delivery Details</Text>
 
-            <Text style={styles.label}>Product Size</Text>
-            <TextInput
-            style={styles.inputStyle}
-            value={productSize}
-            onChangeText={setProductSize}
-            placeholder="Enter product size"
-            />
+                <Text style={styles.label}>Product Size</Text>
+                <TextInput style={styles.inputStyle} value={productSize} onChangeText={setProductSize} placeholder="Enter product size"/>
 
-            <Text style={styles.label}>Contact Number</Text>
-            <TextInput
-            style={styles.inputStyle}
-            value={contactNumber}
-            onChangeText={setContactNumber}
-            placeholder="Enter contact number"
-            keyboardType="phone-pad"
-            />
+                <Text style={styles.label}>Contact Number</Text>
+                <TextInput style={styles.inputStyle} value={contactNumber} onChangeText={setContactNumber} placeholder="Enter contact number" keyboardType="phone-pad"/>
 
-            <Text style={styles.label}>Delivery Address</Text>
-            <TextInput
-            style={styles.inputStyle}
-            value={deliveryAddress}
-            onChangeText={setDeliveryAddress}
-            placeholder="Enter delivery address"
-            />
+                <Text style={styles.label}>Delivery Address</Text>
+                <TextInput style={styles.inputStyle} value={deliveryAddress} onChangeText={setDeliveryAddress} placeholder="Enter delivery address"/>
 
-            <TouchableOpacity
-            style={styles.confirmButton}
-            onPress={handleRedeemConfirmation}
-            >
-            <Text style={styles.confirmButtonText}>Confirm</Text>
-            </TouchableOpacity>
-        </View>
-
-        <Modal
-            isVisible={isConfirmationModalVisible}
-            onBackdropPress={toggleConfirmationModal}
-        >
-            <View style={styles.confirmationModal}>
-            <Text style={styles.confirmationText}>
-                Are you sure you want to redeem {product.ProductName}?
-            </Text>
-            <View style={styles.confirmationButtons}>
-                <TouchableOpacity
-                style={styles.confirmButtonModal}
-                onPress={handleConfirmRedeem}
-                >
-                <Text style={styles.confirmButtonText}>Yes</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={toggleConfirmationModal}
-                >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <TouchableOpacity style={styles.confirmButton} onPress={handleRedeemConfirmation}>
+                    <Text style={styles.confirmButtonText}>Confirm</Text>
                 </TouchableOpacity>
             </View>
-            </View>
-        </Modal>
-
-        {/* Success Modal */}
-        <Modal
-            isVisible={isSuccessModalVisible}
-            onBackdropPress={toggleSuccessModal}
-        >
-            <View style={styles.successModal}>
-            <Text style={styles.successText}>
-                Product redeemed successfully!
-            </Text>
-            <TouchableOpacity
-                style={styles.closeButton}
-                onPress={toggleSuccessModal}
-            >
-                <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-            </View>
-        </Modal>
+            <Modal isVisible={isConfirmationModalVisible} onBackdropPress={toggleConfirmationModal}>
+                <View style={styles.confirmationModal}>
+                    <Text style={styles.confirmationText}>
+                        Are you sure you want to redeem {product.ProductName}?
+                    </Text>
+                    <View style={styles.confirmationButtons}>
+                        <TouchableOpacity style={styles.confirmButtonModal} onPress={handleConfirmRedeem}>
+                            <Text style={styles.confirmButtonText}>Yes</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.cancelButton} onPress={toggleConfirmationModal}>
+                            <Text style={styles.cancelButtonText}>Cancel</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+            <Modal isVisible={isSuccessModalVisible} onBackdropPress={toggleSuccessModal}>
+                <View style={styles.successModal}>
+                <Text style={styles.successText}>
+                    Product redeemed successfully!
+                </Text>
+                <TouchableOpacity
+                    style={styles.closeButton}
+                    onPress={toggleSuccessModal}
+                >
+                    <Text style={styles.closeButtonText}>Close</Text>
+                </TouchableOpacity>
+                </View>
+            </Modal>
+            <Modal isVisible={isOutOfStockModalVisible} onBackdropPress={toggleOutOfStockModal}>
+                <View style={styles.outOfStockModal}>
+                    <Text style={styles.outOfStockText}>
+                        Sorry, this product is currently out of stock.
+                    </Text>
+                    <TouchableOpacity style={styles.closeButton} onPress={toggleOutOfStockModal}>
+                        <Text style={styles.closeButtonText}>Close</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -314,6 +258,17 @@ const styles = StyleSheet.create({
     closeButtonText: {
         color: "white",
         fontWeight: "bold",
+    },
+    outOfStockModal: {
+        backgroundColor: "white",
+        padding: 20,
+        borderRadius: 10,
+        alignItems: "center",
+    },
+    outOfStockText: {
+        fontSize: 18,
+        marginBottom: 20,
+        textAlign: "center",
     },
 });
 
