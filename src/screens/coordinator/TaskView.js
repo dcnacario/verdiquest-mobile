@@ -105,20 +105,11 @@ const TaskView = ({ route }) => {
     }
   };
 
-  const calculatePoints = (difficultyId) => {
-    const difficultyPointsMap = {
-      1: 150,
-      2: 250,
-      3: 500,
-    };
-
-    return difficultyPointsMap[difficultyId] || 0; // Default to 0 if difficultyId is not found
-  };
-
   const handleEditSave = async () => {
     if (isEditing) {
       if (isSubmitting) return;
       setIsSubmitting(true);
+      updateField("taskPoints", parseFloat(editTaskData.taskPoints));
       try {
         await updateImage();
         const response = await axios.post(
@@ -138,6 +129,9 @@ const TaskView = ({ route }) => {
   };
 
   const updateField = (field, value) => {
+    if (field === "taskPoints") {
+      value = parseFloat(value);
+    }
     setEditTaskData({ ...editTaskData, [field]: value });
   };
 
@@ -179,10 +173,6 @@ const TaskView = ({ route }) => {
 
   useEffect(() => {
     updateField("difficultyId", selectedDifficulty);
-
-    // Calculate and set task points based on selected difficulty
-    const points = calculatePoints(selectedDifficulty);
-    updateField("taskPoints", points.toString());
   }, [selectedDifficulty]);
 
   return (

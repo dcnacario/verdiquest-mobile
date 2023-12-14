@@ -172,6 +172,9 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
   };
 
   const updateTaskData = (field, value) => {
+    if (field === "taskPoints") {
+      value = parseFloat(value);
+    }
     setTaskData({ ...taskData, [field]: value });
   };
   useEffect(() => {
@@ -197,7 +200,7 @@ const CreateDashboardComponent = ({ coordinator, onTaskCreated }) => {
       quality: 1,
     });
 
-    if (result.cancelled) {
+    if (result.canceled) {
       // User canceled image selection
       Alert.alert("Image Selection Canceled", "You didn't select an image.");
       return;
