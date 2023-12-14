@@ -663,8 +663,6 @@ class User extends BaseModel {
     const [results] = await this.db.query(query, [userId, eventId]);
     return results.length > 0 && results[0].Feedback !== null;
   }
-}
-
 
   async fetchLimits(orgId, userId, difficultyId) {
     try {
@@ -693,32 +691,32 @@ class User extends BaseModel {
       }
 
       const sql = `
-     SELECT
-    org.OrganizationId,
-    org.EasyLimit,
-    org.ModerateLimit,
-    org.HardLimit,
-    org.ChallengingLimit,
-    org.ExpertLimit,
-    COUNT(CASE WHEN diff.Level = 'Easy' THEN 1 END) AS EasyTasksCount,
-    COUNT(CASE WHEN diff.Level = 'Moderate' THEN 1 END) AS ModerateTasksCount,
-    COUNT(CASE WHEN diff.Level = 'Hard' THEN 1 END) AS HardTasksCount,
-    COUNT(CASE WHEN diff.Level = 'Challenging' THEN 1 END) AS ChallengingTasksCount,
-    COUNT(CASE WHEN diff.Level = 'Expert' THEN 1 END) AS ExpertTasksCount
-FROM
-    organization org
-JOIN
-    dailytask dt ON org.OrganizationId = dt.OrganizationId
-JOIN
-    difficulty diff ON dt.DifficultyId = diff.DifficultyId
-LEFT JOIN
-    userdailytask udt ON dt.TaskId = udt.TaskId
-WHERE
-	udt.UserId = ?
-GROUP BY
-    org.OrganizationId, org.EasyLimit, org.ModerateLimit, org.HardLimit, org.ChallengingLimit, org.ExpertLimit;
-;
-    `;
+      SELECT
+      org.OrganizationId,
+      org.EasyLimit,
+      org.ModerateLimit,
+      org.HardLimit,
+      org.ChallengingLimit,
+      org.ExpertLimit,
+      COUNT(CASE WHEN diff.Level = 'Easy' THEN 1 END) AS EasyTasksCount,
+      COUNT(CASE WHEN diff.Level = 'Moderate' THEN 1 END) AS ModerateTasksCount,
+      COUNT(CASE WHEN diff.Level = 'Hard' THEN 1 END) AS HardTasksCount,
+      COUNT(CASE WHEN diff.Level = 'Challenging' THEN 1 END) AS ChallengingTasksCount,
+      COUNT(CASE WHEN diff.Level = 'Expert' THEN 1 END) AS ExpertTasksCount
+  FROM
+      organization org
+  JOIN
+      dailytask dt ON org.OrganizationId = dt.OrganizationId
+  JOIN
+      difficulty diff ON dt.DifficultyId = diff.DifficultyId
+  LEFT JOIN
+      userdailytask udt ON dt.TaskId = udt.TaskId
+  WHERE
+    udt.UserId = ?
+  GROUP BY
+      org.OrganizationId, org.EasyLimit, org.ModerateLimit, org.HardLimit, org.ChallengingLimit, org.ExpertLimit;
+  ;
+      `;
 
       const [result] = await this.db.query(sql, [userId]);
 
