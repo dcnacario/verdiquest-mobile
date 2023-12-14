@@ -663,6 +663,8 @@ class User extends BaseModel {
     const [results] = await this.db.query(query, [userId, eventId]);
     return results.length > 0 && results[0].Feedback !== null;
   }
+}
+
 
   async fetchLimits(orgId, userId, difficultyId) {
     try {
